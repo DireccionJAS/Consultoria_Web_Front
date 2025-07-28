@@ -6,8 +6,8 @@ import styles from '../../styles/Landing/FAQSection.module.css';
 export default function FAQSection({ faqActiveIndex, handleFaqToggle }) {
   const faqData = [
     {
-      question: "¿Cuánto tiempo tarda el proceso de visa?",
-      answer: "El tiempo de procesamiento varía según el tipo de servicio solicitado. Por ejemplo, para el trámite de eTA, el proceso suele tomar entre 30 minutos y 72 horas. En el caso de visa americana, el tiempo de espera puede oscilar entre 2 y 6 meses, dependiendo de lo acordado en el contrato. Cabe destacar que en CONSULTORÍA JAS siempre trabajamos para minimizar los tiempos de espera y agilizar cada trámite, buscando la mayor eficiencia posible para nuestros clientes."
+      question: "¿Cuánto tiempo tarda el proceso de visa Americana y eTA Canadience?",
+      answer: "El tiempo de procesamiento varía según el tipo de servicio solicitado, puede oscilar entre 2 y 6 meses, dependiendo de lo acordado en el contrato, en cuestión de la eTA, el proceso suele tomar entre 30 minutos y 72 horas. Cabe destacar que en CONSULTORÍA JAS siempre trabajamos para minimizar los tiempos de espera y agilizar cada trámite, buscando la mayor eficiencia posible para nuestros clientes."
     },
     {
       question: "¿Qué documentos necesito para solicitar una visa?",
