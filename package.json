@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start":" serve dist -s -n -L -p $PORT"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -23,7 +24,6 @@
     "@stripe/stripe-js": "^7.3.0",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
-    "consultoria-web-front": "file:",
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "flowbite-react": "^0.11.7",
@@ -41,6 +41,7 @@
     "react-select": "^5.10.1",
     "react-slick": "^0.30.3",
     "react-toastify": "^11.0.5",
+    "serve": "^14.2.4",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.19.1",
     "yup": "^1.6.1"
