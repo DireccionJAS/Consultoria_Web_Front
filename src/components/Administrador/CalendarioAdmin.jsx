@@ -107,13 +107,11 @@ export default function CalendarioAdmin() {
                             title: item.transact?.name || '',
                             tipo: 'CAS',
                             date: item.dateCas,
-                            description: item.transact?.description,
                             userName: item.user?.name,
                             userPhone: item.user?.phone,
                             text: 'CAS',
                             backgroundColor: '#1E90FF',
                             borderColor: '#1E90FF',
-                            transactDesc: item.transact?.description
                         });
                     }
                     // Consulado
@@ -123,13 +121,11 @@ export default function CalendarioAdmin() {
                             title: item.transact?.name || '',
                             tipo: 'CONSULADO',
                             date: item.dateCon,
-                            description: item.transact?.description,
                             userName: item.user?.name,
                             userPhone: item.user?.phone,
                             text: 'CONSULADO',
                             backgroundColor: '#32CD32',
                             borderColor: '#32CD32',
-                            transactDesc: item.transact?.description
                         });
                     }
                     // Simulación
@@ -139,13 +135,11 @@ export default function CalendarioAdmin() {
                             title: item.transact?.name || '',
                             tipo: 'SIMULACION',
                             date: item.dateSimulation,
-                            description: item.transact?.description,
                             userName: item.user?.name,
                             userPhone: item.user?.phone,
                             text: 'SIMULACION',
                             backgroundColor: '#FFA500',
                             borderColor: '#FFA500',
-                            transactDesc: item.transact?.description
                         });
                     }
                 });
@@ -204,7 +198,6 @@ export default function CalendarioAdmin() {
                   html: `
                     <strong>Cliente:</strong> ${userName || 'No disponible'}<br/>
                     <strong>Teléfono:</strong> ${userPhone || 'No disponible'}<br/>
-                    <strong>Descripción:</strong> ${description || 'Sin descripción'}<br/>
                     <strong>Fecha:</strong> ${text || 'No disponible'}
                   `,
                   icon: 'info'
