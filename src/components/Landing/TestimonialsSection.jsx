@@ -1,39 +1,92 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import styles from '../../styles/Landing/TestimonialsSection.module.css';
 
 export default function TestimonialsSection() {
-  const videoIds = [
-    "1yqEprSPRX7USlNl2mBriQMN22Z5ZTYPx",
-    "17BUblslsO4d0iNXUFrZJjt_g4C3G-Sya",
-    "1fMGEVv1H7XodRR9sbFXpWZobYcETVQOA",
-    "123Iyc3EM6oJ6BqGm0mZAei9gtCo_GzzM",
-    "11KCqJy3G2FrMsxFm5QnRghLQETZAZ3GR",
-    "1eoeiepTjQrM5pfCSPrQUcJAE6zsgHiwf",
-    "1UmFZwj7_LolAA1rCYpJnp9HtmdiQbcRw",
-    "1VXZBF5XIqoq8Jo44iXTRav3sc3UiwnfM",
-    "1ZSTDl2Ia-CqNKD13BUVorwQmufuBij_-",
-    "1QXlAypI-58YVcJiPgBEiI4HDqLJjBPhj",
-    "1ORluy_SDTlyh2DfMj_6mYsy9FtWD5CZu",
-    "1xYwZEl6vP3-4Xt-qgIFpQQ6mP13JEpBb",
-    "1R6Orp1eZ-xZjT6vLp4coEveVNdpG8wrZ",
-    "1M1Z7XuNTOCQGpjGwSaLeBX6YLTgKpb4M",
-    "1KI2zYjHEm7PHgkRfN3QUTEfjPgiPoqn6",
-    "1t5j3ax1MCS2MQT04rVhkxH3GFN_zzeu_",
-    "1pXcgUfA9SxBiXnqnTPecAKk_7Kbj0H6A",
-    "1diEtVMdU4enTYkfpocz7I_edDmqpAKs0",
-    "1mutQaj0CifflEQ2ILc9BRbupM4fBKSvj",
-    "1CthwKjE1GmHXfxrUJ0Tp2Ucz8_0JjpzK",
-    "1EWOBgkF-JYks8UJ9B8yPWHk3OnjUKWmv",
-    "1dfPBepbibpMQFXIJffUJb0bFDkrueuXe",
-    "1iNawH0zM2f9pZAzFET_V4a2sUaQDvquY"
-  ];
+  // Corrected useState destructuring
+  const [videosIds, setVideosIds] = useState([]);
+  const [loading, setLoading] = useState(true); // Added loading state back
+  const [error, setError] = useState(null);     // Added error state back
 
-  // Seleccionar 10 IDs aleatorios
-  const selectedVideoIds = useMemo(() => {
-    const shuffled = [...videoIds].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 12);
-  }, []);
+  const folderId = "1QnjhCrysPgz6gNILAAVpxtrRSEAYpp74"; // tu carpeta
+  const apiKey = "AIzaSyDlorWPzhf2zFW7YBA9YE4Vqyutg7DVKOw";
+
+  useEffect(() => {
+    const fetchDriveVideos = async () => { // Renamed for clarity to avoid confusion with fetchImages in previous examples
+      try {
+        setLoading(true); // Set loading true at the start of fetch
+
+        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink)`;
+
+        console.log("URL de la API:", url);
+
+        const response = await fetch(url);
+
+        console.log("Status de respuesta:", response.status);
+
+        const data = await response.json();
+
+        console.log("Respuesta completa de la API:", data);
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status} - ${data.error?.message || response.statusText}`);
+        }
+
+        if (data.error) {
+          throw new Error(`Error de API: ${data.error.message}`);
+        }
+
+        if (!data.files) {
+          console.warn("No se recibieron archivos en la respuesta de la API.");
+          setLoading(false);
+          return; // Exit if no files
+        }
+
+        // Filter for video files only if you intend to add them to the videosIds array
+        // If you want to keep the hardcoded IDs only for videos and fetch other types,
+        // you'd need separate state variables.
+        const driveVideoIds = data.files
+          .map(file => file.id);
+
+        // Update state using the functional update form to ensure correct previous state
+        setVideosIds(prevIds => {
+          // Filter out any IDs from driveVideoIds that are already in prevIds
+          const newUniqueIds = driveVideoIds.filter(id => !prevIds.includes(id));
+          return [...prevIds, ...newUniqueIds];
+        });
+
+        console.log("IDs de videos después de la API:", videosIds); // This log will still show old state due to closure, check in dev tools component tab for actual state.
+
+      } catch (e) {
+        console.error("Error al cargar videos de Google Drive:", e);
+        setError(e.message); // Set error message
+      } finally {
+        setLoading(false); // Set loading false after fetch is complete (success or error)
+      }
+    };
+
+    fetchDriveVideos(); // Call the async function
+
+  }, []); // Empty dependency array means this useEffect runs once on mount
+
+  if (loading) {
+    return (
+      <section id="testimonios" className={styles.testimoniosSection}>
+        <div className={styles.loadingMessage}>Cargando testimonios...</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="testimonios" className={styles.testimoniosSection}>
+        <div className={styles.errorMessage}>
+          Error al cargar testimonios: {error}
+        </div>
+      </section>
+    );
+  }
+
 
   return (
     <section id="testimonios" className={styles.testimoniosSection}>
@@ -50,18 +103,23 @@ export default function TestimonialsSection() {
         </div>
 
         <div className={styles.testimoniosGrid}>
-          {selectedVideoIds.map((videoId, index) => (
-            <div key={index} className={`${styles.testimonioCard} ${styles.fadeInUp}`}>
-              <iframe
-                src={`https://drive.google.com/file/d/${videoId}/preview`}
-                className={styles.testimonioImagenFrame}
-                allow="autoplay"
-                title={`Testimonio ${index + 1}`}
-              />
+          {videosIds.length > 0 ? (
+            videosIds.map((videoId, index) => (
+              <div key={videoId} className={`${styles.testimonioCard} ${styles.fadeInUp}`}> {/* Use videoId as key for better performance */}
+                <iframe
+                  src={`https://drive.google.com/file/d/${videoId}/preview`}
+                  className={styles.testimonioImagenFrame}
+                  allow="autoplay"
+                  allowFullScreen // Good practice for iframes, especially for video
+                  title={`Testimonio ${index + 1}`}
+                />
+              </div>
+            ))
+          ) : (
+            <div className={styles.noTestimoniosMessage}>
+              No hay testimonios disponibles.
             </div>
-          ))}
-
-
+          )}
         </div>
       </div>
     </section>

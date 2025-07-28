@@ -17,7 +17,8 @@ export default function CalendarioAdmin() {
     const [filtroTipo, setFiltroTipo] = useState('');
     const [tiposUnicos, setTiposUnicos] = useState([]);
     const [coloresPorTramite, setColoresPorTramite] = useState({});
-    const [contadorCitas, setContadorCitas] = useState({}); 
+    const [contadorCitas, setContadorCitas] = useState({});
+    const [dataServicios, setDataServicios] = useState([]);
 
     const obtenerColorPorId = (id) => {
         const coloresBase = [
@@ -65,45 +66,86 @@ export default function CalendarioAdmin() {
             const response = await trasacciones();
             if (response.success && Array.isArray(response.response.transactProgresses)) {
                 const data = response.response.transactProgresses;
+                setDataServicios(data);
 
-                const tipos = [...new Set(data.map(item => item.transact.name))];
+                const tipos = [...new Set(data.map(item => item.transact?.name))];
                 setTiposUnicos(tipos);
+
+                // Log para ver la estructura real de los datos
+                console.log('Estructura de data:', data);
 
                 const colores = {};
                 const contador = {}; // Contador para cada trámite
                 
                 data.forEach(item => {
-                    const idReal = item.transact.idTransact;
-                    const nombreTramite = item.transact.name;
+                    const idReal = item.transact?.idTransact;
+                    const nombreTramite = item.transact?.name;
                     
-                    if (!colores[idReal]) {
+                    if (idReal !== undefined && !colores[idReal]) {
                         colores[idReal] = obtenerColorPorId(idReal);
                     }
                     
                     // Inicializar contador si no existe
-                    if (!contador[nombreTramite]) {
+                    if (nombreTramite && !contador[nombreTramite]) {
                         contador[nombreTramite] = 0;
                     }
                     
-                    contador[nombreTramite]++; // Incrementar contador para el trámite correspondiente
+                    if (nombreTramite) contador[nombreTramite]++; // Incrementar contador para el trámite correspondiente
                 });
 
                 setColoresPorTramite(colores);
                 setContadorCitas(contador);
                 
                 // Mapear los datos a formato de eventos para FullCalendar
-                const eventosCalendario = data.map(item => ({
-                    id: item.id,
-                    title: item.transact.name,
-                    date: item.date,
-                    description: item.description,
-                    userName: item.userName,
-                    userPhone: item.userPhone,
-                    text: item.text,
-                    backgroundColor: colores[item.transact.idTransact],
-                    borderColor: colores[item.transact.idTransact],
-                    transactDesc: item.transact.desc // Suponiendo que 'desc' es el campo correcto
-                }));
+                const eventosCalendario = [];
+                console.log("Datos de servicios:", data);
+                data.forEach(item => {
+                    // CAS
+                    if (item.dateCas) {
+                        eventosCalendario.push({
+                            id: item.idTransactProgress + '-cas',
+                            title: item.transact?.name || '',
+                            tipo: 'CAS',
+                            date: item.dateCas,
+                            userName: item.user?.name,
+                            userPhone: item.user?.phone,
+                            text: 'CAS',
+                            backgroundColor: '#1E90FF',
+                            borderColor: '#1E90FF',
+                        });
+                    }
+                    // Consulado
+                    if (item.dateCon) {
+                        eventosCalendario.push({
+                            id: item.idTransactProgress + '-con',
+                            title: item.transact?.name || '',
+                            tipo: 'CONSULADO',
+                            date: item.dateCon,
+                            userName: item.user?.name,
+                            userPhone: item.user?.phone,
+                            text: 'CONSULADO',
+                            backgroundColor: '#32CD32',
+                            borderColor: '#32CD32',
+                        });
+                    }
+                    // Simulación
+                    if (item.dateSimulation) {
+                        eventosCalendario.push({
+                            id: item.idTransactProgress + '-sim',
+                            title: item.transact?.name || '',
+                            tipo: 'SIMULACION',
+                            date: item.dateSimulation,
+                            userName: item.user?.name,
+                            userPhone: item.user?.phone,
+                            text: 'SIMULACION',
+                            backgroundColor: '#FFA500',
+                            borderColor: '#FFA500',
+                        });
+                    }
+                });
+
+                // Log para depuración de eventos y fechas
+                console.log("Eventos para FullCalendar:", eventosCalendario);
 
                 setEventos(eventosCalendario);
             }
@@ -156,7 +198,6 @@ export default function CalendarioAdmin() {
                   html: `
                     <strong>Cliente:</strong> ${userName || 'No disponible'}<br/>
                     <strong>Teléfono:</strong> ${userPhone || 'No disponible'}<br/>
-                    <strong>Descripción:</strong> ${description || 'Sin descripción'}<br/>
                     <strong>Fecha:</strong> ${text || 'No disponible'}
                   `,
                   icon: 'info'
@@ -168,12 +209,25 @@ export default function CalendarioAdmin() {
             <h4>Información</h4>
             <ul>
               {Object.entries(coloresPorTramite).map(([id, color]) => {
-                const descripcion = eventos.find(e => e.backgroundColor === color)?.transactDesc;
-                const cantidadCitas = contadorCitas[descripcion] || 0;
+                // Buscar el nombre del trámite por id
+                const tramiteNombre = (() => {
+                  const evento = eventos.find(e => {
+                    const dataId = dataServicios && dataServicios.find(item => item.transact?.idTransact === Number(id));
+                    return dataId && e.title === dataId.transact?.name;
+                  });
+                  if (evento) return evento.title;
+                  // fallback: buscar en dataServicios
+                  const dataItem = dataServicios && dataServicios.find(item => item.transact?.idTransact === Number(id));
+                  return dataItem?.transact?.name || `Trámite #${id}`;
+                })();
+                const cantidadCitas = eventos.filter(e => {
+                  const dataId = dataServicios && dataServicios.find(item => item.transact?.idTransact === Number(id));
+                  return dataId && e.title === dataId.transact?.name;
+                }).length;
                 return (
                   <li key={id}>
                     <span className="color-box" style={{ backgroundColor: color }}></span>
-                    {descripcion || `No hay fechas #${id}`}
+                    {tramiteNombre}
                     <span className="citas-count">({cantidadCitas})</span>
                   </li>
                 );
