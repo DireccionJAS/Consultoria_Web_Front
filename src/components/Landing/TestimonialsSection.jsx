@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MessageSquare } from "lucide-react";
-import styles from '../../styles/Landing/TestimonialsSection.module.css';
+import styles from '../../styles/landing/TestimonialsSection.module.css';
 
 export default function TestimonialsSection() {
   // Corrected useState destructuring

@@ -1,6 +1,6 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { Icon } from '@iconify/react';
-import styles from '../../styles/Landing/FooterSection.module.css';
+import styles from '../../styles/landing/FooterSection.module.css';
 import { redirect } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import React from "react";

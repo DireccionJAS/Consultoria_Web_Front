@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import styles from '../../styles/Landing/HeroSection.module.css';
+import styles from '../../styles/landing/HeroSection.module.css';
 
 export default function HeroSection() {
   return (

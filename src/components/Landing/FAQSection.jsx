@@ -1,7 +1,7 @@
 import React from "react";
 import { HelpCircle } from "lucide-react";
 import { Icon } from '@iconify/react';
-import styles from '../../styles/Landing/FAQSection.module.css';
+import styles from '../../styles/landing/FAQSection.module.css';
 
 export default function FAQSection({ faqActiveIndex, handleFaqToggle }) {
   const faqData = [

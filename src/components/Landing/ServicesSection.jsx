@@ -2,7 +2,7 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import Slider from 'react-slick';
 import { Icon } from '@iconify/react';
-import styles from '../../styles/Landing/ServicesSection.module.css';
+import styles from '../../styles/landing/ServicesSection.module.css';
 
 export default function ServicesSection({ 
   services, 

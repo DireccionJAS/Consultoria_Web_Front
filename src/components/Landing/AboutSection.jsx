@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Briefcase, Users, MessageSquare } from "lucide-react";
 import { Icon } from '@iconify/react';
-import styles from '../../styles/Landing/AboutSection.module.css';
+import styles from '../../styles/landing/AboutSection.module.css';
 
 export default function AboutSection() {
   return (
