@@ -7,9 +7,11 @@ export default function TestimonialsSection() {
   const [videosIds, setVideosIds] = useState([]);
   const [loading, setLoading] = useState(true); // Added loading state back
   const [error, setError] = useState(null);     // Added error state back
+  const [lengthArray, setLengthArray] = useState(0); // Added lengthArray state
 
   const folderId = "1QnjhCrysPgz6gNILAAVpxtrRSEAYpp74"; // tu carpeta
   const apiKey = "AIzaSyDlorWPzhf2zFW7YBA9YE4Vqyutg7DVKOw";
+  
 
   useEffect(() => {
     const fetchDriveVideos = async () => { // Renamed for clarity to avoid confusion with fetchImages in previous examples
@@ -42,20 +44,17 @@ export default function TestimonialsSection() {
           return; // Exit if no files
         }
 
-        // Filter for video files only if you intend to add them to the videosIds array
-        // If you want to keep the hardcoded IDs only for videos and fetch other types,
-        // you'd need separate state variables.
-        const driveVideoIds = data.files
-          .map(file => file.id);
 
-        // Update state using the functional update form to ensure correct previous state
-        setVideosIds(prevIds => {
-          // Filter out any IDs from driveVideoIds that are already in prevIds
-          const newUniqueIds = driveVideoIds.filter(id => !prevIds.includes(id));
-          return [...prevIds, ...newUniqueIds];
-        });
-
-        console.log("IDs de videos después de la API:", videosIds); // This log will still show old state due to closure, check in dev tools component tab for actual state.
+        // Mezclar y tomar solo 9 IDs al azar
+        function getRandomSample(arr, n) {
+          const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+          return shuffled.slice(0, n);
+        }
+        const driveVideoIds = data.files.map(file => file.id);
+        const randomIds = getRandomSample(driveVideoIds, 9);
+        setVideosIds(randomIds);
+        setLengthArray(driveVideoIds.length);
+        console.log("IDs de videos aleatorios:", randomIds);
 
       } catch (e) {
         console.error("Error al cargar videos de Google Drive:", e);
