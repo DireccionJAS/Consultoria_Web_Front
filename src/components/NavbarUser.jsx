@@ -98,7 +98,8 @@ export default function NavbarAdmin({ title }) {
             <Icon icon="mdi:menu" />
           </button>
           <div className="navbar-logo">
-            <img src={Logo} alt="logo" />
+            <a href='ClienteHome'> <img src={Logo} alt="logo"  /></a>
+           
           </div>
         </div>
 
