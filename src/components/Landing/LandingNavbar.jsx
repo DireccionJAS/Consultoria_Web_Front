@@ -2,7 +2,7 @@ import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { Home, Briefcase, Users, MessageSquare, HelpCircle, Mail, Phone, LogInIcon } from "lucide-react";
 import Logo from "./../../img/logo.png";
-import styles from '../../styles/Landing/LandingNavbar.module.css';
+import styles from './../../styles/landing/LandingNavbar.module.css';
 
 export default function LandingNavbar({ 
   isScrolled, 
