@@ -7,7 +7,6 @@ import dayjs from 'dayjs';
 const API_URL = import.meta.env.VITE_API_URL;
 const API_URL_MAIL = import.meta.env.VITE_API_URL_MAIL
 const URL_DS160 = import.meta.env.VITE_URL_DS160;
-console.log('API_URL:', API_URL);
 
 // =============================================================================
 // AUTENTICACIÓN Y USUARIOS

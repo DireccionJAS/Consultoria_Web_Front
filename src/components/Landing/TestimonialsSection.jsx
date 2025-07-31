@@ -20,15 +20,9 @@ export default function TestimonialsSection() {
 
         const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink)`;
 
-        console.log("URL de la API:", url);
-
         const response = await fetch(url);
 
-        console.log("Status de respuesta:", response.status);
-
         const data = await response.json();
-
-        console.log("Respuesta completa de la API:", data);
 
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status} - ${data.error?.message || response.statusText}`);
