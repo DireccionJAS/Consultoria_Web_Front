@@ -58,25 +58,26 @@ export default function AdministradorTramites() {
   }, [busqueda]);
 
   const fetchServices = async () => {
-    try {
-      const response = await trasacciones();
+  try {
+    const response = await trasacciones();
 
-      if (response.success && Array.isArray(response.response.transactProgresses)) {
-        const sortedData = response.response.transactProgresses.sort((a, b) => {
-          return b.idTransactProgress - a.idTransactProgress;
-        });
-        setDatos(sortedData);
-      } else {
-        console.error("Formato de respuesta inesperado:", response);
-        setDatos([]);
-      }
-    } catch (error) {
-      console.error("Error al obtener los tramites:", error);
+    if (response.success && Array.isArray(response.response.transactProgresses)) {
+      const sortedData = response.response.transactProgresses.sort((a, b) => {
+        return b.idTransactProgress - a.idTransactProgress; // ← Cambio aquí
+      });
+      setDatos(sortedData);
+    } else {
+      console.error("Formato de respuesta inesperado:", response);
       setDatos([]);
-    } finally {
-      setCargando(false);
     }
-  };
+  } catch (error) {
+    console.error("Error al obtener los tramites:", error);
+    setDatos([]);
+  } finally {
+    setCargando(false);
+  }
+};
+
 
   const handleStatusChange = async (idTransactProgress, nuevoEstado) => {
     try {
