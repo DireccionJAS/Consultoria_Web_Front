@@ -139,10 +139,7 @@ export const actualizar = async (idUser, datosActualizados) => {
 
 export const getAllProcess = async () => {
   try {
-    console.log('getAllProcess: API_URL =', API_URL);
-    console.log('getAllProcess: URL completa =', `${API_URL}/transaction/web`);
     const response = await axios.get(`${API_URL}/transaction/web`);
-    console.log('getAllProcess: Respuesta recibida =', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching processes:', error);
@@ -282,7 +279,6 @@ export const getStepById = async (id) => {
 
 export const obtenerLosPasos = async (id) => {
   try {
-    console.log('ID de la  trasnsaccionm enviada:', id);
     const response = await axios.get(`${API_URL}/steps/${id}`);
     return response.data;
   } catch (error) {
@@ -338,7 +334,6 @@ export const updateSteps = async (idTransact, stepsArray) => {
     throw new Error('Debe proporcionar un arreglo de pasos para actualizar.');
   }
 
-  console.log("Iniciando actualización/creación de pasos. Total:", stepsArray.length);
   console.table(stepsArray.map(s => ({
     id: s.id || 'NUEVO',
     name: s.name,
@@ -378,7 +373,6 @@ export const updateSteps = async (idTransact, stepsArray) => {
 
       if (isNewStep) {
         // Creamos un nuevo paso
-        console.log(`Creando nuevo paso #${stepData.numStep || stepData.stepNumber} para el trámite ${idTransact}:`, payload);
 
         response = await axios.post(`${API_URL}/steps`, payloadCreate, {
           headers: {
@@ -394,8 +388,6 @@ export const updateSteps = async (idTransact, stepsArray) => {
         });
       } else {
         // Actualizamos un paso existente
-        console.log(`Actualizando paso ID=${stepData.id} (Paso #${stepData.numStep || stepData.stepNumber}) para el trámite ${idTransact}:`, payload);
-
         response = await axios.put(`${API_URL}/steps/${stepData.id}`, payload, {
           headers: {
             'Content-Type': 'application/json',
@@ -410,7 +402,6 @@ export const updateSteps = async (idTransact, stepsArray) => {
         });
       }
 
-      console.log(`Respuesta para operación en paso #${stepData.numStep || stepData.stepNumber}:`, response.data);
     } catch (error) {
       console.error(`Error en operación de paso:`, error);
 
@@ -422,7 +413,6 @@ export const updateSteps = async (idTransact, stepsArray) => {
     }
   }
 
-  console.log("Resultados de las operaciones:", results);
   return results;
 }
 
@@ -432,8 +422,7 @@ export const updateSteps = async (idTransact, stepsArray) => {
 
 export const tramitesPorId = async (id) => {
   try {
-    console.log('ID de usuario enviado:', id);  // Para depuración
-    const response = await axios.get(`${API_URL}/progress/progressByUserIdWeb/${id}`);
+      const response = await axios.get(`${API_URL}/progress/progressByUserIdWeb/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener las transacciones', error);
@@ -488,7 +477,6 @@ export const actualizarT = async (idTransactProgress, nuevoEstado) => {
     );
     return response.data;
   } catch (error) {
-    console.log('El nuevo estado es:', nuevoEstado);
     console.error("Error al actualizar el estadO DEL TRAMITE", error);
     throw error;
   }
@@ -665,7 +653,6 @@ export const olvidarContra = async (email) => {
       }
     );
 
-    console.log("Respuesta del servidor:", response.data);
     return response.data;
 
   } catch (error) {
@@ -697,7 +684,6 @@ export const olvidarContraSin = async (email) => {
       }
     );
 
-    console.log("Respuesta del servidor:", response.data);
     return response.data;
 
   } catch (error) {
@@ -751,7 +737,6 @@ export const payDS160 = async (email) => {
         }
       }
     );
-    console.log("Respuesta del servidor:", response.data);
     return response.data;
 
   } catch (error) {
