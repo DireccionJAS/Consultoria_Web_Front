@@ -48,7 +48,6 @@ export default function TestimonialsSection() {
         const randomIds = getRandomSample(driveVideoIds, 9);
         setVideosIds(randomIds);
         setLengthArray(driveVideoIds.length);
-        console.log("IDs de videos aleatorios:", randomIds);
 
       } catch (e) {
         console.error("Error al cargar videos de Google Drive:", e);
