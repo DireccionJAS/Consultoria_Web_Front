@@ -1,4 +1,4 @@
-/* Navbar moderno */
+/* Navbar moderno con mejor responsividad */
 .navbar {
   background: linear-gradient(135deg, #012b40 0%, #1a4b5c 50%, #012b40 100%);
   height: 100px;
@@ -18,6 +18,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .mobile-menu-btn {
@@ -44,19 +45,8 @@
   height: 24px;
 }
 
-.icono {
-  width: 50px;
-  height: 50px;
-  color: #FFF;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  padding: 8px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.icono:hover {
-  background: rgba(255, 255, 255, 0.2);
+.navbar-logo {
+  flex-shrink: 0;
 }
 
 .navbar-logo img {
@@ -71,6 +61,15 @@
   transform: scale(1.02);
 }
 
+.navbar-title {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 20px;
+  min-width: 0; /* Permite que se contraiga */
+}
+
 .navbar-title h1 {
   color: white;
   font-size: 30px;
@@ -79,16 +78,35 @@
   font-weight: 700;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar-logout {
   cursor: pointer;
   transition: background-color 0.2s ease;
+  flex-shrink: 0;
 }
 
 .navbar-logout:hover {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
+}
+
+.icono {
+  width: 50px;
+  height: 50px;
+  color: #FFF;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icono:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Sidebar moderno */
@@ -222,40 +240,56 @@
   margin-left: 70px;
 }
 
-/* Responsive Design */
+/* Responsive Design Mejorado */
 @media screen and (max-width: 768px) {
   .navbar {
-    height: 80px;
-    padding: 0 20px;
+    height: 70px; /* Reducir altura significativamente */
+    padding: 0 15px; /* Menos padding lateral */
   }
 
   .navbar-left {
-    gap: 15px;
+    gap: 10px; /* Menos espacio entre elementos */
   }
 
   .mobile-menu-btn {
     display: flex;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+
+  .mobile-menu-btn svg {
+    width: 20px;
+    height: 20px;
   }
 
   .navbar-logo img {
-    height: 55px;
-    width: 55px;
+    height: 45px; /* Logo más pequeño */
+    width: 45px;
+  }
+
+  .navbar-title {
+    margin: 0 10px; /* Menos margen */
   }
 
   .navbar-title h1 {
-    font-size: 20px;
+    font-size: 16px; /* Texto mucho más pequeño */
+    font-weight: 600;
+    line-height: 1.2;
+    max-width: 200px; /* Limitar ancho máximo */
   }
 
   .icono {
-    width: 40px;
-    height: 40px;
+    width: 35px; /* Ícono más pequeño */
+    height: 35px;
+    padding: 6px;
   }
 
   /* Sidebar en móvil */
   .sidebar {
-    top: 80px;
-    width: 300px;
-    height: calc(100vh - 80px);
+    top: 70px; /* Coincidir con altura del navbar */
+    width: 280px;
+    height: calc(100vh - 70px);
     transform: translateX(-100%);
     box-shadow: none;
   }
@@ -296,7 +330,7 @@
   }
 
   .main-content {
-    margin-top: 80px;
+    margin-top: 70px;
     margin-left: 0;
     padding: 15px;
   }
@@ -304,32 +338,103 @@
 
 @media screen and (max-width: 480px) {
   .navbar {
-    height: 70px;
-    padding: 0 15px;
+    height: 60px; /* Aún más pequeño */
+    padding: 0 12px;
+  }
+
+  .navbar-left {
+    gap: 8px;
+  }
+
+  .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+
+  .mobile-menu-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   .navbar-logo img {
-    height: 50px;
-    width: 50px;
+    height: 38px; /* Logo aún más pequeño */
+    width: 38px;
+  }
+
+  .navbar-title {
+    margin: 0 8px;
   }
 
   .navbar-title h1 {
-    font-size: 18px;
+    font-size: 14px; /* Texto muy pequeño */
+    font-weight: 600;
+    max-width: 150px;
   }
 
   .icono {
-    width: 35px;
-    height: 35px;
+    width: 32px;
+    height: 32px;
+    padding: 5px;
   }
 
   .sidebar {
-    top: 70px;
-    height: calc(100vh - 70px);
-    width: 280px;
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 260px; /* Sidebar más estrecho */
   }
 
   .main-content {
-    margin-top: 70px;
+    margin-top: 60px;
+    padding: 12px;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .navbar {
+    height: 55px; /* Mínimo para móviles muy pequeños */
+    padding: 0 10px;
+  }
+
+  .navbar-left {
+    gap: 6px;
+  }
+
+  .mobile-menu-btn {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+  }
+
+  .mobile-menu-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .navbar-logo img {
+    height: 32px;
+    width: 32px;
+  }
+
+  .navbar-title h1 {
+    font-size: 12px;
+    max-width: 120px;
+  }
+
+  .icono {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+  }
+
+  .sidebar {
+    top: 55px;
+    height: calc(100vh - 55px);
+    width: 240px;
+  }
+
+  .main-content {
+    margin-top: 55px;
     padding: 10px;
   }
 }

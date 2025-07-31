@@ -16,6 +16,34 @@ export default function Calendario() {
     const [filtroTipo, setFiltroTipo] = useState('');
     const [tiposUnicos, setTiposUnicos] = useState([]);
     const [coloresPorTramite, setColoresPorTramite] = useState({});
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        const saved = localStorage.getItem('sidebarCollapsed');
+        return saved ? JSON.parse(saved) : true;
+    });
+
+    // Escuchar cambios en localStorage para el sidebar
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const saved = localStorage.getItem('sidebarCollapsed');
+            setSidebarCollapsed(saved ? JSON.parse(saved) : true);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        
+        // También escuchar cambios directos en el mismo tab
+        const interval = setInterval(() => {
+            const saved = localStorage.getItem('sidebarCollapsed');
+            const newState = saved ? JSON.parse(saved) : true;
+            if (newState !== sidebarCollapsed) {
+                setSidebarCollapsed(newState);
+            }
+        }, 100);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            clearInterval(interval);
+        };
+    }, [sidebarCollapsed]);
 
     const obtenerColorPorId = (id) => {
         const coloresBase = [
@@ -152,10 +180,23 @@ export default function Calendario() {
     return (
         <>
             <style jsx>{`
+                .navbar-fixed {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    z-index: 1001; /* Más alto que el navbar original */
+                    width: 100%;
+                }
+
                 .calendario-container {
-                    margin-top: 100px;
+                    padding-top: 120px; /* 100px navbar + 20px espacio */
                     min-height: 100vh;
-                    padding: 20px;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    padding-bottom: 20px;
+                    margin-left: 280px; /* Espacio para sidebar en desktop */
+                    transition: margin-left 0.3s ease;
                 }
 
                 .calendario-content {
@@ -273,8 +314,11 @@ export default function Calendario() {
                 /* Media queries para responsividad */
                 @media (max-width: 768px) {
                     .calendario-container {
-                        margin-top: 80px;
-                        padding: 15px;
+                        padding-top: 90px; /* 70px navbar + 20px espacio */
+                        padding-left: 15px;
+                        padding-right: 15px;
+                        padding-bottom: 15px;
+                        margin-left: 0; /* Sin sidebar en móvil */
                     }
 
                     .calendario-content {
@@ -291,12 +335,14 @@ export default function Calendario() {
                     .botones-container {
                         justify-content: center;
                         gap: 6px;
+                        flex-wrap: wrap;
                     }
 
                     .boton-fecha {
                         padding: 10px 8px;
                         font-size: 13px;
                         min-width: 70px;
+                        flex: 0 1 auto;
                     }
 
                     .calendario-wrapper {
@@ -318,19 +364,24 @@ export default function Calendario() {
 
                 @media (max-width: 480px) {
                     .calendario-container {
-                        margin-top: 70px;
-                        padding: 10px;
+                        padding-top: 80px; /* 60px navbar + 20px espacio */
+                        padding-left: 10px;
+                        padding-right: 10px;
+                        padding-bottom: 10px;
+                        margin-left: 0;
                     }
 
                     .botones-container {
                         padding: 10px;
                         gap: 4px;
+                        justify-content: space-between;
                     }
 
                     .boton-fecha {
                         padding: 8px 6px;
                         font-size: 12px;
                         min-width: 60px;
+                        flex: 1;
                     }
 
                     .calendario-wrapper {
@@ -355,24 +406,107 @@ export default function Calendario() {
                         height: 12px;
                         margin-right: 8px;
                     }
+
+                    .filtro-select {
+                        font-size: 14px;
+                    }
+                }
+
+                @media (max-width: 360px) {
+                    .calendario-container {
+                        padding-top: 75px; /* 55px navbar + 20px espacio */
+                        margin-left: 0;
+                    }
+
+                    .boton-fecha {
+                        font-size: 11px;
+                        padding: 6px 4px;
+                        min-width: 55px;
+                    }
                 }
 
                 @media (min-width: 1200px) {
                     .calendario-container {
-                        padding: 30px;
+                        padding-top: 120px;
+                        padding-left: 30px;
+                        padding-right: 30px;
+                        padding-bottom: 30px;
+                        margin-left: 280px; /* Sidebar completo en pantallas grandes */
                     }
 
                     .calendario-content {
                         gap: 40px;
                     }
                 }
+
+                /* Responsive para sidebar colapsado en desktop */
+                @media (min-width: 769px) {
+                    .calendario-container.sidebar-collapsed {
+                        margin-left: 70px; /* Sidebar colapsado */
+                    }
+                }
+
+                /* Asegurar que el FullCalendar sea responsivo */
+                .fc {
+                    font-size: 14px;
+                }
+
+                @media (max-width: 768px) {
+                    .fc {
+                        font-size: 12px;
+                    }
+
+                    .fc-toolbar {
+                        flex-direction: column;
+                        gap: 10px;
+                    }
+
+                    .fc-toolbar-chunk {
+                        display: flex;
+                        justify-content: center;
+                    }
+
+                    .fc-button {
+                        padding: 6px 12px;
+                        font-size: 12px;
+                    }
+
+                    .fc-daygrid-event {
+                        font-size: 11px;
+                        padding: 1px 2px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .fc {
+                        font-size: 11px;
+                    }
+
+                    .fc-button {
+                        padding: 4px 8px;
+                        font-size: 11px;
+                    }
+
+                    .fc-toolbar-title {
+                        font-size: 16px;
+                    }
+
+                    .fc-col-header-cell {
+                        padding: 4px 2px;
+                    }
+
+                    .fc-daygrid-day-number {
+                        font-size: 12px;
+                        padding: 2px;
+                    }
+                }
             `}</style>
 
-            <div className="calendario-container">
-                <div className='fixed-top'>
-                    <Navbar title={"- Calendario"} />
-                </div>
+            <div className="navbar-fixed">
+                <Navbar title={"- Calendario"} />
+            </div>
 
+            <div className={`calendario-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
                 <div className="calendario-content">
                     <div className="calendario-main">
                         <select
