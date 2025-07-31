@@ -168,7 +168,7 @@
   border: none;
   padding: 6px 10px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.645);
   transition: all 0.3s ease;
   color: white;
   position: relative;
