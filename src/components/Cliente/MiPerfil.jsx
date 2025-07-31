@@ -104,10 +104,19 @@ export default function MiPerfil() {
     };
 
     if (!datos) return <div>Cargando...</div>;
-
+    <style jsx>{`
+                .navbar-fixed {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    z-index: 1001; /* Más alto que el navbar original */
+                    width: 100%;
+                }'
+  `}</style>
     return (
         <div style={{ marginTop: '80px' }}>
-            <div className='fixed-top'>
+            <div className='navbar-fixed'>
                 <Navbar title={"- Mi Perfil"} />
             </div>
             <div className="profile-container">

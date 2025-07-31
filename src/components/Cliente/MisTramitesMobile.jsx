@@ -127,10 +127,20 @@ export default function MisTramitesMobile() {
       setPaginaActual(numero);
     }
   };
+      <style jsx>{`
+                .navbar-fixed {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    z-index: 1001; /* Más alto que el navbar original */
+                    width: 100%;
+                }'
+  `}</style>
 
   return (
     <div className={styles.container}>
-      <div className={styles.navbarContainer}>
+      <div className='navbar-fixed'>
         <Navbar title={"- Trámites"} />
       </div>
 
