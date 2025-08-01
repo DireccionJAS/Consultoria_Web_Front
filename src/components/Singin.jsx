@@ -157,7 +157,7 @@ const stylesModal = {
     color: '#333',
   },
   closeButton: {
-    background: 'transparent',
+    background: 'black',
     border: 'none',
     cursor: 'pointer',
     padding: '5px',
@@ -785,18 +785,18 @@ export default function Signin({ onCancel }) {
       </div>
       {showModal && (
         <div style={stylesS.overlay}>
-          <div style={stylesS.modal}>
-            <button onClick={closeModal} style={stylesS.closeButton}>
-              <MdClose size={24} />
-            </button>
+         
+            
             <PdfModal
               showModal={showModal}
               pdfUrl={pdfUrl}
               pdfType={pdfType}
               onClose={closeModal}
+              
             />
+          
            
-          </div>
+          
         </div>
       )}
     </div>

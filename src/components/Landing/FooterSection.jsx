@@ -149,7 +149,7 @@ export default function FooterSection() {
       color: '#333',
     },
     closeButton: {
-      background: 'transparent',
+      background: 'black',
       border: 'none',
       cursor: 'pointer',
       padding: '5px',
@@ -743,17 +743,12 @@ export default function FooterSection() {
       </Container>
       {showModal && (
         <div style={stylesS.overlay}>
-          <div style={stylesS.modal}>
-            <button onClick={closeModal} style={stylesS.closeButton}>
-              <MdClose size={24} />
-            </button>
-            <PdfModal
-              showModal={showModal}
-              pdfUrl={pdfUrl}
-              pdfType={pdfType}
-              onClose={closeModal}
-            />
-          </div>
+          <PdfModal
+            showModal={showModal}
+            pdfUrl={pdfUrl}
+            pdfType={pdfType}
+            onClose={closeModal}
+          />
         </div>
       )}
     </footer>
