@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -9,9 +9,305 @@ import {
   FaEye, FaEyeSlash, FaCheck, FaUser, FaEnvelope, FaPhone,
   FaShieldAlt, FaChevronDown
 } from 'react-icons/fa';
-import { MdClose, MdArrowBack } from 'react-icons/md';
+import { MdClose, MdArrowBack, MdOpenInNew, MdDownload } from 'react-icons/md';
 import Logo from './../img/logo_letras_negras.png';
 import { Icon } from '@iconify/react';
+
+const PdfModal = ({ showModal, pdfUrl, onClose, pdfType }) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+    const android = /android/i.test(userAgent);
+    const ios = /iphone|ipad|ipod/i.test(userAgent);
+    
+    setIsMobile(mobile);
+    setIsAndroid(android);
+    setIsIOS(ios);
+  }, []);
+
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = `${pdfType || 'documento'}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleOpenInNewTab = () => {
+    window.open(pdfUrl, '_blank');
+  };
+
+  if (!showModal) return null;
+
+  return (
+    <div style={stylesModal.overlay}>
+      <div style={stylesModal.modal}>
+        <div style={stylesModal.header}>
+          <h3 style={stylesModal.title}>
+            {pdfType === 'terminos' ? 'Términos y Condiciones' : 'Política de Privacidad'}
+          </h3>
+          <button onClick={onClose} style={stylesModal.closeButton}>
+            <MdClose size={24} />
+          </button>
+        </div>
+
+        <div style={stylesModal.content}>
+          {isMobile ? (
+            // Vista móvil - Mostrar opciones en lugar del iframe
+            <div style={stylesModal.mobileContainer}>
+              <div style={stylesModal.mobileIcon}>
+                📄
+              </div>
+              <h4 style={stylesModal.mobileTitle}>Visualizar documento PDF</h4>
+              <p style={stylesModal.mobileText}>
+                {isIOS 
+                  ? "En iOS, los PDFs se abren mejor en una nueva pestaña o descargándolos."
+                  : "En Android, recomendamos descargar el documento para una mejor visualización."
+                }
+              </p>
+              
+              <div style={stylesModal.mobileActions}>
+                <button 
+                  onClick={handleOpenInNewTab}
+                  style={stylesModal.actionButton}
+                >
+                  <MdOpenInNew size={20} />
+                  Abrir en nueva pestaña
+                </button>
+                
+                <button 
+                  onClick={handleDownload}
+                  style={stylesModal.downloadButton}
+                >
+                  <MdDownload size={20} />
+                  Descargar PDF
+                </button>
+              </div>
+
+              {/* Fallback: Mostrar iframe con advertencia */}
+              <div style={stylesModal.fallbackSection}>
+                <p style={stylesModal.fallbackText}>
+                  O intenta visualizarlo aquí (puede tener limitaciones en móviles):
+                </p>
+                <div style={stylesModal.iframeContainer}>
+                  <iframe
+                    src={pdfUrl}
+                    title="PDF Viewer"
+                    style={stylesModal.mobileIframe}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Vista escritorio - iframe normal
+            <div style={stylesModal.desktopContainer}>
+              <div style={stylesModal.desktopActions}>
+                <button 
+                  onClick={handleOpenInNewTab}
+                  style={stylesModal.actionButtonSmall}
+                  title="Abrir en nueva pestaña"
+                >
+                  <MdOpenInNew size={16} />
+                </button>
+                <button 
+                  onClick={handleDownload}
+                  style={stylesModal.actionButtonSmall}
+                  title="Descargar PDF"
+                >
+                  <MdDownload size={16} />
+                </button>
+              </div>
+              <iframe
+                src={pdfUrl}
+                title="PDF Viewer"
+                style={stylesModal.desktopIframe}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Estilos para el modal - AGREGAR ESTOS ESTILOS
+const stylesModal = {
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+    padding: '10px',
+  },
+  modal: {
+    position: 'relative',
+    width: '90%',
+    maxWidth: '900px',
+    height: '90%',
+    maxHeight: '800px',
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '15px 20px',
+    borderBottom: '1px solid #e5e5e5',
+    backgroundColor: '#f8f9fa',
+  },
+  title: {
+    margin: 0,
+    fontSize: '18px',
+    fontWeight: '600',
+    color: '#333',
+  },
+  closeButton: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '5px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'background-color 0.2s',
+  },
+  content: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  mobileContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    textAlign: 'center',
+  },
+  mobileIcon: {
+    fontSize: '60px',
+    marginBottom: '20px',
+  },
+  mobileTitle: {
+    fontSize: '20px',
+    fontWeight: '600',
+    marginBottom: '10px',
+    color: '#333',
+  },
+  mobileText: {
+    fontSize: '14px',
+    color: '#666',
+    marginBottom: '25px',
+    lineHeight: '1.5',
+    maxWidth: '300px',
+  },
+  mobileActions: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    width: '100%',
+    maxWidth: '280px',
+  },
+  actionButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  downloadButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    backgroundColor: '#28a745',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  fallbackSection: {
+    marginTop: '30px',
+    width: '100%',
+  },
+  fallbackText: {
+    fontSize: '12px',
+    color: '#888',
+    marginBottom: '10px',
+  },
+  iframeContainer: {
+    width: '100%',
+    height: '200px',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    overflow: 'hidden',
+  },
+  mobileIframe: {
+    width: '100%',
+    height: '100%',
+    border: 'none',
+  },
+  desktopContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  desktopActions: {
+    display: 'flex',
+    gap: '8px',
+    padding: '10px 15px',
+    backgroundColor: '#f8f9fa',
+    borderBottom: '1px solid #e5e5e5',
+  },
+  actionButtonSmall: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '6px',
+    backgroundColor: '#6c757d',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  desktopIframe: {
+    flex: 1,
+    border: 'none',
+    width: '100%',
+  },
+};
+
 
 const countryOptions = [
   { value: "+54", label: "Argentina", flag: "🇦🇷" },
