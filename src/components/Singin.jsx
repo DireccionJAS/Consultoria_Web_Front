@@ -58,7 +58,6 @@ const PdfModal = ({ showModal, pdfUrl, onClose, pdfType }) => {
 
         <div style={stylesModal.content}>
           {isMobile ? (
-            // Vista móvil - Mostrar opciones en lugar del iframe
             <div style={stylesModal.mobileContainer}>
               <div style={stylesModal.mobileIcon}>
                 📄
@@ -81,19 +80,7 @@ const PdfModal = ({ showModal, pdfUrl, onClose, pdfType }) => {
                 </button>
               </div>
 
-              {/* Fallback: Mostrar iframe con advertencia */}
-              <div style={stylesModal.fallbackSection}>
-                <p style={stylesModal.fallbackText}>
-                  O intenta visualizarlo aquí (puede tener limitaciones en móviles):
-                </p>
-                <div style={stylesModal.iframeContainer}>
-                  <iframe
-                    src={pdfUrl}
-                    title="PDF Viewer"
-                    style={stylesModal.mobileIframe}
-                  />
-                </div>
-              </div>
+           
             </div>
           ) : (
             // Vista escritorio - iframe normal
