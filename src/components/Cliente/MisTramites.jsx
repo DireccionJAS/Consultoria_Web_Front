@@ -95,6 +95,7 @@ export default function MisTramites() {
     try {
       const response = await tramitesPorId(userId);
       if (response.success && Array.isArray(response.response.transactProgresses)) {
+        console.log("Datos obtenidos:", response.response.transactProgresses);
         // Ordenar los datos por idTransactProgress de forma ascendente (más viejos primero)
         const sortedData = response.response.transactProgresses.sort((a, b) => {
           return a.idTransactProgress - b.idTransactProgress;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import axios from 'axios';
-import { createProcessWithPayment, payDS160, actualizarTC } from './../api/api.js';
+import { createProcessWithPayment, payDS160, envioCorreo } from './../api/api.js';
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function CheckoutForm({
@@ -111,6 +111,7 @@ export default function CheckoutForm({
               idTransact: parseInt(idProductoTransaccion),
             };
             await createProcessWithPayment(processPaymentData);
+             await envioCorreo(userEmail,customer,serviceName);
           }
           // Enviar correo DS-160 si aplica
           if (serviceName) {

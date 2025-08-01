@@ -7,6 +7,7 @@ import {
   RegistrarTransaccion as registrarTransaccionAPI,
   clientes,
   servicios,
+  envioCorreo, // Importación agregada
 } from './../../api/api.js';
 import Swal from 'sweetalert2';
 import '../../styles/RegistrarCliente.css';
@@ -94,12 +95,30 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
     try {
       data.status = 1;
       data.stepProgress = 6;
+
+      const usuarioSeleccionado = usuarios.find(u => u.idUser === data.idUser);
+      const tramiteSeleccionado = transacciones.find(t => t.idTransact === data.idTransact);
+
+      if (!usuarioSeleccionado || !tramiteSeleccionado) {
+        Swal.fire('Error', 'No se encontró el usuario o trámite seleccionado', 'error');
+        return;
+      }
+
       await registrarTransaccionAPI(data);
+
+      // Enviar correo personalizado
+      await envioCorreo(
+        usuarioSeleccionado.email,
+        usuarioSeleccionado.name,
+        tramiteSeleccionado.description
+      );
+
       Swal.fire({
         icon: 'success',
-        title: 'Registro exitoso',
+        title: 'Trámite registrado y correo enviado',
         confirmButtonText: 'Aceptar',
       });
+
       reset();
       onHide();
       if (typeof onClienteRegistrado === 'function') {
@@ -108,8 +127,8 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Error al registrar',
-        text: 'Ocurrió un error durante el registro.',
+        title: 'Error',
+        text: 'Ocurrió un error durante el registro o envío del correo.',
       });
       console.error(error);
     }
@@ -155,6 +174,7 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
             />
             <span className="error">{errors.paidAll?.message}</span>
           </div>
+
           <div className="form-group">
             <label>¿Hizo un adelanto?:</label>
             <div className="checkbox-group">

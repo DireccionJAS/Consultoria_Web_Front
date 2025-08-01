@@ -78,7 +78,7 @@ const StripePaymentModal = ({ show, onHide, onPaymentSuccess, amount = 99, clien
     const handlePaymentSuccess = (paymentResult) => {
         setIsProcessing(false);
         onHide();
-        
+
         // Solo pasamos la información del pago exitoso al componente padre
         if (onPaymentSuccess) {
             onPaymentSuccess(paymentResult, pendingDateTime);
@@ -183,7 +183,7 @@ const DateTimeSelector = ({ value, onChange, fechasOcupadas, className, error, o
         if (value) {
             if (typeof value === 'string' && value.includes('T')) {
                 const [datePart, timePart] = value.split('T');
-                const timeOnly = timePart.split(':').slice(0, 2).join(':'); 
+                const timeOnly = timePart.split(':').slice(0, 2).join(':');
                 setSelectedDate(datePart);
                 setSelectedTime(timeOnly);
             } else {
@@ -560,7 +560,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
 
             // Preparar los datos actuales del formulario para la actualización
             const currentFormData = watch(); // Obtener todos los datos actuales del formulario
-            
+
             const formatDate = (date) => {
                 if (!date) return null;
                 const d = new Date(date);
@@ -620,10 +620,10 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
 
         } catch (error) {
             console.error('❌ Error al actualizar el trámite después del pago:', error);
-            
+
             // Cerrar modal de pago pero mostrar error
             setShowStripeModal(false);
-            
+
             Swal.fire({
                 icon: 'error',
                 title: 'Error al actualizar',
@@ -788,7 +788,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
             try {
                 const fechaActual = new Date();
                 const fechaCita = new Date(cliente.dateSimulation);
-            
+
                 if (fechaCita < fechaActual) {
                     Swal.fire({
                         icon: 'error',
@@ -832,6 +832,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
         setShowStripeModal(false);
         onHide();
     };
+
 
     return (
         <>
@@ -904,7 +905,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
                             <label>Descripción del paso:</label>
                             <input type="text" className="form-control" value={descripcionDelPaso} disabled />
                         </div>
-                   
+
 
 
                         <div className="form-group">
@@ -913,29 +914,33 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
                                     ? "Ya cuentas con una cita agendada"
                                     : "No cuentas con cita agendada"}
                             </p>
-                            <div className="form-group">
-                                <label>Cita de Simulación:</label>
-                                <Controller
-                                    name="dateSimulation"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <DateTimeSelector
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                            fechasOcupadas={fechasOcupadas}
-                                            error={errors.dateSimulation}
-                                            onExtraChargeRequired={handleExtraChargeRequired}
-                                            disabled={cliente?.wasUpdated}
-                                        />
+
+                            {(cliente?.transact?.simulation || cliente?.dateSimulation) && (
+                                <div className="form-group">
+                                    <label>Cita de Simulación:</label>
+                                    <Controller
+                                        name="dateSimulation"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <DateTimeSelector
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                fechasOcupadas={fechasOcupadas}
+                                                error={errors.dateSimulation}
+                                                onExtraChargeRequired={handleExtraChargeRequired}
+                                                // ✅ Deshabilitar si NO es una cita de simulación
+                                                disabled={!cliente?.transact?.simulation || cliente?.wasUpdated}
+                                            />
+                                        )}
+                                    />
+                                    {errors.dateSimulation && (
+                                        <span className="text-danger">{errors.dateSimulation.message}</span>
                                     )}
-                                />
+                                </div>
+                            )}
 
-                                {errors.dateSimulation && (
-                                    <span className="text-danger">{errors.dateSimulation.message}</span>
-                                )}
-                            </div>
-
-                            {cliente?.wasUpdated && (
+                            {/* ✅ Mostrar botón Cancelar solo si es una cita de simulación y se puede editar */}
+                            {cliente?.transact?.simulation && cliente?.wasUpdated && (
                                 <button
                                     type="button"
                                     className="btn btn-danger mt-2"
@@ -945,6 +950,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
                                 </button>
                             )}
                         </div>
+
                     </Modal.Body>
 
                     <Modal.Footer>

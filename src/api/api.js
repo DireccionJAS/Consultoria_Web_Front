@@ -160,7 +160,7 @@ export const servicios = async () => {
 
 export const createService = async (serviceData) => {
   try {
-    
+
     const payload = {
       name: serviceData.name,
       description: serviceData.description,
@@ -422,7 +422,7 @@ export const updateSteps = async (idTransact, stepsArray) => {
 
 export const tramitesPorId = async (id) => {
   try {
-      const response = await axios.get(`${API_URL}/progress/progressByUserIdWeb/${id}`);
+    const response = await axios.get(`${API_URL}/progress/progressByUserIdWeb/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener las transacciones', error);
@@ -661,6 +661,37 @@ export const olvidarContra = async (email) => {
     throw new Error(errorMessage);
   }
 };
+export const envioCorreo = async (email, nombreCliente, nombreTramite) => {
+  try {
+    if (!email || !email.trim() || !email.includes('@')) {
+      Swal.fire('Advertencia', 'Ingresa un correo electrónico válido.', 'warning');
+      return;
+    }
+
+    const body = {
+      subject: "Asignación de Trámite",
+      message: `Hola ${nombreCliente}, te notificamos que se te ha asignado correctamente el trámite: "${nombreTramite}", de parte del equipo de Consultoría JAS.`,
+    };
+
+    const response = await axios.post(
+      `${API_URL_MAIL}/send/web/${email.trim()}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error al mandar el correo:", error);
+    const errorMessage = error.response?.data?.message || error.message || "Error desconocido";
+    throw new Error(errorMessage);
+  }
+};
+
 
 export const olvidarContraSin = async (email) => {
   try {
