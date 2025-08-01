@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -15,6 +16,7 @@ export default function ActualizarTramite({ show, onHide, onClienteRegistrado, c
     const citaSimulacion = cliente?.transact?.simulation === true;
     const [nombreDelPaso, setNombreDelPaso] = useState('');
     const [descripcionDelPaso, setDescripcionDelPaso] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
 
     const schema = yup.object().shape({
@@ -209,11 +211,31 @@ export default function ActualizarTramite({ show, onHide, onClienteRegistrado, c
                         <input type="email" {...register('emailAcces')} className={`modern-input ${errors.emailAcces ? 'input-error' : ''}`} />
                         <span className="error">{errors.emailAcces?.message}</span>
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" style={{ position: 'relative' }}>
                         <label>Contraseña:</label>
-                        <input type="password" {...register('passwordAcces')} className={`modern-input ${errors.passwordAcces ? 'input-error' : ''}`} />
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            {...register('passwordAcces')}
+                            className={`modern-input ${errors.passwordAcces ? 'input-error' : ''}`}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{
+                                position: 'absolute',
+                                right: '10px',
+                                top: '38px',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: 0
+                            }}
+                        >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
                         <span className="error">{errors.passwordAcces?.message}</span>
                     </div>
+
                     <div className="form-group">
                         <label>Selecciona el paso del trámite:</label>
                         <select
@@ -342,18 +364,18 @@ export default function ActualizarTramite({ show, onHide, onClienteRegistrado, c
                             if (result.isConfirmed) {
                                 try {
                                     await deleteTRansactProgress(cliente.idTransactProgress);
-                                    
+
                                     Swal.fire(
                                         'Eliminado!',
                                         'El trámite ha sido eliminado.',
                                         'success'
                                     );
-                                    
+
                                     // Actualizar la lista después de eliminar
                                     if (typeof onClienteRegistrado === 'function') {
                                         onClienteRegistrado();
                                     }
-                                    
+
                                     onHide();
                                 } catch (error) {
                                     console.error('Error al eliminar el trámite:', error);
