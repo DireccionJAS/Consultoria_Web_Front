@@ -109,14 +109,6 @@ const CountrySelect = ({ value, onChange, error }) => {
 
 const UrlApi = import.meta.env.VITE_API_URL;
   
-const handleDownloadTerminos = (UrlApi) => {
-  window.open('${UrlApi}/pdf/download/terminos', '_blank');
-};
-
-const handleDownloadPrivacidad = (UrlApi) => {
-  window.open('${UrlApi}/pdf/download/privacidad', '_blank');
-};
-
 const schema = yup.object().shape({
   email: yup.string().required('Correo requerido').email('Correo inválido'),
   name: yup.string().required('Nombre requerido'),
@@ -158,7 +150,7 @@ export default function Signin({ onCancel }) {
   };
  const handleViewPdf = async (tipo) => {
     try {
-      const response = await fetch(`${UrlApi}/api/pdf/download/${tipo}`);
+      const response = await fetch(`${UrlApi}/pdf/download/${tipo}`);
       if (!response.ok) throw new Error('Error al obtener PDF');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
