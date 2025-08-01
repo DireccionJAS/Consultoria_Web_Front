@@ -21,9 +21,10 @@ export default function FooterSection() {
   const redirect = () => {
     navigate('/practicas');
   }
+    const UrlApi = import.meta.env.VITE_API_URL;
   const handleViewPdf = async (tipo) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/pdf/download/${tipo}`);
+      const response = await fetch(`${UrlApi}/pdf/download/${tipo}`);
       if (!response.ok) throw new Error('Error al obtener PDF');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

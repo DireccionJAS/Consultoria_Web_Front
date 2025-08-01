@@ -43,6 +43,8 @@ const countryOptions = [
 ];
 
 
+
+
 const CountrySelect = ({ value, onChange, error }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -105,12 +107,14 @@ const CountrySelect = ({ value, onChange, error }) => {
   );
 };
 
-const handleDownloadTerminos = () => {
-  window.open('http://localhost:8080/api/pdf/download/terminos', '_blank');
+const UrlApi = import.meta.env.VITE_API_URL;
+  
+const handleDownloadTerminos = (UrlApi) => {
+  window.open('${UrlApi}/pdf/download/terminos', '_blank');
 };
 
-const handleDownloadPrivacidad = () => {
-  window.open('http://localhost:8080/api/pdf/download/privacidad', '_blank');
+const handleDownloadPrivacidad = (UrlApi) => {
+  window.open('${UrlApi}/pdf/download/privacidad', '_blank');
 };
 
 const schema = yup.object().shape({
@@ -154,7 +158,7 @@ export default function Signin({ onCancel }) {
   };
  const handleViewPdf = async (tipo) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/pdf/download/${tipo}`);
+      const response = await fetch(`${UrlApi}/api/pdf/download/${tipo}`);
       if (!response.ok) throw new Error('Error al obtener PDF');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
