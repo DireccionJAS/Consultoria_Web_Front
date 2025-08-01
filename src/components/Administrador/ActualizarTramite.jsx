@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import '../../styles/ActualizarTramite.css';
 import { FaCheck } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
-import { actualizarTC, obtenerLosPasos, deleteTRansactProgress } from './../../api/api.js';
+import { actualizarTC, obtenerLosPasos, deleteTRansactProgress , envioCorreoActualizacion} from './../../api/api.js';
 
 export default function ActualizarTramite({ show, onHide, onClienteRegistrado, cliente }) {
     const citaCas = cliente?.transact?.cas === true;
@@ -163,10 +163,11 @@ export default function ActualizarTramite({ show, onHide, onClienteRegistrado, c
             };
 
             await actualizarTC(cliente.idTransactProgress, payload);
+            await envioCorreoActualizacion(cliente?.user?.email,cliente?.user?.name,cliente?.transact?.name);
 
             Swal.fire({
                 icon: 'success',
-                title: 'Datos guardados',
+                title: 'Datos guardados y correo enviado',
                 confirmButtonText: 'Aceptar',
             });
 

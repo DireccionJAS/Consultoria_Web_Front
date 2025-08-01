@@ -691,6 +691,37 @@ export const envioCorreo = async (email, nombreCliente, nombreTramite) => {
     throw new Error(errorMessage);
   }
 };
+export const envioCorreoActualizacion = async (email, nombreCliente, nombreTramite) => {
+  try {
+    if (!email || !email.trim() || !email.includes('@')) {
+      Swal.fire('Advertencia', 'Ingresa un correo electrónico válido.', 'warning');
+      return;
+    }
+
+    const body = {
+      subject: "Atualización de Trámite",
+      message: `Hola <strong>${nombreCliente}</strong>, te notificamos que se te ha hecho una actualización a tu tramite de: <strong>"${nombreTramite}"</strong>, de parte del equipo de Consultoría JAS.`,
+    };
+
+    const response = await axios.post(
+      `${API_URL_MAIL}/send/web/${email.trim()}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error al mandar el correo:", error);
+    const errorMessage = error.response?.data?.message || error.message || "Error desconocido";
+    throw new Error(errorMessage);
+  }
+};
+
 
 
 export const olvidarContraSin = async (email) => {
