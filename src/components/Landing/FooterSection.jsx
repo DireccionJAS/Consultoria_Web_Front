@@ -151,6 +151,7 @@ export default function FooterSection() {
     closeButton: {
       background: 'black',
       border: 'none',
+      color: 'white',
       cursor: 'pointer',
       padding: '5px',
       borderRadius: '50%',

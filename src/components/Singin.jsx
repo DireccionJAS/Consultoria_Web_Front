@@ -160,6 +160,7 @@ const stylesModal = {
     background: 'black',
     border: 'none',
     cursor: 'pointer',
+    color: 'white',
     padding: '5px',
     borderRadius: '50%',
     display: 'flex',
