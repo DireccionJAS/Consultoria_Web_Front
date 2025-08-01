@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 
 export default function UploadPdf() {
   const navigate = useNavigate();
+  const UrlApi = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     document.body.classList.add('home-admin-body');
@@ -61,7 +62,7 @@ export default function UploadPdf() {
     formData.append('file', file);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/pdf/upload/${tipo}`, {
+      const response = await fetch(`${UrlApi}/api/pdf/upload/${tipo}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
