@@ -79,14 +79,6 @@ const PdfModal = ({ showModal, pdfUrl, onClose, pdfType }) => {
                   <MdOpenInNew size={20} />
                   Abrir en nueva pestaña
                 </button>
-                
-                <button 
-                  onClick={handleDownload}
-                  style={stylesModal.downloadButton}
-                >
-                  <MdDownload size={20} />
-                  Descargar PDF
-                </button>
               </div>
 
               {/* Fallback: Mostrar iframe con advertencia */}
