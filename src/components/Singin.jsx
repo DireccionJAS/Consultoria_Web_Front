@@ -108,7 +108,7 @@ const CountrySelect = ({ value, onChange, error }) => {
 };
 
 const UrlApi = import.meta.env.VITE_API_URL;
-  
+
 const schema = yup.object().shape({
   email: yup.string().required('Correo requerido').email('Correo inválido'),
   name: yup.string().required('Nombre requerido'),
@@ -131,6 +131,7 @@ export default function Signin({ onCancel }) {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfType, setPdfType] = useState(''); // Agregar esta línea
   const {
     register,
     handleSubmit,
@@ -148,13 +149,14 @@ export default function Signin({ onCancel }) {
       window.history.back();
     }
   };
- const handleViewPdf = async (tipo) => {
+  const handleViewPdf = async (tipo) => {
     try {
       const response = await fetch(`${UrlApi}/pdf/download/${tipo}`);
       if (!response.ok) throw new Error('Error al obtener PDF');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
+      setPdfType(tipo); // Agregar esta línea
       setShowModal(true);
     } catch (error) {
       console.error(error);
@@ -265,15 +267,15 @@ export default function Signin({ onCancel }) {
           >
             <Icon icon="mdi:arrow-left" width="16" height="16" />
           </button>
-          
+
           {/* Sección izquierda - Logo */}
           <div className={styles.cardLeft}>
             <img src={Logo} alt="Logo Consultoría JAS" className={styles.logoImg} />
           </div>
-          
+
           {/* Línea divisoria */}
           <div className={styles.verticalLine}></div>
-          
+
           {/* Sección derecha - Formulario */}
           <div className={styles.cardRight}>
             <div className={styles.header}>
@@ -288,235 +290,237 @@ export default function Signin({ onCancel }) {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          {paso === 1 && (
-            <div className={styles.formGrid}>
-              {/* Nombre */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>
-                  <FaUser className={styles.labelIcon} />
-                  Nombre completo
-                </label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type="text"
-                    placeholder="Ingresa tu nombre completo"
-                    {...register('name')}
-                    className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
-                    autoComplete="name"
-                  />
-                </div>
-                {errors.name && (
-                  <span className={styles.errorMessage}>{errors.name.message}</span>
-                )}
-              </div>
+              {paso === 1 && (
+                <div className={styles.formGrid}>
+                  {/* Nombre */}
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>
+                      <FaUser className={styles.labelIcon} />
+                      Nombre completo
+                    </label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type="text"
+                        placeholder="Ingresa tu nombre completo"
+                        {...register('name')}
+                        className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
+                        autoComplete="name"
+                      />
+                    </div>
+                    {errors.name && (
+                      <span className={styles.errorMessage}>{errors.name.message}</span>
+                    )}
+                  </div>
 
-              {/* Email */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>
-                  <FaEnvelope className={styles.labelIcon} />
-                  Correo electrónico
-                </label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type="email"
-                    placeholder="ejemplo@correo.com"
-                    {...register('email')}
-                    className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
-                    autoComplete="email"
-                  />
-                </div>
-                {errors.email && (
-                  <span className={styles.errorMessage}>{errors.email.message}</span>
-                )}
-              </div>
+                  {/* Email */}
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>
+                      <FaEnvelope className={styles.labelIcon} />
+                      Correo electrónico
+                    </label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type="email"
+                        placeholder="ejemplo@correo.com"
+                        {...register('email')}
+                        className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+                        autoComplete="email"
+                      />
+                    </div>
+                    {errors.email && (
+                      <span className={styles.errorMessage}>{errors.email.message}</span>
+                    )}
+                  </div>
 
-              {/* Contraseña */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>
-                  <FaShieldAlt className={styles.labelIcon} />
-                  Contraseña
-                </label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Crea una contraseña segura"
-                    {...register('password')}
-                    className={`${styles.input} ${styles.inputPassword} ${errors.password ? styles.inputError : ''}`}
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className={styles.passwordToggle}
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <span className={styles.errorMessage}>{errors.password.message}</span>
-                )}
-              </div>
+                  {/* Contraseña */}
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>
+                      <FaShieldAlt className={styles.labelIcon} />
+                      Contraseña
+                    </label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Crea una contraseña segura"
+                        {...register('password')}
+                        className={`${styles.input} ${styles.inputPassword} ${errors.password ? styles.inputError : ''}`}
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        className={styles.passwordToggle}
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
+                    {errors.password && (
+                      <span className={styles.errorMessage}>{errors.password.message}</span>
+                    )}
+                  </div>
 
-              {/* Confirmar contraseña */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>
-                  <FaShieldAlt className={styles.labelIcon} />
-                  Confirmar contraseña
-                  {passwordsMatch && (
-                    <FaCheck className={styles.checkIcon} style={{ color: '#10b981', marginLeft: '8px' }} />
-                  )}
-                </label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Confirma tu contraseña"
-                    {...register('confirmPassword')}
-                    className={`${styles.input} ${styles.inputPassword} ${errors.confirmPassword ? styles.inputError : passwordsMatch ? styles.inputSuccess : ''}`}
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className={styles.passwordToggle}
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <span className={styles.errorMessage}>{errors.confirmPassword.message}</span>
-                )}
-                {!errors.confirmPassword && confirmPassword && passwordsMatch && (
-                  <span className={styles.successMessage}>
-                    <FaCheck style={{ marginRight: '4px' }} />
-                    Las contraseñas coinciden
-                  </span>
-                )}
-              </div>
+                  {/* Confirmar contraseña */}
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>
+                      <FaShieldAlt className={styles.labelIcon} />
+                      Confirmar contraseña
+                      {passwordsMatch && (
+                        <FaCheck className={styles.checkIcon} style={{ color: '#10b981', marginLeft: '8px' }} />
+                      )}
+                    </label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Confirma tu contraseña"
+                        {...register('confirmPassword')}
+                        className={`${styles.input} ${styles.inputPassword} ${errors.confirmPassword ? styles.inputError : passwordsMatch ? styles.inputSuccess : ''}`}
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        className={styles.passwordToggle}
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
+                    {errors.confirmPassword && (
+                      <span className={styles.errorMessage}>{errors.confirmPassword.message}</span>
+                    )}
+                    {!errors.confirmPassword && confirmPassword && passwordsMatch && (
+                      <span className={styles.successMessage}>
+                        <FaCheck style={{ marginRight: '4px' }} />
+                        Las contraseñas coinciden
+                      </span>
+                    )}
+                  </div>
 
-              {/* Teléfono */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>
-                  <FaPhone className={styles.labelIcon} />
-                  Teléfono
-                </label>
-                <div className={styles.phoneContainer}>
-                  <CountrySelect
-                    value={phonePrefix}
-                    onChange={setPhonePrefix}
-                    error={errors.phone}
-                  />
-                  <div className={styles.phoneInputWrapper}>
-                    <input
-                      type="tel"
-                      placeholder="777 555 3344"
-                      {...register('phone')}
-                      className={`${styles.input} ${styles.phoneNumberInput} ${errors.phone ? styles.inputError : ''}`}
-                      maxLength={10}
-                      inputMode="numeric"
-                      pattern="\d{10}"
-                    />
+                  {/* Teléfono */}
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>
+                      <FaPhone className={styles.labelIcon} />
+                      Teléfono
+                    </label>
+                    <div className={styles.phoneContainer}>
+                      <CountrySelect
+                        value={phonePrefix}
+                        onChange={setPhonePrefix}
+                        error={errors.phone}
+                      />
+                      <div className={styles.phoneInputWrapper}>
+                        <input
+                          type="tel"
+                          placeholder="777 555 3344"
+                          {...register('phone')}
+                          className={`${styles.input} ${styles.phoneNumberInput} ${errors.phone ? styles.inputError : ''}`}
+                          maxLength={10}
+                          inputMode="numeric"
+                          pattern="\d{10}"
+                        />
+                      </div>
+                    </div>
+                    {errors.phone && (
+                      <span className={styles.errorMessage}>{errors.phone.message}</span>
+                    )}
                   </div>
                 </div>
-                {errors.phone && (
-                  <span className={styles.errorMessage}>{errors.phone.message}</span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {paso === 1 && (
-            <div className={styles.terms}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                />{' '}
-                Acepto los{' '}
-                <a href="#" onClick={(e) => { e.preventDefault(); handleViewPdf('terminos'); }}>
-                  Términos y Condiciones
-                </a>{' '}
-                y la{' '}
-                <a href="#" onClick={(e) => { e.preventDefault(); handleViewPdf('privacidad'); }}>
-                  Política de Privacidad
-                </a>.
-              </label>
-            </div>
-          )}
-
-          {paso === 2 && (
-            <div className={styles.verificationSection}>
-              <div className={styles.verificationCard}>
-                <div className={styles.verificationIcon}>
-                  <FaEnvelope />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label className={styles.label}>Código de verificación</label>
-                  <div className={styles.inputWrapper}>
-                    <input
-                      type="text"
-                      placeholder="Ingresa el código de 6 dígitos"
-                      value={codigoIngresado}
-                      onChange={(e) => setCodigoIngresado(e.target.value)}
-                      className={`${styles.input} ${styles.codeInput}`}
-                      maxLength={6}
-                      inputMode="numeric"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className={styles.actions}>
-            {paso === 2 && (
-              <button
-                type="button"
-                className={`${styles.button} ${styles.buttonSecondary}`}
-                onClick={volverAtras}
-              >
-                <MdArrowBack />
-                Volver
-              </button>
-            )}
-            <button
-              type="button"
-              className={`${styles.button} ${styles.buttonOutline}`}
-              onClick={cancel}
-            >
-              <MdClose />
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className={`${styles.button} ${styles.buttonPrimary}`}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <div className={styles.spinner}></div>
-              ) : (
-                <>
-                  {paso === 1 ? 'Enviar código' : 'Crear cuenta'}
-                  <FaCheck />
-                </>
               )}
-            </button>
-          </div>
-        </form>
+
+              {paso === 1 && (
+                <div className={styles.terms}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                    />{' '}
+                    Acepto los{' '}
+                    <a href="#" onClick={(e) => { e.preventDefault(); handleViewPdf('terminos'); }}>
+                      Términos y Condiciones
+                    </a>{' '}
+                    y la{' '}
+                    <a href="#" onClick={(e) => { e.preventDefault(); handleViewPdf('privacidad'); }}>
+                      Política de Privacidad
+                    </a>.
+                  </label>
+                </div>
+              )}
+
+              {paso === 2 && (
+                <div className={styles.verificationSection}>
+                  <div className={styles.verificationCard}>
+                    <div className={styles.verificationIcon}>
+                      <FaEnvelope />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label className={styles.label}>Código de verificación</label>
+                      <div className={styles.inputWrapper}>
+                        <input
+                          type="text"
+                          placeholder="Ingresa el código de 6 dígitos"
+                          value={codigoIngresado}
+                          onChange={(e) => setCodigoIngresado(e.target.value)}
+                          className={`${styles.input} ${styles.codeInput}`}
+                          maxLength={6}
+                          inputMode="numeric"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.actions}>
+                {paso === 2 && (
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.buttonSecondary}`}
+                    onClick={volverAtras}
+                  >
+                    <MdArrowBack />
+                    Volver
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.buttonOutline}`}
+                  onClick={cancel}
+                >
+                  <MdClose />
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className={`${styles.button} ${styles.buttonPrimary}`}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <div className={styles.spinner}></div>
+                  ) : (
+                    <>
+                      {paso === 1 ? 'Enviar código' : 'Crear cuenta'}
+                      <FaCheck />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-   {showModal && (
+      {showModal && (
         <div style={stylesS.overlay}>
           <div style={stylesS.modal}>
             <button onClick={closeModal} style={stylesS.closeButton}>
               <MdClose size={24} />
             </button>
-            <iframe
-              src={pdfUrl}
-              title="PDF Viewer"
-              style={stylesS.iframe}
+            <PdfModal
+              showModal={showModal}
+              pdfUrl={pdfUrl}
+              pdfType={pdfType}
+              onClose={closeModal}
             />
+           
           </div>
         </div>
       )}
