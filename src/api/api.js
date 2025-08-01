@@ -670,7 +670,7 @@ export const envioCorreo = async (email, nombreCliente, nombreTramite) => {
 
     const body = {
       subject: "Asignación de Trámite",
-      message: `Hola ${nombreCliente}, te notificamos que se te ha asignado correctamente el trámite: "${nombreTramite}", de parte del equipo de Consultoría JAS.`,
+      message: `Hola <strong>${nombreCliente}</strong>, te notificamos que se te ha asignado correctamente el trámite: <strong>"${nombreTramite}"</strong>, de parte del equipo de Consultoría JAS.`,
     };
 
     const response = await axios.post(
