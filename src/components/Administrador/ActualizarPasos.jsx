@@ -138,8 +138,19 @@ export default function ActualizarPasos() {
 
 const removeStep = async (index) => {
   const stepToDelete = steps[index];
+  
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    text: "¡No podrás revertir esta acción!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  });
 
-  if (window.confirm('¿Estás seguro de que deseas eliminar este paso?')) {
+  if (result.isConfirmed){
     if (stepToDelete.id) {
       try {
         await deleteStepById(stepToDelete.id);
