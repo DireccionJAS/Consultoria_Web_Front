@@ -141,7 +141,7 @@ export default function AdministradorServicios() {
   // Steps Modal handlers
   const openStepsModal = async (idTransact) => {
     try {
-      setIdService(idTransact); // Set ID first
+      setServiceId(idTransact);
       const response = await getStepById(idTransact);
       setSteps(response.response.StepsTransacts || []);
       setStepsModalIsOpen(true); // ✅

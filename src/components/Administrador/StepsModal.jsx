@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';  // IMPORTAR hook
 import styles from './../../styles/AdminServicios.module.css';
+import modalUtils from '../../utils/modalUtils.js';  // asegúrate que importas modalUtils
 
 export default function StepsModal({ 
   show, 
@@ -9,8 +11,10 @@ export default function StepsModal({
   steps = [], 
   serviceId,
   onClearSteps,
-  onAddSteps // 👈 Nuevo callback para pedir navegación
+  onAddSteps
 }) {
+  const navigate = useNavigate();  // USAR hook
+
   const handleClose = () => {
     onHide();
     if (onClearSteps) {
@@ -23,8 +27,6 @@ export default function StepsModal({
       console.error('❌ No hay serviceId disponible para agregar pasos');
       return;
     }
-    // ⛔ NO navegamos directamente aquí
-    // ✅ En lugar de eso, pedimos al padre que lo haga después de cerrar el modal
     if (onAddSteps) {
       onAddSteps();
     }
@@ -33,10 +35,9 @@ export default function StepsModal({
   const handleUpdateSteps = () => {
     if (!serviceId) return;
     onHide(); // Cerramos modal
-    // Navegación la podrías manejar en `onExited` si quisieras
-    window.setTimeout(() => {
+    setTimeout(() => {
       modalUtils.smartCleanup();
-      window.location.href = "/ActualizarPasos"; // alternativa si no quieres usar navigate
+      navigate("/ActualizarPasos", { state: { serviceID: serviceId, isEditMode: true } });  // NAVEGA
     }, 300);
   };
 

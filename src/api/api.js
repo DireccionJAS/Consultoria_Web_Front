@@ -267,6 +267,20 @@ export const getSteps = async () => {
   }
 };
 
+export const deleteStepById = async (stepId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/steps/${stepId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting step:', error);
+    throw error;
+  }
+};
+
 export const getStepById = async (id) => {
   try {
     const response = await axios.get(`${API_URL}/steps/${id}`);

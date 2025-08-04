@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getStepById, updateSteps, getNameService } from '../../api/api';
+import { getStepById, updateSteps, getNameService , deleteStepById} from '../../api/api';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
 import Navbar from './../NavbarAdmin.jsx';
@@ -52,9 +52,9 @@ export default function ActualizarPasos() {
   const fetchStepsById = async () => {
     try {
       const response = await getStepById(idTransact);
-      
+
       if (response.success && Array.isArray(response.response.StepsTransacts)) {
-        
+
         // Asegurarse de que todos los pasos tengan los campos necesarios
         const formattedSteps = response.response.StepsTransacts.map(step => {
           // Registrar cada paso para depuración          
@@ -68,7 +68,7 @@ export default function ActualizarPasos() {
             idTransact: step.idTransact || idTransact
           };
         });
-        
+
         setSteps(formattedSteps);
       } else {
         setSteps([]);
@@ -115,10 +115,10 @@ export default function ActualizarPasos() {
   const addNewStep = () => {
     setSteps(prevSteps => {
       // Determinar el número del siguiente paso
-      const nextStepNumber = prevSteps.length > 0 
-        ? Math.max(...prevSteps.map(step => step.stepNumber)) + 1 
+      const nextStepNumber = prevSteps.length > 0
+        ? Math.max(...prevSteps.map(step => step.stepNumber)) + 1
         : 1;
-      
+
       // Agregar un nuevo paso al arreglo
       return [
         ...prevSteps,
@@ -135,22 +135,54 @@ export default function ActualizarPasos() {
     });
   };
 
-  const removeStep = (index) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este paso?')) {
+
+const removeStep = async (index) => {
+  const stepToDelete = steps[index];
+
+  if (window.confirm('¿Estás seguro de que deseas eliminar este paso?')) {
+    if (stepToDelete.id) {
+      try {
+        await deleteStepById(stepToDelete.id);
+
+        // Mostrar alerta y esperar que el usuario cierre
+        await Swal.fire('Eliminado', 'Paso eliminado correctamente.', 'success');
+
+        // Ahora actualizamos la UI local
+        setSteps(prevSteps => {
+          const newSteps = prevSteps.filter((_, i) => i !== index);
+          // Reordenar números de paso
+          return newSteps.map((step, idx) => ({
+            ...step,
+            stepNumber: idx + 1
+          }));
+        });
+
+      } catch (error) {
+        Swal.fire('Error', 'No se pudo eliminar el paso.', 'error');
+      }
+    } else {
+      // Paso nuevo (sin ID), solo eliminar localmente y mostrar alerta
+
+      // Actualizar UI
       setSteps(prevSteps => {
         const newSteps = prevSteps.filter((_, i) => i !== index);
-        // Reordenar los números de paso después de eliminar
         return newSteps.map((step, idx) => ({
           ...step,
           stepNumber: idx + 1
         }));
       });
+
+      // Mostrar alerta después de actualizar UI
+      await Swal.fire('Eliminado', 'Paso eliminado correctamente.', 'success');
     }
-  };
+  }
+};
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (steps.length === 0) {
       Swal.fire({
         icon: 'warning',
@@ -170,7 +202,7 @@ export default function ActualizarPasos() {
         needCalendar: step.needCalendar ? 1 : 0,
         idTransact: idTransact // ID del trámite
       }));
-      
+
       // Muestra un indicador de carga
       Swal.fire({
         title: 'Procesando...',
@@ -180,12 +212,12 @@ export default function ActualizarPasos() {
           Swal.showLoading();
         }
       });
-      
+
       const response = await updateSteps(idTransact, formattedSteps);
-      
+
       // Cerrar el indicador de carga
       Swal.close();
-      
+
       if (!response.some(res => res.error)) {
         setMessage('✅ Todos los pasos fueron procesados exitosamente.');
         Swal.fire({
@@ -236,7 +268,7 @@ export default function ActualizarPasos() {
       <div className="container-registrar-pasos">
         <div className="card-registrar-pasos">
           <h2>Actualizar pasos para el trámite: {name}</h2>
-          
+
           {steps.length === 0 ? (
             <div>
               <p>No hay pasos registrados para este trámite.</p>
@@ -249,10 +281,10 @@ export default function ActualizarPasos() {
           ) : (
             <form onSubmit={handleSubmit} className="form-registrar-pasos">
               {steps.map((step, index) => (
-                <div key={index} className="step-form" style={{ 
-                  border: '1px solid #e2e8f0', 
-                  borderRadius: '8px', 
-                  padding: '16px', 
+                <div key={index} className="step-form" style={{
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  padding: '16px',
                   marginBottom: '20px',
                   backgroundColor: step.isNew ? '#f0fff4' : 'white' // Color de fondo verde claro para pasos nuevos
                 }}>
