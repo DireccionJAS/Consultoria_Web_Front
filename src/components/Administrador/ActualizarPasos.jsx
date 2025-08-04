@@ -110,7 +110,9 @@ export default function ActualizarPasos() {
       return newSteps;
     });
   };
-
+const volver = () => {
+    navigate('/ServiciosAdmin'); // Redireccionar a la lista de servicios
+  }
   // Modificado: Añadir paso directamente en la interfaz
   const addNewStep = () => {
     setSteps(prevSteps => {
@@ -366,6 +368,9 @@ const removeStep = async (index) => {
               ))}
 
               <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <button type="button" onClick={volver} className="custom-file-button" style={{ backgroundColor: '#2c5282', color: 'white' }}>
+                  Volver
+                </button>
                 <button type="button" onClick={addNewStep} className="custom-file-button">
                   ➕ Agregar Nuevo Paso
                 </button>
