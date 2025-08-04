@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate  } from 'react-router-dom';
 import './../../styles/RegistrarPasos.css';
 import { createSteps } from '../../api/api.js';
 import Navbar from './../NavbarAdmin.jsx';
+import { Icon } from '@iconify/react/dist/iconify.js';
+
 
 export default function RegistrarPasos() {
   const location = useLocation();
   const idTransact = location.state.serviceID;
+  const navigate = useNavigate();
 
   const [steps, setSteps] = useState([{
     name: '',
     description: '',
-    stepNumber: 1, 
+    stepNumber: 1,
     needCalendar: false,
     id: idTransact,
   }]);
@@ -98,83 +101,89 @@ export default function RegistrarPasos() {
       setMessage('❌ Error al registrar los pasos.');
     }
   };
+   const volver = () => {
+    navigate('/ServiciosAdmin'); // Redireccionar a la lista de servicios
+  }
 
   return (
-    
+
     <div style={{ marginTop: '90px' }}>
-          <div className='fixed-top'>
-            <Navbar title={"- Registrar Servicios"} />
-          </div>
+      <div className='fixed-top'>
+        <Navbar title={"- Registrar Servicios"} />
+      </div>
 
-    <div className="container-registrar-pasos">
-      <div className="card-registrar-pasos">
-        <h2>Registrar pasos para el trámite</h2>
-        <form onSubmit={handleSubmit} className="form-registrar-pasos">
-          {steps.map((step, index) => (
-            <div key={index} className="step-form" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
-              
-              <div className="form-group">
-                <p className='h4'>Paso número {step.stepNumber}</p>
-                <input
-                  type="hidden" 
-                  name="stepNumber"
-                  value={step.stepNumber}
-                  onChange={(e) => handleStepChange(index, e)}
-                  required
-                />
+      <div className="container-registrar-pasos">
+        <div className="card-registrar-pasos">
+          <h2>Registrar pasos para el trámite</h2>
+          <form onSubmit={handleSubmit} className="form-registrar-pasos">
+            {steps.map((step, index) => (
+              <div key={index} className="step-form" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+
+                <div className="form-group">
+                  <p className='h4'>Paso número {step.stepNumber}</p>
+                  <input
+                    type="hidden"
+                    name="stepNumber"
+                    value={step.stepNumber}
+                    onChange={(e) => handleStepChange(index, e)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Nombre del paso</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={step.name}
+                    onChange={(e) => handleStepChange(index, e)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Descripción</label>
+                  <textarea
+                    name="description"
+                    value={step.description}
+                    onChange={(e) => handleStepChange(index, e)}
+                    required
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => removeStep(index)}
+                  style={{
+                    backgroundColor: '#e53e3e',
+                    color: 'white',
+                    padding: '8px 16px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    marginTop: '10px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Eliminar Paso
+                </button>
               </div>
+            ))}
+            <button type="button" onClick={volver} className="custom-file-button" style={{ backgroundColor: '#2c5282', color: 'white' }}>
+              <Icon icon="humbleicons:arrow-left" width="24" height="24" color='white' /> Volver
+            </button>
 
-              <div className="form-group">
-                <label>Nombre del paso</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={step.name}
-                  onChange={(e) => handleStepChange(index, e)}
-                  required
-                />
-              </div>
+            <button type="button" onClick={addStep} className="custom-file-button" style={{}}>
+              ➕ Agregar Paso
+            </button>
 
-              <div className="form-group">
-                <label>Descripción</label>
-                <textarea
-                  name="description"
-                  value={step.description}
-                  onChange={(e) => handleStepChange(index, e)}
-                  required
-                />
-              </div>
+            <button type="submit" className="button-submit-service">
+              Registrar Todos los Pasos
+            </button>
+          </form>
 
-              <button
-                type="button"
-                onClick={() => removeStep(index)}
-                style={{
-                  backgroundColor: '#e53e3e',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  marginTop: '10px',
-                  cursor: 'pointer',
-                }}
-              >
-                Eliminar Paso
-              </button>
-            </div>
-          ))}
-
-          <button type="button" onClick={addStep} className="custom-file-button" style={{  }}>
-            ➕ Agregar Paso
-          </button>
-
-          <button type="submit" className="button-submit-service">
-            Registrar Todos los Pasos
-          </button>
-        </form>
-
-        {message && <p style={{ color: '#2c5282', marginTop: '16px' }}>{message}</p>}
+          {message && <p style={{ color: '#2c5282', marginTop: '16px' }}>{message}</p>}
+        </div>
       </div>
     </div>
-  </div>
   );
 }
