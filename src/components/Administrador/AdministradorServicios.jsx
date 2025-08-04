@@ -20,20 +20,34 @@ export default function AdministradorServicios() {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
-  
+
   // Service Preview Modal states
   const [previewModalIsOpen, setPreviewModalIsOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-  
+
   // Steps Modal states
-  const [showStepsModal, setShowStepsModal] = useState(false);
   const [steps, setSteps] = useState([]);
   const [idService, setIdService] = useState(null);
+  const [stepsModalIsOpen, setStepsModalIsOpen] = useState(false);
+  const [serviceId, setServiceId] = useState(null);
+  const [shouldNavigateToAddSteps, setShouldNavigateToAddSteps] = useState(false);
 
+  // Función para mostrar los pasos del trámite (cuando das clic en "Ver pasos")
+  const handleViewSteps = async (id) => {
+    setServiceId(id);
+    // aquí puedes traer los pasos desde el backend si lo necesitas
+    setStepsModalIsOpen(true);
+  };
+
+  // Se invoca desde el modal cuando se quiere agregar pasos
+  const handleRequestAddSteps = () => {
+    setShouldNavigateToAddSteps(true);  // Marcar intención
+    setStepsModalIsOpen(false);         // Cerrar el modal
+  };
   useEffect(() => {
     // Aplicar el estilo de fondo al body cuando se monta el componente
     document.body.className = styles.backgroundBody;
-    
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -130,7 +144,7 @@ export default function AdministradorServicios() {
       setIdService(idTransact); // Set ID first
       const response = await getStepById(idTransact);
       setSteps(response.response.StepsTransacts || []);
-      setShowStepsModal(true);
+      setStepsModalIsOpen(true); // ✅
     } catch (error) {
       console.error('❌ Error al obtener pasos:', error);
       setSteps([]);
@@ -226,10 +240,10 @@ export default function AdministradorServicios() {
           </div>
         )}
       </div>
-      
+
       <div>
-        <button 
-          className={styles.bottonAggregate} 
+        <button
+          className={styles.bottonAggregate}
           onClick={() => navigate("/RegistrarServicio")}
         >
           Agregar Servicio
@@ -238,8 +252,7 @@ export default function AdministradorServicios() {
 
       {/* Service Preview Modal */}
       <ModalErrorBoundary onReset={() => {
-        setPreviewModalIsOpen(false);
-        setSelectedService(null);
+        setStepsModalIsOpen(false);  // ✅
         setSteps([]);
       }}>
         <ServicePreviewModal
@@ -256,12 +269,21 @@ export default function AdministradorServicios() {
         setSteps([]);
       }}>
         <StepsModal
-          show={showStepsModal}
-          onHide={closeStepsModal}
+          show={stepsModalIsOpen}
+          onHide={() => setStepsModalIsOpen(false)}
+          serviceId={serviceId}
           steps={steps}
-          serviceId={idService}
-          onClearSteps={clearSteps}
+          onClearSteps={() => setSteps([])}
+          onAddSteps={handleRequestAddSteps}
+          onExited={() => {
+            modalUtils.smartCleanup();
+            if (shouldNavigateToAddSteps && serviceId) {
+              setShouldNavigateToAddSteps(false);
+              navigate("/RegistrarPasos", { state: { serviceID: serviceId } });
+            }
+          }}
         />
+
       </ModalErrorBoundary>
     </div>
   );
