@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getStepById, updateSteps, getNameService , deleteStepById} from '../../api/api';
+import { getStepById, updateSteps, getNameService, deleteStepById } from '../../api/api';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
 import Navbar from './../NavbarAdmin.jsx';
 import './../../styles/RegistrarPasos.css';
+import { Icon } from '@iconify/react/dist/iconify.js';
 
 export default function ActualizarPasos() {
   const location = useLocation();
@@ -110,7 +111,7 @@ export default function ActualizarPasos() {
       return newSteps;
     });
   };
-const volver = () => {
+  const volver = () => {
     navigate('/ServiciosAdmin'); // Redireccionar a la lista de servicios
   }
   // Modificado: Añadir paso directamente en la interfaz
@@ -138,58 +139,58 @@ const volver = () => {
   };
 
 
-const removeStep = async (index) => {
-  const stepToDelete = steps[index];
-  
-  const result = await Swal.fire({
-    title: '¿Estás seguro?',
-    text: "¡No podrás revertir esta acción!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  });
+  const removeStep = async (index) => {
+    const stepToDelete = steps[index];
 
-  if (result.isConfirmed){
-    if (stepToDelete.id) {
-      try {
-        await deleteStepById(stepToDelete.id);
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "¡No podrás revertir esta acción!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
 
-        // Mostrar alerta y esperar que el usuario cierre
-        await Swal.fire('Eliminado', 'Paso eliminado correctamente.', 'success');
+    if (result.isConfirmed) {
+      if (stepToDelete.id) {
+        try {
+          await deleteStepById(stepToDelete.id);
 
-        // Ahora actualizamos la UI local
+          // Mostrar alerta y esperar que el usuario cierre
+          await Swal.fire('Eliminado', 'Paso eliminado correctamente.', 'success');
+
+          // Ahora actualizamos la UI local
+          setSteps(prevSteps => {
+            const newSteps = prevSteps.filter((_, i) => i !== index);
+            // Reordenar números de paso
+            return newSteps.map((step, idx) => ({
+              ...step,
+              stepNumber: idx + 1
+            }));
+          });
+
+        } catch (error) {
+          Swal.fire('Error', 'No se pudo eliminar el paso.', 'error');
+        }
+      } else {
+        // Paso nuevo (sin ID), solo eliminar localmente y mostrar alerta
+
+        // Actualizar UI
         setSteps(prevSteps => {
           const newSteps = prevSteps.filter((_, i) => i !== index);
-          // Reordenar números de paso
           return newSteps.map((step, idx) => ({
             ...step,
             stepNumber: idx + 1
           }));
         });
 
-      } catch (error) {
-        Swal.fire('Error', 'No se pudo eliminar el paso.', 'error');
+        // Mostrar alerta después de actualizar UI
+        await Swal.fire('Eliminado', 'Paso eliminado correctamente.', 'success');
       }
-    } else {
-      // Paso nuevo (sin ID), solo eliminar localmente y mostrar alerta
-
-      // Actualizar UI
-      setSteps(prevSteps => {
-        const newSteps = prevSteps.filter((_, i) => i !== index);
-        return newSteps.map((step, idx) => ({
-          ...step,
-          stepNumber: idx + 1
-        }));
-      });
-
-      // Mostrar alerta después de actualizar UI
-      await Swal.fire('Eliminado', 'Paso eliminado correctamente.', 'success');
     }
-  }
-};
+  };
 
 
 
@@ -369,7 +370,7 @@ const removeStep = async (index) => {
 
               <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 <button type="button" onClick={volver} className="custom-file-button" style={{ backgroundColor: '#2c5282', color: 'white' }}>
-                  Volver
+                  <Icon icon="humbleicons:arrow-left" width="24" height="24" color='white' /> Volver
                 </button>
                 <button type="button" onClick={addNewStep} className="custom-file-button">
                   ➕ Agregar Nuevo Paso
