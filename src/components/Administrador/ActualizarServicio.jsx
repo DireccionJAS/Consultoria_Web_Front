@@ -5,6 +5,8 @@ import { jwtDecode } from 'jwt-decode';
 import { updateService } from './../../api/api.js';
 import styles from './../../styles/ActualizarServicio.module.css';
 import Swal from 'sweetalert2';
+import { Icon } from '@iconify/react/dist/iconify.js';
+
 
 export default function ActualizarServicio() {
   const navigate = useNavigate();
@@ -56,6 +58,7 @@ export default function ActualizarServicio() {
 
     const imageFile = formData.get('image');
     const imageDetailFile = formData.get('imageDetail');
+   
 
     const serviceData = {
       name: formData.get('name'),
@@ -99,6 +102,9 @@ export default function ActualizarServicio() {
       console.error('Error:', error);
     }
   };
+   const volver = () => {
+      navigate('/ServiciosAdmin'); // Redireccionar a la lista de servicios
+    }
 
   return (
     <div style={{ marginTop: '80px' }}>
@@ -191,7 +197,7 @@ export default function ActualizarServicio() {
                 }}
               />
             </div>
-             <div className={styles['form-group-switch']}>
+            <div className={styles['form-group-switch']}>
               <label htmlFor='status'>Estado del servicio</label>
               <label className={styles['switch']}>
                 <input
@@ -284,7 +290,7 @@ export default function ActualizarServicio() {
               </label>
             </div>
 
-           
+
 
 
             {tieneOtroCosto && (
@@ -361,6 +367,9 @@ export default function ActualizarServicio() {
             )}
 
             <p className={styles['required-fields-note']}>* Campos obligatorios</p>
+            <button type="button" onClick={volver} className="custom-file-button" style={{ backgroundColor: '#2c5282', color: 'white' }}>
+              <Icon icon="humbleicons:arrow-left" width="24" height="24" color='white' /> Volver
+            </button>
             <button type='submit' className={styles['button-submit-service']}>Actualizar</button>
           </form>
         </div>

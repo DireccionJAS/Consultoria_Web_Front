@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import '../../styles/ActualizarTramite.css';
+import { Icon } from '@iconify/react/dist/iconify.js';
 import { FaCheck } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import { actualizarTC, obtenerLosPasos, deleteTRansactProgress , envioCorreoActualizacion} from './../../api/api.js';
