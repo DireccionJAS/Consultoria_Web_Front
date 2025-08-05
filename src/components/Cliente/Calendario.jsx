@@ -29,7 +29,7 @@ export default function Calendario() {
         };
 
         window.addEventListener('storage', handleStorageChange);
-        
+
         // También escuchar cambios directos en el mismo tab
         const interval = setInterval(() => {
             const saved = localStorage.getItem('sidebarCollapsed');
@@ -119,7 +119,7 @@ export default function Calendario() {
                             title: `${item.transact.description} - CAS`,
                             start: item.dateCas,
                             end: item.dateCas,
-                            description: 'Cita en CAS',
+                            description: 'Tienes una cita agendada en centro de atención a solicitantes (CAS)',
                             text: item.dateCas,
                             tipo: 'CAS',
                             ...baseProps
@@ -128,7 +128,7 @@ export default function Calendario() {
                             title: `${item.transact.description} - CONSULADO`,
                             start: item.dateCon,
                             end: item.dateCon,
-                            description: 'Cita en el consulado',
+                            description: 'Tienes una cita agendada en el consulado',
                             text: item.dateCon,
                             tipo: 'CONSULADO',
                             ...baseProps
@@ -541,12 +541,29 @@ export default function Calendario() {
                                 locale={esLocale}
                                 events={eventosFiltrados}
                                 eventClick={(info) => {
+                                    const { description, text } = info.event.extendedProps;
+                                    const fechaObj = new Date(text);
+
+                                    const diaSemana = fechaObj.toLocaleDateString('es-MX', { weekday: 'long' });
+                                    const fecha = fechaObj.toLocaleDateString('es-MX', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    });
+                                    const hora = fechaObj.toLocaleTimeString('es-MX', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    });
+
                                     Swal.fire({
                                         title: info.event.title,
-                                        text: `${info.event.extendedProps.description} el DÍA y HORA ${info.event.extendedProps.text}` || 'Sin descripción',
+                                        text: `${description} el ${diaSemana}, ${fecha} a las ${hora}`,
                                         icon: 'info'
                                     });
                                 }}
+
+
                                 headerToolbar={{
                                     left: 'prev,next today',
                                     center: 'title',
@@ -567,7 +584,7 @@ export default function Calendario() {
                                     const descripcion = eventos.find(e => e.backgroundColor === color)?.transactDesc;
                                     return (
                                         <li key={id} className="info-item">
-                                            <span 
+                                            <span
                                                 className="color-indicator"
                                                 style={{ backgroundColor: color }}
                                             ></span>
