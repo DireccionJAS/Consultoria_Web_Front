@@ -10,6 +10,9 @@
   border: none;
   overflow: hidden; /* Oculta scroll externo */
 }
+.previewButton{
+  background-color: #2fbad6;
+}
 
 .customDialog {
   max-width: 700px;
