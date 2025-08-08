@@ -714,7 +714,7 @@ export const envioCorreoActualizacion = async (email, nombreCliente, nombreTrami
 
     const body = {
       subject: "Actualización de Trámite",
-      message: `Hola <strong>${nombreCliente}</strong>, te notificamos que se ha hecho una actualización a tu tramite de: <strong>"${nombreTramite}"</strong>, de parte del equipo de Consultoría JAS.`,
+      message: `Hola <strong>${nombreCliente}</strong>, te notificamos que se ha hecho una actualización a tu trámite de: <strong>"${nombreTramite}"</strong>, de parte del equipo de Consultoría JAS.`,
     };
 
     const response = await axios.post(

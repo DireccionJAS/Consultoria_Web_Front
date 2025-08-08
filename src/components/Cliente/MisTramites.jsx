@@ -171,6 +171,8 @@ export default function MisTramites() {
       case 4: valor = "Terminado"; break;
       case 5: valor = "Cancelado"; break;
       case 6: valor = "Revisar"; break;
+      case 7: valor = "Aprovado"; break;
+      case 8: valor = "Rechazado"; break;
       default: valor = "Desconocido";
     }
 
@@ -184,7 +186,7 @@ export default function MisTramites() {
   // ✅ CORRECCIÓN: Usar handleOpenPaymentModal en lugar de setear variables separadas
   const handleLiquidar = (datos) => {
     const montoRestante = datos.paidAll - datos.paid;
-    
+
     Swal.fire({
       title: '¿Deseas liquidar este trámite?',
       text: `Monto restante: $${montoRestante}`,
@@ -200,7 +202,7 @@ export default function MisTramites() {
       }
     });
   };
-    <style jsx>{`
+  <style jsx>{`
                 .navbar-fixed {
                     position: fixed;
                     top: 0;
@@ -229,7 +231,7 @@ export default function MisTramites() {
             />
           </div>
         </div>
-        
+
         <div className={styles.filterSection}>
           <div className={styles.filterWrapper}>
             <span className={styles.filterIcon}>🏷️</span>
@@ -245,10 +247,12 @@ export default function MisTramites() {
               <option value="4">✅ Terminado</option>
               <option value="5">❌ Cancelado</option>
               <option value="6">🔍 Revisar</option>
+              <option value="5">✅ Aceptado</option>
+              <option value="6">❌ Rechazado</option>
             </Form.Select>
           </div>
         </div>
-        
+
         <div className={styles.statsSection}>
           <div className={styles.statsCard}>
             <span className={styles.statsNumber}>{filtrados.length}</span>
@@ -319,24 +323,24 @@ export default function MisTramites() {
                   </td>
                   <td className={styles.tdDate}>
                     <div className={styles.dateInfo}>
-                      {cliente.dateCas ? 
+                      {cliente.dateCas ?
                         new Date(cliente.dateCas).toLocaleDateString('es-ES', {
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric'
-                        }) : 
+                        }) :
                         <span className={styles.noDate}>No programada</span>
                       }
                     </div>
                   </td>
                   <td className={styles.tdDate}>
                     <div className={styles.dateInfo}>
-                      {cliente.dateCon ? 
+                      {cliente.dateCon ?
                         new Date(cliente.dateCon).toLocaleDateString('es-ES', {
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric'
-                        }) : 
+                        }) :
                         <span className={styles.noDate}>No programada</span>
                       }
                     </div>
@@ -347,9 +351,8 @@ export default function MisTramites() {
                     </div>
                   </td>
                   <td className={styles.tdAmount}>
-                    <div className={`${styles.amountBadge} ${
-                      (cliente.paidAll - cliente.paid) === 0 ? styles.paidComplete : styles.pendingAmount
-                    }`}>
+                    <div className={`${styles.amountBadge} ${(cliente.paidAll - cliente.paid) === 0 ? styles.paidComplete : styles.pendingAmount
+                      }`}>
                       {(cliente.paidAll) === 0 ? "$0" : `$${(cliente.paidAll - cliente.paid).toLocaleString('es-ES')}`}
                     </div>
                   </td>
@@ -370,20 +373,23 @@ export default function MisTramites() {
                     )}
                   </td>
                   <td className={styles.tdStatus}>
-                    <div className={`${styles.statusBadge} ${
-                      cliente.status === 1 ? styles.statusProcess :
-                      cliente.status === 2 ? styles.statusWaiting :
-                      cliente.status === 3 ? styles.statusPayment :
-                      cliente.status === 4 ? styles.statusComplete :
-                      cliente.status === 5 ? styles.statusCancelled :
-                      cliente.status === 6 ? styles.statusReview : styles.statusUnknown
-                    }`}>
+                    <div className={`${styles.statusBadge} ${cliente.status === 1 ? styles.statusProcess :
+                        cliente.status === 2 ? styles.statusWaiting :
+                          cliente.status === 3 ? styles.statusPayment :
+                            cliente.status === 4 ? styles.statusComplete :
+                              cliente.status === 5 ? styles.statusCancelled :
+                              cliente.status === 7 ? styles.statusComplete :
+                              cliente.status === 8 ? styles.statusPayment:
+                                cliente.status === 6 ? styles.statusReview : styles.statusUnknown
+                      }`}>
                       {cliente.status === 1 ? '⏳ En proceso' :
-                       cliente.status === 2 ? '⏸️ En espera' :
-                       cliente.status === 3 ? '💳 Falta de pago' :
-                       cliente.status === 4 ? '✅ Terminado' :
-                       cliente.status === 5 ? '❌ Cancelado' :
-                       cliente.status === 6 ? '🔍 Revisar' : '❓ Desconocido'}
+                        cliente.status === 2 ? '⏸️ En espera' :
+                          cliente.status === 3 ? '💳 Falta de pago' :
+                            cliente.status === 4 ? '✅ Terminado' :
+                              cliente.status === 5 ? '❌ Cancelado' :
+                                  cliente.status === 7 ? '✅ Aprovado' :
+                              cliente.status === 8 ? '❌ Rechazado' :
+                                cliente.status === 6 ? '🔍 Revisar' : '❓ Desconocido'}
                     </div>
                   </td>
                   <td className={styles.tdAction}>
@@ -412,7 +418,7 @@ export default function MisTramites() {
             Mostrando {datosPaginados.length} de {filtrados.length} trámites
           </span>
         </div>
-        
+
         <div className={styles.paginationControls}>
           <Button
             variant="outline-primary"
@@ -428,9 +434,8 @@ export default function MisTramites() {
               <Button
                 key={i}
                 variant={paginaActual === i + 1 ? "primary" : "outline-primary"}
-                className={`${styles.pageButton} ${
-                  paginaActual === i + 1 ? styles.pageButtonActive : ''
-                }`}
+                className={`${styles.pageButton} ${paginaActual === i + 1 ? styles.pageButtonActive : ''
+                  }`}
                 onClick={() => cambiarPagina(i + 1)}
               >
                 {i + 1}

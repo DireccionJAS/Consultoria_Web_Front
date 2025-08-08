@@ -125,6 +125,8 @@ export default function AdministradorTramites() {
       case 4: valor = "Terminado"; break;
       case 5: valor = "Cancelado"; break;
       case 6: valor = "Revisar"; break;
+      case 7: valor = "Aprovado"; break;
+      case 8: valor = "Rechazado"; break;
       default: valor = "Desconocido";
     }
 
@@ -256,6 +258,8 @@ export default function AdministradorTramites() {
                         <option value={4}>Terminado</option>
                         <option value={5}>Cancelado</option>
                         <option value={6}>Revisar</option>
+                        <option value={7}>Aprovado</option>
+                        <option value={8}>Rechazado</option>
                       </Form.Select>
                     </td>
                     <td>
