@@ -11,15 +11,13 @@ import { actualizar } from './../../api/api.js';
 
 const schema = yup.object().shape({
   email: yup.string().email('Correo no válido').required('Campo obligatorio'),
-  name: yup
+    name: yup
     .string()
     .required('Campo obligatorio')
-    .matches(/^[aA-zZ\s]+$/, 'Solo letras'),
+    .matches(/^[\p{L}\s]+$/u, 'Solo letras'),
   phone: yup
     .string()
     .required('Campo obligatorio')
-    .min(10, 'Tienen que ser 10 números')
-    .max(10, 'Tienen que ser 10 números'),
 });
 
 export default function RegistrarCliente({ show, onHide, onClienteRegistrado, cliente }) {
