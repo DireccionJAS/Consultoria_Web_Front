@@ -49,7 +49,7 @@ export default function RegistrarCliente({ show, onHide, onClienteRegistrado, cl
       await actualizar(cliente.idUser, data);
       Swal.fire({
         icon: 'success',
-        title: "Actualización exitosa",
+        title: 'Actualización exitosa',
         confirmButtonText: 'Aceptar',
       });
       reset();
