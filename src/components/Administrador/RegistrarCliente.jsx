@@ -13,15 +13,13 @@ import { Icon } from '@iconify/react';
 const schema = yup.object().shape({
   email: yup.string().required('Campo obligatorio').matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, 'El correo debe estar en minúsculas').email('Correo no válido'),
   name: yup
-    .string()
-    .required('Campo obligatorio')
-    .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, 'Solo letras'),
+  .string()
+  .required('Campo obligatorio')
+  .matches(/^[\p{L}\s]+$/u, 'Solo letras'),
   password: yup.string().required('Campo obligatorio'),
   phone: yup
     .string()
     .required('Campo obligatorio')
-    .min(10, 'Tienen que ser 10 números')
-    .max(10, 'Tienen que ser 10 números'),
 });
 
 export default function RegistrarCliente({ show, onHide, onClienteRegistrado }) {
