@@ -20,11 +20,6 @@ const schema = yup.object().shape({
     .typeError('Debe ser un número')
     .positive('Debe ser un número positivo')
     .required('Campo obligatorio'),
-  advance: yup
-    .number()
-    .typeError('Debe ser un número')
-    .oneOf([0, 1], 'Debe seleccionar una opción')
-    .required('Campo obligatorio'),
   paidAll: yup
     .number()
     .typeError('Debe ser un número')
@@ -154,7 +149,7 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
           </div>
 
           <div className="form-group">
-            <label>Pago inicial de:</label>
+            <label>Pago de adelanto:</label>
             <input
               type="number"
               step="0.01"
@@ -165,7 +160,7 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
           </div>
 
           <div className="form-group">
-            <label>Pago total:</label>
+            <label>Costo total del trámite:</label>
             <input
               type="number"
               step="0.01"
@@ -174,34 +169,10 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
             />
             <span className="error">{errors.paidAll?.message}</span>
           </div>
-
-          <div className="form-group">
-            <label>¿Hizo un adelanto?:</label>
-            <div className="checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={watch('advance') === 1}
-                  onChange={() => setValue('advance', 1)}
-                />
-                Sí
-              </label>
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={watch('advance') === 0}
-                  onChange={() => setValue('advance', 0)}
-                />
-                No
-              </label>
-            </div>
-            <span className="error">{errors.advance?.message}</span>
-          </div>
-
           <div className="form-group">
             <label>Trámite:</label>
             <select {...register('idTransact')} className={errors.idTransact ? 'input-error' : ''}>
-              <option value="">Selecciona un trámite</option>
+              <option value="">Selecciona un servicio</option>
               {transacciones.map((transact) => (
                 <option key={transact.idTransact} value={transact.idTransact}>
                   {transact.description}
