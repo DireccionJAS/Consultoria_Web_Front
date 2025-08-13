@@ -90,15 +90,25 @@ export default function LandingPage() {
     setSelectedServiceForPayment(null);
     setPaymentModalOpen(false);
   };
+  
 
-  const singint = (service) => {
-    // Guardar el servicio seleccionado en sessionStorage para pasarlo después del login
-    if (service) {
-      sessionStorage.setItem('selectedService', JSON.stringify(service));
-    }
-    window.location.href = '/Login';
-  };
-
+ const singint = (service) => {
+  if (service) {
+    const minimalService = {
+      idTransact: service.idTransact,
+      name: service.name,
+      cost: service.cost,
+      cashAdvance: service.cashAdvance,
+      isDateService: service.isDateService,
+      cas: service.cas,
+      con: service.con,
+      simulation: service.simulation,
+      status: service.status
+    };
+    sessionStorage.setItem('selectedService', JSON.stringify(minimalService));
+  }
+  window.location.href = '/Login';
+};
   const handleCloseDetailsModal = () => {
     setSelectedService(null);
     setDetailsModalOpen(false);
