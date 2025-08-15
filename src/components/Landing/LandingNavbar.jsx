@@ -4,12 +4,12 @@ import { Home, Briefcase, Users, MessageSquare, HelpCircle, Mail, Phone, LogInIc
 import Logo from "./../../img/logo.png";
 import styles from '../../styles/landing/LandingNavbar.module.css';
 
-export default function LandingNavbar({ 
-  isScrolled, 
-  activeSection, 
-  navSections, 
-  handleNavClick, 
-  showNavbar 
+export default function LandingNavbar({
+  isScrolled,
+  activeSection,
+  navSections,
+  handleNavClick,
+  showNavbar
 }) {
   return (
     <Navbar
@@ -21,10 +21,10 @@ export default function LandingNavbar({
       <Container fluid className="px-3 px-lg-4">
         <Navbar.Brand href="#" className={styles.navbarBrand}>
           <div className={styles.logoContainer}>
-            <img 
-              src={Logo} 
-              className={styles.navbarLogo} 
-              alt="Consultoría JAS Logo" 
+            <img
+              src={Logo}
+              className={styles.navbarLogo}
+              alt="Consultoría JAS Logo"
             />
           </div>
           <div className="d-none d-sm-block">
@@ -52,12 +52,32 @@ export default function LandingNavbar({
             <span className="d-inline d-xl-none">Login</span>
           </Button>
         </div>
+        <div className="d-flex d-lg-none ms-auto align-items-center gap-2">
+          <Button
+            className={styles.ctaButton}
+            style={{ height: "40px", padding: "0 16px", display: "flex", alignItems: "center" }}
+            onClick={() => window.location.href = 'tel:+527779835782'}
+          >
+         
+            Cotizar
+          </Button>
 
-        <Navbar.Toggle 
-          aria-controls="basic-navbar-nav" 
-          className={`${styles.navbarToggle} order-lg-2`}
-        />
+          <Button
+            className={styles.sessionButton}
+            style={{ height: "40px", padding: "0 16px", display: "flex", alignItems: "center" }}
+            onClick={() => window.location.href = '/Login'}
+          >
+        
+            Iniciar sesión
+          </Button>
 
+
+
+          <Navbar.Toggle
+            aria-controls="basic-navbar-nav"
+            className={`${styles.navbarToggle} order-lg-2`}
+          />
+        </div>
         <Navbar.Collapse id="basic-navbar-nav" className="order-lg-1">
           <Nav className="me-auto">
             {navSections.map((section) => {
@@ -81,20 +101,7 @@ export default function LandingNavbar({
           {/* Botones de acción para mobile */}
           <div className="d-lg-none mt-3">
             <div className="d-flex flex-column gap-2">
-              <Button
-                className={`${styles.ctaButton} w-100`}
-                onClick={() => window.location.href = 'tel:+527779835782'}
-              >
-                <Phone size={16} />
-                Solicitar Cotización
-              </Button>
-              <Button
-                className={`${styles.sessionButton} w-100`}
-                onClick={() => window.location.href = '/Login'}
-              >
-                <LogInIcon size={16} />
-                Iniciar sesión
-              </Button>
+
             </div>
           </div>
         </Navbar.Collapse>
