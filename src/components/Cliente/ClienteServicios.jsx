@@ -25,7 +25,7 @@ export default function ClienteServicios() {
   const [services, setServices] = useState([]);
   const [userEmail, setUserEmail] = useState("");
   const [userId, setUserId] = useState("");
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const [preselectedServiceId, setPreselectedServiceId] = useState(null);
 
   // Estados para modal de detalles
@@ -69,7 +69,7 @@ export default function ClienteServicios() {
   }, [navigate]);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 900);
+    const handleResize = () => setIsMobile(window.innerWidth <= 600);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -182,16 +182,16 @@ const fetchServices = async () => {
   );
   const sliderSettings = {
     dots: false,
-    infinite: services.length > 3,
+    infinite: false,
     speed: 300,
-    slidesToShow: 3,
+    slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
-      { breakpoint: 1200, settings: { slidesToShow: 3, infinite: services.length > 3 } },
+      { breakpoint: 1400, settings: { slidesToShow: 2, infinite: services.length > 2 } },
       { breakpoint: 900, settings: { slidesToShow: 1, infinite: services.length > 1, centerMode: true, centerPadding: '0px' } },
       { breakpoint: 600, settings: { slidesToShow: 1, infinite: services.length > 1, centerMode: true, centerPadding: '0px', arrows: false, dots: true } }
     ]
@@ -293,10 +293,10 @@ const fetchServices = async () => {
             ))}
           </div>
         ) : (
-          <div className={styles.desktopSlider}>
-            <Slider {...sliderSettings}>
+          <div className={styles.desktopSlider} style={{ width: '100%' }}>
+            <Slider {...sliderSettings} variableWidth={false}>
               {services.map((service, index) => (
-                <div key={index} className={styles.sliderItem}>
+                <div key={index} className={styles.sliderItem} style={{ width: '100%' }}>
                   <ServiceCard
                     key={index}
                     service={service}

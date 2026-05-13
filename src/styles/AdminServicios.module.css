@@ -24,19 +24,12 @@
   align-items: center;
 }
 
-.desktopSlider {
+.servicesGrid {
   width: 100%;
-  padding: 0 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
   box-sizing: border-box;
-}
-
-.sliderItem {
-  padding: 15px;
-  box-sizing: border-box;
-}
-
-.mobileContainer {
-  padding: 0 8px;
 }
 
 .title {
@@ -121,41 +114,6 @@
 
 .cardButton:hover {
   background-color: #0056b3;
-}
-
-/* Flechas personalizadas de Iconify */
-.slickArrow {
-  background: none !important;
-  border: none !important;
-  color: black !important;
-  z-index: 1000;
-}
-
-/* Estilos para las flechas del carrusel */
-.slickArrowPrev, .slickArrowNext {
-  position: absolute;
-  z-index: 1000;
-  cursor: pointer;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  background: none !important;
-  border: none !important;
-  color: black !important;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.slickArrowPrev {
-  left: -40px;
-}
-
-.slickArrowNext {
-  right: -40px;
-}
-
-.slickPrev:before, .slickNext:before {
-  content: none !important;
 }
 
 /* Apartado de admin */
@@ -609,28 +567,20 @@
     padding: 0 20px;
     width: 100%;
   }
-  
+
   .modalBodyContent {
     flex-direction: row;
   }
-  
+
   .modalImage {
     max-width: 40%;
     max-height: 400px;
   }
-  
+
   .serviceCard {
     max-width: 280px;
   }
-  
-  .slickArrowPrev {
-    left: -30px;
-  }
 
-  .slickArrowNext {
-    right: -30px;
-  }
-  
   .stepItem {
     padding: 20px 20px 20px 60px;
   }
@@ -659,19 +609,11 @@
     padding: 0 30px;
     width: 100%;
   }
-  
+
   .serviceCard {
     max-width: 300px;
   }
-  
-  .slickArrowPrev {
-    left: -40px;
-  }
 
-  .slickArrowNext {
-    right: -40px;
-  }
-  
   .modalSteps :global(.modal-content) {
     margin: 1.75rem auto;
   }
@@ -691,28 +633,34 @@
   }
 }
 
-/* Mobile específico */
+/* Tablet: 2 columnas */
+@media (max-width: 1023px) {
+  .servicesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile específico: 1 columna */
 @media (max-width: 767px) {
+  .servicesGrid {
+    grid-template-columns: 1fr;
+  }
+
   .container {
     margin-top: 60px;
     padding: 0 5px;
     width: 100%;
   }
-  
+
   .serviceCard {
     min-height: 400px;
     padding: 12px;
   }
-  
+
   .serviceCardImage {
     height: 120px;
   }
-  
-  .slickArrowPrev,
-  .slickArrowNext {
-    display: none !important;
-  }
-  
+
   .modalBody {
     padding: 10px;
   }

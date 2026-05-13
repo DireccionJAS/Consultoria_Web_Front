@@ -4,22 +4,17 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { getAllProcess, getStepById } from './../../api/api.js';
 import Navbar from '../NavbarAdmin.jsx';
-import Slider from 'react-slick';
-import { Icon } from '@iconify/react';
 import ServicePreviewModal from './ServicePreviewModal.jsx';
 import StepsModal from './StepsModal.jsx';
 import AdminServiceCard from './AdminServiceCard.jsx';
 import modalUtils from '../../utils/modalUtils.js';
 import ModalErrorBoundary from '../common/ModalErrorBoundary.jsx';
 
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import styles from './../../styles/AdminServicios.module.css';
 
 export default function AdministradorServicios() {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
 
   // Service Preview Modal states
   const [previewModalIsOpen, setPreviewModalIsOpen] = useState(false);
@@ -78,12 +73,6 @@ export default function AdministradorServicios() {
       document.body.className = '';
     };
   }, [navigate]);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 900);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const fetchServices = async () => {
     try {
@@ -161,36 +150,6 @@ export default function AdministradorServicios() {
     setSteps([]);
   };
 
-  // Custom arrows for slider
-  const PrevArrow = ({ onClick }) => (
-    <div className={styles.slickArrowPrev} onClick={onClick}>
-      <Icon icon="mdi:arrow-left-circle" width="30" height="30" color="black" />
-    </div>
-  );
-
-  const NextArrow = ({ onClick }) => (
-    <div className={styles.slickArrowNext} onClick={onClick}>
-      <Icon icon="mdi:arrow-right-circle" width="30" height="30" color="black" />
-    </div>
-  );
-
-  const sliderSettings = {
-    dots: false,
-    infinite: services.length > 3,
-    speed: 300,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    responsive: [
-      { breakpoint: 1200, settings: { slidesToShow: 3, infinite: services.length > 3 } },
-      { breakpoint: 900, settings: { slidesToShow: 1, infinite: services.length > 1, centerMode: true, centerPadding: '0px' } },
-      { breakpoint: 600, settings: { slidesToShow: 1, infinite: services.length > 1, centerMode: true, centerPadding: '0px', arrows: false, dots: true } }
-    ]
-  };
-
   const handleEditClick = (service) => {
     navigate(`/ActualizarServicio`, { state: { service } });
   };
@@ -206,39 +165,19 @@ export default function AdministradorServicios() {
 
       <div className={styles.servicesSlider}>
         <h1 className={styles.title}>Servicios disponibles</h1>
-        {isMobile ? (
-          <div className={styles.mobileContainer}>
-            {services.map((service, index) => (
-              <AdminServiceCard
-                key={index}
-                service={service}
-                onEdit={handleEditClick}
-                onViewSteps={openStepsModal}
-                onPreview={openPreviewModal}
-                formatPrice={formatPrice}
-                truncateDescription={truncateDescription}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className={styles.desktopSlider}>
-            <Slider {...sliderSettings}>
-              {services.map((service, index) => (
-                <div key={index} className={styles.sliderItem}>
-                  <AdminServiceCard
-                    key={index}
-                    service={service}
-                    onEdit={handleEditClick}
-                    onViewSteps={openStepsModal}
-                    onPreview={openPreviewModal}
-                    formatPrice={formatPrice}
-                    truncateDescription={truncateDescription}
-                  />
-                </div>
-              ))}
-            </Slider>
-          </div>
-        )}
+        <div className={styles.servicesGrid}>
+          {services.map((service, index) => (
+            <AdminServiceCard
+              key={index}
+              service={service}
+              onEdit={handleEditClick}
+              onViewSteps={openStepsModal}
+              onPreview={openPreviewModal}
+              formatPrice={formatPrice}
+              truncateDescription={truncateDescription}
+            />
+          ))}
+        </div>
       </div>
 
       <div>

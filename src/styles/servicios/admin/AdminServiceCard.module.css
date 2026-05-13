@@ -2,7 +2,6 @@
 
 .serviceCard {
   width: 100%;
-  max-width: 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -107,12 +106,9 @@
 
 /* Tablets */
 @media (min-width: 768px) {
-  .serviceCard {
-    max-width: 280px;
-  }
-  
   .buttonContainer {
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 8px;
   }
   
@@ -126,12 +122,6 @@
   }
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
-  .serviceCard {
-    max-width: 300px;
-  }
-}
 
 /* Mobile específico */
 @media (max-width: 767px) {

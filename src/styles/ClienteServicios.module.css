@@ -24,11 +24,40 @@
   width: 100%;
   padding: 0 40px;
   box-sizing: border-box;
+  position: relative;
 }
 
 .sliderItem {
   padding: 15px;
   box-sizing: border-box;
+  display: flex !important;
+  justify-content: center;
+}
+
+/* Fix react-slick horizontal layout */
+.desktopSlider :global(.slick-slider),
+.desktopSlider :global(.slick-list),
+.desktopSlider :global(.slick-track) {
+  width: 100%;
+}
+
+.desktopSlider :global(.slick-track) {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch;
+}
+
+.desktopSlider :global(.slick-slide) {
+  float: none !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column;
+}
+
+.desktopSlider :global(.slick-slide > div) {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .title {
