@@ -11,6 +11,7 @@
 }
 .aboutImgwrap {
   position: relative;
+  width: 100%;
 }
 .aboutImgMain {
   aspect-ratio: 4 / 5;

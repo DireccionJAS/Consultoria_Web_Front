@@ -44,6 +44,11 @@ function formatCost(cost) {
   return new Intl.NumberFormat('es-MX').format(cost);
 }
 
+function cleanDescription(text) {
+  if (!text) return text;
+  return text.replace(/•/g, '').replace(/\s{2,}/g, ' ').trim();
+}
+
 export default function ServicesSection({ services, handleOpenDetailsModal, handleOpenStepsModal, singint }) {
   const [headerRef, headerIn] = useReveal();
   const [bentoRef, bentoIn] = useReveal();
@@ -83,7 +88,7 @@ export default function ServicesSection({ services, handleOpenDetailsModal, hand
                 </div>
                 <div>
                   <h3>{service.name}</h3>
-                  <p className={styles.bentoDesc}>{service.description}</p>
+                  <p className={styles.bentoDesc}>{cleanDescription(service.description)}</p>
                 </div>
                 <div className={styles.bentoFoot}>
                   <div>
@@ -96,7 +101,10 @@ export default function ServicesSection({ services, handleOpenDetailsModal, hand
                       </a>
                     </div>
                     {price && (
-                      <div className={styles.bentoPrice}>${price}<small>MXN</small></div>
+                      <div className={styles.bentoPrice}>
+                        <span className={styles.bentoPriceLabel}>Desde</span>
+                        <div className={styles.bentoPriceAmount}>${price}<small>MXN</small></div>
+                      </div>
                     )}
                   </div>
                   <a className={styles.bentoCta} onClick={() => singint(service)}>

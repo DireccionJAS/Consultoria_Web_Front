@@ -17,8 +17,12 @@ const DESTINATIONS = [
   { img: destTokyo, badge: "Pasaporte", name: "Tokio", country: "Japón 🇯🇵" },
 ];
 
-const PER_VIEW = 3;
-const MAX_IDX = DESTINATIONS.length - PER_VIEW;
+function getPerView() {
+  if (typeof window === 'undefined') return 3;
+  if (window.innerWidth <= 575.98) return 1;
+  if (window.innerWidth <= 991.98) return 2;
+  return 3;
+}
 
 function ArrowIcon() {
   return (
@@ -57,12 +61,18 @@ export default function HeroSection() {
   const trackRef = useRef(null);
   const [idx, setIdx] = useState(0);
   const [step, setStep] = useState(0);
+  const [maxIdx, setMaxIdx] = useState(DESTINATIONS.length - getPerView());
+  const maxIdxRef = useRef(maxIdx);
   const timerRef = useRef(null);
 
   const measure = () => {
     const track = trackRef.current;
     if (!track || !track.firstElementChild) return;
     setStep(track.firstElementChild.offsetWidth + 20);
+    const nextMaxIdx = DESTINATIONS.length - getPerView();
+    maxIdxRef.current = nextMaxIdx;
+    setMaxIdx(nextMaxIdx);
+    setIdx((i) => Math.min(i, nextMaxIdx));
   };
 
   useEffect(() => {
@@ -73,7 +83,7 @@ export default function HeroSection() {
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {
-      setIdx((i) => (i >= MAX_IDX ? 0 : i + 1));
+      setIdx((i) => (i >= maxIdxRef.current ? 0 : i + 1));
     }, 4000);
   };
 
@@ -83,7 +93,7 @@ export default function HeroSection() {
   }, []);
 
   const move = (dir) => {
-    setIdx((i) => Math.min(MAX_IDX, Math.max(0, i + dir)));
+    setIdx((i) => Math.min(maxIdxRef.current, Math.max(0, i + dir)));
   };
 
   return (
@@ -107,8 +117,8 @@ export default function HeroSection() {
 
         <div ref={headlineRef} className={`${styles.heroHeadline} jas-reveal ${headlineIn ? 'jas-in' : ''}`}>
           <h1 className={`mega display ${styles.headlineTitle}`}>
-            Tu próximo <em style={{ color: 'var(--c4)' }}>destino</em><br />
-            empieza <em>aquí.</em>
+            Tu próximo <em>destino</em><br />
+            empieza <em className={styles.gradientWord}>aquí.</em>
           </h1>
           <div className={styles.heroSub}>Trámites migratorios con confianza y excelencia.</div>
           <p className={styles.heroDesc}>
@@ -169,7 +179,7 @@ export default function HeroSection() {
           </div>
 
           <div className={styles.destinosDots}>
-            {Array.from({ length: MAX_IDX + 1 }).map((_, i) => (
+            {Array.from({ length: maxIdx + 1 }).map((_, i) => (
               <div
                 key={i}
                 className={`${styles.ddot} ${i === idx ? styles.active : ''}`}
@@ -180,8 +190,12 @@ export default function HeroSection() {
 
           <div className={styles.destinosCta}>
             <a href="#servicios" className="jas-btn jas-btn-light">
-              Inicia tu trámite hoy
+              Ver servicios
               <div className="jas-arrow-rev"><ArrowIcon /></div>
+            </a>
+            <a href="tel:7779835782" className="jas-btn jas-btn-outline-light">
+              <PhoneIcon />
+              777 983 5782
             </a>
           </div>
         </div>

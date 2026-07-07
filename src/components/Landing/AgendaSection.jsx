@@ -13,6 +13,7 @@ function ArrowIcon() {
 export default function AgendaSection() {
   const [cardRef, cardIn] = useReveal();
   const [type, setType] = useState('zoom');
+  const [hora, setHora] = useState('');
 
   return (
     <section className={styles.agenda} id="agenda">
@@ -57,10 +58,7 @@ export default function AgendaSection() {
               <div className={styles.agField}>
                 <label className={styles.agLabel}>Fecha <span className={styles.req}>*</span></label>
                 <div className={styles.agInpWrap}>
-                  <span className={styles.agInpIcon}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
-                  </span>
-                  <input className={styles.agInp} type="date" />
+                  <input className={`${styles.agInp} ${styles.agInpNoLeadIcon}`} type="date" />
                 </div>
               </div>
               <div className={styles.agField}>
@@ -69,7 +67,12 @@ export default function AgendaSection() {
                   <span className={styles.agInpIcon}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                   </span>
-                  <input className={styles.agInp} type="time" />
+                  <input
+                    className={`${styles.agInp} ${!hora ? styles.agInpTimeEmpty : ''}`}
+                    type="time"
+                    value={hora}
+                    onChange={(e) => setHora(e.target.value)}
+                  />
                 </div>
               </div>
             </div>

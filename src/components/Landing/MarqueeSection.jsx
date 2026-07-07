@@ -2,14 +2,14 @@ import React from "react";
 import styles from '../../styles/landing/MarqueeSection.module.css';
 
 const ITEMS = [
-  { text: "Estados Unidos" },
+  { text: "Estados Unidos", highlight: true },
   { text: "Canadá" },
-  { text: "India" },
-  { text: "China", em: true },
-  { text: "Egipto" },
+  { text: "India", highlight: true },
+  { text: "China" },
+  { text: "Egipto", highlight: true },
   { text: "Australia" },
-  { text: "eTA Canadá" },
-  { text: "ESTA", em: true, suffix: " USA" },
+  { text: "eTA Canadá", highlight: true },
+  { text: "ESTA", suffix: " USA" },
 ];
 
 export default function MarqueeSection() {
@@ -19,7 +19,7 @@ export default function MarqueeSection() {
       <div className={styles.marqueeTrack}>
         {doubled.map((item, i) => (
           <span key={i} className={styles.marqueeItem}>
-            {item.em ? <em>{item.text}</em> : item.text}
+            {item.highlight ? <strong className={styles.marqueeHighlight}>{item.text}</strong> : item.text}
             {item.suffix}
           </span>
         ))}

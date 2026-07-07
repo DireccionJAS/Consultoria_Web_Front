@@ -30,7 +30,7 @@
   color: var(--accent);
   font-size: 20px;
 }
-.marqueeItem em { color: var(--c4); font-style: italic; }
+.marqueeHighlight { color: var(--accent); font-weight: 700; }
 
 @media (max-width: 575.98px) {
   .marqueeItem { font-size: 22px; gap: 32px; }
