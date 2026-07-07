@@ -1,0 +1,38 @@
+.marquee {
+  background: var(--c1);
+  color: var(--c5);
+  padding: 28px 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(228, 236, 240, 0.10);
+  border-bottom: 1px solid rgba(228, 236, 240, 0.10);
+  position: relative;
+}
+.marqueeTrack {
+  display: flex;
+  gap: 56px;
+  animation: scroll 35s linear infinite;
+  white-space: nowrap;
+}
+@keyframes scroll {
+  to { transform: translateX(-50%); }
+}
+.marqueeItem {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 56px;
+}
+.marqueeItem::after {
+  content: "✦";
+  color: var(--accent);
+  font-size: 20px;
+}
+.marqueeItem em { color: var(--c4); font-style: italic; }
+
+@media (max-width: 575.98px) {
+  .marqueeItem { font-size: 22px; gap: 32px; }
+  .marqueeTrack { gap: 32px; }
+}

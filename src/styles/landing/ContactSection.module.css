@@ -1,0 +1,334 @@
+.contact {
+  padding: 140px 0;
+  background: var(--c5);
+  position: relative;
+}
+.contactHeader {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 80px;
+}
+.contactHeader :global(.jas-display) {
+  font-size: clamp(48px, 6.5vw, 96px);
+  margin: 24px 0;
+}
+.contactHeader p {
+  color: var(--muted);
+  font-size: 16px;
+}
+.contactGrid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.location {
+  background: var(--white);
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  transition: all 0.4s;
+}
+.location:hover { transform: translateY(-6px); border-color: var(--c3); }
+.locationMap {
+  aspect-ratio: 16 / 8;
+  background: linear-gradient(135deg, var(--c2), var(--c1));
+  position: relative;
+  overflow: hidden;
+}
+.locationMap::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(228, 236, 240, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(228, 236, 240, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.mapRoads { position: absolute; inset: 0; }
+.mapRoads svg { width: 100%; height: 100%; }
+.mapPinMod {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 60px; height: 60px;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.mapPinMod::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: ping 2.5s infinite;
+}
+.mapPinMod::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--c5);
+  border: 4px solid var(--accent);
+}
+@keyframes ping {
+  0% { transform: scale(0.3); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.locationBody { padding: 32px; }
+.locationHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 8px;
+}
+.locationCity {
+  font-family: var(--display);
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.openBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: #DFF5E5;
+  color: #1F7B3D;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 999px;
+  margin-top: 8px;
+}
+.openBadge .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #28A052;
+}
+.locationAddress {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+.locationContact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.ccc { display: flex; align-items: center; gap: 12px; }
+.cccIcon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: var(--c4);
+  color: var(--c1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.lab {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.val {
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+
+.hoursStrip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) auto;
+  gap: 32px;
+  align-items: center;
+  padding: 28px 32px;
+  background: var(--c1);
+  color: var(--c5);
+  border-radius: 24px;
+}
+.hLab {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.hVal {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Social spotlight */
+.socialSpotlight {
+  background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 100%);
+  border-radius: 28px;
+  padding: 32px;
+  color: var(--c5);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.socialSpotlight::before {
+  content: "";
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(111, 174, 219, 0.25) 0%, transparent 70%);
+}
+.socialSpotlightHead {
+  position: relative;
+  margin-bottom: 24px;
+}
+.socialSpotlightTitle {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  margin: 12px 0 8px;
+}
+.socialSpotlightTitle em {
+  font-style: italic;
+  color: var(--accent);
+}
+.socialSpotlightDesc {
+  font-size: 13px;
+  color: rgba(228, 236, 240, 0.65);
+  line-height: 1.55;
+  max-width: 340px;
+}
+.socialSpotlightGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  flex: 1;
+  position: relative;
+}
+.socialTile {
+  position: relative;
+  padding: 16px 14px 14px;
+  background: rgba(228, 236, 240, 0.06);
+  border: 1px solid rgba(228, 236, 240, 0.10);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--c5);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  isolation: isolate;
+}
+.socialTile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand-bg, var(--accent));
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.35s ease;
+}
+.socialTile:hover {
+  transform: translateY(-4px);
+  border-color: transparent;
+  color: var(--brand-fg, var(--c1));
+}
+.socialTile:hover::before { opacity: 1; }
+.socialTile > svg:first-child {
+  width: 22px; height: 22px;
+  color: var(--brand-color, var(--accent));
+  transition: color 0.35s;
+}
+.socialTile:hover > svg:first-child { color: var(--brand-fg, var(--c1)); }
+.socialTileInfo { display: flex; flex-direction: column; gap: 2px; }
+.socialTileName {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.015em;
+}
+.socialTileHandle {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(228, 236, 240, 0.55);
+  letter-spacing: 0.02em;
+  transition: color 0.35s;
+}
+.socialTile:hover .socialTileHandle { color: rgba(0, 0, 42, 0.65); }
+.socialTileStat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(228, 236, 240, 0.12);
+  transition: border-color 0.35s;
+}
+.socialTile:hover .socialTileStat { border-top-color: rgba(0, 0, 42, 0.15); }
+.socialTileNum {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+.socialTileLab {
+  font-size: 10px;
+  color: rgba(228, 236, 240, 0.55);
+  letter-spacing: 0.03em;
+  transition: color 0.35s;
+}
+.socialTile:hover .socialTileLab { color: rgba(0, 0, 42, 0.6); }
+.socialTileArrow {
+  position: absolute;
+  top: 16px; right: 14px;
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+.socialTile:hover .socialTileArrow {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.socialTile.fb { --brand-color: #1877F2; --brand-bg: #1877F2; --brand-fg: #fff; }
+.socialTile.ig { --brand-color: #DD2A7B; --brand-bg: linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%); --brand-fg: #fff; }
+.socialTile.tk { --brand-color: #25F4EE; --brand-bg: linear-gradient(135deg, #25F4EE 0%, #000 50%, #FE2C55 100%); --brand-fg: #fff; }
+.socialTile.wa { --brand-color: #25D366; --brand-bg: #25D366; --brand-fg: #fff; }
+.socialTile.fb:hover .socialTileHandle,
+.socialTile.ig:hover .socialTileHandle,
+.socialTile.tk:hover .socialTileHandle,
+.socialTile.wa:hover .socialTileHandle { color: rgba(255,255,255,0.85); }
+.socialTile.fb:hover .socialTileLab,
+.socialTile.ig:hover .socialTileLab,
+.socialTile.tk:hover .socialTileLab,
+.socialTile.wa:hover .socialTileLab { color: rgba(255,255,255,0.8); }
+.socialTile.fb:hover .socialTileStat,
+.socialTile.ig:hover .socialTileStat,
+.socialTile.tk:hover .socialTileStat,
+.socialTile.wa:hover .socialTileStat { border-top-color: rgba(255,255,255,0.25); }
+
+@media (max-width: 991.98px) {
+  .contact { padding: 90px 0; }
+  .contactHeader { margin-bottom: 48px; }
+  .contactGrid { grid-template-columns: 1fr; }
+  .hoursStrip {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 20px;
+  }
+  .hoursStrip :global(.jas-btn) { grid-column: span 2; }
+}
+
+@media (max-width: 575.98px) {
+  .locationContact { grid-template-columns: 1fr; }
+  .socialSpotlightGrid { grid-template-columns: 1fr; }
+  .hoursStrip { grid-template-columns: 1fr; }
+  .hoursStrip :global(.jas-btn) { grid-column: span 1; }
+  .locationCity { font-size: 28px; }
+  .locationHead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .locationHead :global(.jas-btn) { width: 100%; justify-content: center; }
+}

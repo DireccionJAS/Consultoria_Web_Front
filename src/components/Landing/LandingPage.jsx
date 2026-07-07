@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Home, Briefcase, Users, MessageSquare, HelpCircle, Mail } from "lucide-react";
 import { getAllProcess, getStepById } from './../../api/api.js';
 import ServiceDetailsModal from './../Cliente/Modals/ServiceDetailsModal.jsx';
 import StepsModal from './../Cliente/Modals/StepsModal.jsx';
@@ -11,24 +10,27 @@ import 'leaflet/dist/leaflet.css';
 // Importar componentes separados
 import LandingNavbar from './LandingNavbar.jsx';
 import HeroSection from './HeroSection.jsx';
+import MarqueeSection from './MarqueeSection.jsx';
 import ServicesSection from './ServicesSection.jsx';
 import AboutSection from './AboutSection.jsx';
+import StatsSection from './StatsSection.jsx';
+import AgendaSection from './AgendaSection.jsx';
 import TestimonialsSection from './TestimonialsSection.jsx';
 import FAQSection from './FAQSection.jsx';
+import ContactSection from './ContactSection.jsx';
+import PracticasSection from './PracticasSection.jsx';
 import FooterSection from './FooterSection.jsx';
 
 export default function LandingPage() {
   const [services, setServices] = useState([]);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('inicio');
+  const [activeSection, setActiveSection] = useState('hero');
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [stepsModalOpen, setStepsModalOpen] = useState(false);
   const [steps, setSteps] = useState([]);
   const [stepsLoading, setStepsLoading] = useState(false);
-  const [showNavbar, setShowNavbar] = useState(true);
-  const [faqActiveIndex, setFaqActiveIndex] = useState(null);
+  const [faqActiveIndex, setFaqActiveIndex] = useState(0);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedServiceForPayment, setSelectedServiceForPayment] = useState(null);
 
@@ -43,7 +45,7 @@ export default function LandingPage() {
   const allServices = response.response.Transacts;
       const activeServices = allServices.filter(service => service.status === true);
       setServices(activeServices);
-      
+
       } else {
         console.error("Unexpected API response format:", response);
         setServices([]);
@@ -90,7 +92,7 @@ export default function LandingPage() {
     setSelectedServiceForPayment(null);
     setPaymentModalOpen(false);
   };
-  
+
 
  const singint = (service) => {
   if (service) {
@@ -148,22 +150,13 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const navSections = [
-    { id: 'inicio', label: 'Inicio', icon: Home, href: '/#' },
-    { id: 'servicios', label: 'Servicios', icon: Briefcase, href: '#servicios' },
-    { id: 'nosotros', label: 'Nosotros', icon: Users, href: '#nosotros' },
-    { id: 'testimonios', label: 'Testimonios', icon: MessageSquare, href: '#testimonios' },
-    { id: 'faq', label: 'FAQ', icon: HelpCircle, href: '#faq' },
-    { id: 'contacto', label: 'Contacto', icon: Mail, href: '#contacto' }
+    { id: 'hero', label: 'Inicio', href: '#hero' },
+    { id: 'servicios', label: 'Servicios', href: '#servicios' },
+    { id: 'nosotros', label: 'Nosotros', href: '#nosotros' },
+    { id: 'testimonios', label: 'Testimonios', href: '#testimonios' },
+    { id: 'faq', label: 'Preguntas', href: '#faq' },
+    { id: 'contacto', label: 'Contacto', href: '#contacto' }
   ];
 
   const handleNavClick = (sectionId) => {
@@ -171,17 +164,17 @@ export default function LandingPage() {
   };
 
   return (
-  <div style={{ display: 'flex', flexDirection: 'column', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, marginTop: '25px' }}>
+  <div>
     <LandingNavbar
-      isScrolled={isScrolled}
       activeSection={activeSection}
       navSections={navSections}
       handleNavClick={handleNavClick}
-      showNavbar={showNavbar}
     />
 
-    <main style={{ flex: 1 }}>
+    <main>
       <HeroSection />
+
+      <MarqueeSection />
 
       <ServicesSection
         services={services}
@@ -192,12 +185,20 @@ export default function LandingPage() {
 
       <AboutSection />
 
+      <StatsSection />
+
+      <AgendaSection />
+
       <TestimonialsSection />
 
       <FAQSection
         faqActiveIndex={faqActiveIndex}
         handleFaqToggle={handleFaqToggle}
       />
+
+      <ContactSection />
+
+      <PracticasSection />
 
     <FooterSection />
 

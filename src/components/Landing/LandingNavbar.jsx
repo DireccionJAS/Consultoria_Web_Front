@@ -1,111 +1,99 @@
-import React from "react";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { Home, Briefcase, Users, MessageSquare, HelpCircle, Mail, Phone, LogInIcon } from "lucide-react";
-import Logo from "./../../img/logo.png";
+import React, { useState } from "react";
+import { Menu, X } from "lucide-react";
+import Logo from "../../img/landing/logo.png";
 import styles from '../../styles/landing/LandingNavbar.module.css';
 
-export default function LandingNavbar({
-  isScrolled,
-  activeSection,
-  navSections,
-  handleNavClick,
-  showNavbar
-}) {
+function ArrowIcon() {
   return (
-    <Navbar
-      expand="lg"
-      fixed="top"
-      className={`${styles.modernNavbar} ${isScrolled ? styles.scrolled : ''}`}
-      style={{ top: showNavbar ? '0' : '-120px' }}
-    >
-      <Container fluid className="px-3 px-lg-4">
-        <Navbar.Brand href="#" className={styles.navbarBrand}>
-          <div className={styles.logoContainer}>
-            <img
-              src={Logo}
-              className={styles.navbarLogo}
-              alt="Consultoría JAS Logo"
-            />
-          </div>
-          <div className="d-none d-sm-block">
-            <h1 className={styles.navbarTitle}>Consultoría JAS</h1>
-            <p className={styles.navbarSubtitle}>JOHNRIC</p>
-          </div>
-        </Navbar.Brand>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M7 17L17 7M7 7h10v10" />
+    </svg>
+  );
+}
 
-        {/* Botones de acción para desktop */}
-        <div className="d-none d-lg-flex align-items-center ms-auto order-lg-3">
-          <Button
-            className={`${styles.ctaButton} me-3`}
-            onClick={() => window.location.href = 'tel:+527779835782'}
+function PhoneIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
+
+export default function LandingNavbar({ activeSection, navSections, handleNavClick }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLinkClick = (sectionId) => {
+    handleNavClick(sectionId);
+    setMenuOpen(false);
+  };
+
+  return (
+    <nav className={`${styles.nav} ${menuOpen ? styles.menuOpen : ''}`} id="nav">
+      <a href="#hero" className={styles.navLogo} onClick={() => handleLinkClick('hero')}>
+        <img src={Logo} alt="JAS" />
+        <span>Consultoría <em>JAS</em></span>
+      </a>
+
+      <div className={styles.navLinks}>
+        {navSections.map((section) => (
+          <a
+            key={section.id}
+            href={section.href}
+            onClick={() => handleLinkClick(section.id)}
+            className={activeSection === section.id ? styles.active : ''}
           >
-            <Phone size={16} />
-            <span className="d-none d-xl-inline">Cotizar</span>
-            <span className="d-inline d-xl-none">Call</span>
-          </Button>
-          <Button
-            className={styles.sessionButton}
-            onClick={() => window.location.href = '/Login'}
-          >
-            <LogInIcon size={16} />
-            <span className="d-none d-xl-inline">Iniciar sesión</span>
-            <span className="d-inline d-xl-none">Login</span>
-          </Button>
+            {section.label}
+          </a>
+        ))}
+      </div>
+
+      <div className={styles.navCta}>
+        <a href="#agenda" className="jas-btn jas-btn-outline jas-btn-sm" onClick={() => handleLinkClick('agenda')}>
+          <PhoneIcon />
+          Cotizar
+        </a>
+        <a href="/Login" className="jas-btn jas-btn-primary jas-btn-sm">
+          Iniciar sesión
+          <div className="jas-arrow-rev"><ArrowIcon /></div>
+        </a>
+      </div>
+
+      <button
+        type="button"
+        className={styles.navToggle}
+        onClick={() => setMenuOpen((open) => !open)}
+        aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={menuOpen}
+      >
+        {menuOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {menuOpen && (
+        <div className={styles.navMobileMenu}>
+          <div className={styles.navMobileLinks}>
+            {navSections.map((section) => (
+              <a
+                key={section.id}
+                href={section.href}
+                onClick={() => handleLinkClick(section.id)}
+                className={activeSection === section.id ? styles.active : ''}
+              >
+                {section.label}
+              </a>
+            ))}
+          </div>
+          <div className={styles.navMobileCta}>
+            <a href="#agenda" className="jas-btn jas-btn-outline jas-btn-sm" onClick={() => handleLinkClick('agenda')}>
+              <PhoneIcon />
+              Cotizar
+            </a>
+            <a href="/Login" className="jas-btn jas-btn-primary jas-btn-sm">
+              Iniciar sesión
+              <div className="jas-arrow-rev"><ArrowIcon /></div>
+            </a>
+          </div>
         </div>
-        <div className="d-flex d-lg-none ms-auto align-items-center gap-2">
-          <Button
-            className={styles.ctaButton}
-            style={{ height: "40px", padding: "0 16px", display: "flex", alignItems: "center" }}
-            onClick={() => window.location.href = 'tel:+527779835782'}
-          >
-         
-            Cotizar
-          </Button>
-
-          <Button
-            className={styles.sessionButton}
-            style={{ height: "40px", padding: "0 16px", display: "flex", alignItems: "center" }}
-            onClick={() => window.location.href = '/Login'}
-          >
-        
-            Iniciar sesión
-          </Button>
-
-
-
-          <Navbar.Toggle
-            aria-controls="basic-navbar-nav"
-            className={`${styles.navbarToggle} order-lg-2`}
-          />
-        </div>
-        <Navbar.Collapse id="basic-navbar-nav" className="order-lg-1">
-          <Nav className="me-auto">
-            {navSections.map((section) => {
-              const IconComponent = section.icon;
-              const isActive = activeSection === section.id;
-
-              return (
-                <Nav.Link
-                  key={section.id}
-                  href={section.href}
-                  onClick={() => handleNavClick(section.id)}
-                  className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
-                >
-                  <IconComponent size={16} className={styles.navIcon} />
-                  <span className="d-inline d-lg-inline">{section.label}</span>
-                </Nav.Link>
-              );
-            })}
-          </Nav>
-
-          {/* Botones de acción para mobile */}
-          <div className="d-lg-none mt-3">
-            <div className="d-flex flex-column gap-2">
-
-            </div>
-          </div>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+      )}
+    </nav>
   );
 }
