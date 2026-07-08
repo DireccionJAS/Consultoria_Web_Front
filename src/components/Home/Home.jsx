@@ -109,6 +109,14 @@ export default function Home() {
           showConfirmButton: true,
         });
         navigate('/HomeAdmin');
+      } else if (decoded.role === 'EMPRESA') {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'Bienvenido ',
+          showConfirmButton: true,
+        });
+        navigate('/HomeEmpresa');
       } else if (decoded.role === 'USER') {
         const selectedServiceData = sessionStorage.getItem('selectedService');
 
