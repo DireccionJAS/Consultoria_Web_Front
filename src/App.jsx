@@ -5,6 +5,7 @@ import './App.css'
 import Home from "./components/Home/Home.jsx";
 import AdministradorHome from "./components/Administrador/AdministradorHome";
 import EmpresaDashboard from "./components/Administrador/EmpresaDashboard.jsx";
+import EmpresaTramites from "./components/Administrador/EmpresaTramites.jsx";
 import AdministradorServicios from "./components/Administrador/AdministradorServicios";
 import AdministradorCliente from "./components/Administrador/AdministradorClientes";
 import AdministradorTramites from "./components/Administrador/AdministradorTramites";
@@ -78,6 +79,11 @@ function App() {
         <Route path="/HomeEmpresa" element={
           <ProtectedRoute allowedRoles={["EMPRESA"]}>
             <EmpresaDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/EmpresaTramites" element={
+          <ProtectedRoute allowedRoles={["EMPRESA"]}>
+            <EmpresaTramites />
           </ProtectedRoute>
         } />
         <Route path="/PDF" element={
