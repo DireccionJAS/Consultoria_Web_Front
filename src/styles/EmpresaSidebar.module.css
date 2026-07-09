@@ -24,6 +24,7 @@
   overflow-y: auto;
   flex-shrink: 0;
   font-family: "Inter", system-ui, sans-serif;
+  text-align: left;
 }
 .sidebar button { font-family: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
 

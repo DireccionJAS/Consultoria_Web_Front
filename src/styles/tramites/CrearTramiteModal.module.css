@@ -31,6 +31,7 @@
   padding: 40px 20px;
   font-family: var(--sans);
   color: var(--c1);
+  text-align: left;
   -webkit-font-smoothing: antialiased;
 }
 .overlay button, .overlay input { font-family: inherit; }

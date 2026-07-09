@@ -21,6 +21,7 @@
   font-family: var(--sans);
   color: var(--c5);
   background: var(--c1-deep);
+  text-align: left;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   display: grid;

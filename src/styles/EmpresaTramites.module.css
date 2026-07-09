@@ -31,6 +31,7 @@
   font-family: var(--sans);
   color: var(--c1);
   background: #F4F6F8;
+  text-align: left;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   display: flex;
