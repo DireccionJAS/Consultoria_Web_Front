@@ -58,6 +58,7 @@ export default function EmpresaSidebar({
   const go = (key) => {
     if (onNavigate) onNavigate(key);
     if (key === 'inicio') navigate('/HomeEmpresa');
+    if (key === 'tramites') navigate('/EmpresaTramites');
   };
 
   const handleLogout = () => {

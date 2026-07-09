@@ -127,7 +127,11 @@ export default function EmpresaDashboard() {
               {NAV_CARDS.map((card) => {
                 const Icon = card.icon;
                 return (
-                  <div key={card.key} className={`${styles.navCard} ${card.featured ? styles.featured : ''}`}>
+                  <div
+                    key={card.key}
+                    className={`${styles.navCard} ${card.featured ? styles.featured : ''}`}
+                    onClick={() => card.key === 'tramites' && navigate('/EmpresaTramites')}
+                  >
                     <div className={styles.navCardTop}>
                       <div className={styles.navCardIcon}><Icon /></div>
                       <span className={styles.navCardBadge} style={card.badgeStyle || undefined}>{card.badge}</span>
