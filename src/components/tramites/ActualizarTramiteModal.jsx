@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import {
   obtenerLosPasos,
@@ -20,20 +20,23 @@ const STATUS_META = {
   8: { label: 'Rechazado', color: 'var(--rose-dark)' },
 };
 
-function toDatetimeLocal(value) {
-  if (!value) return '';
-  return value.replace(' ', 'T').slice(0, 16);
+function getInitials(name = '') {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
-function formatDateTimeForApi(value) {
-  if (!value) return null;
-  const d = new Date(value);
-  const yyyy = d.getFullYear();
-  const MM = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  return `${yyyy}-${MM}-${dd} ${hh}:${mm}:00`;
+function splitDateTime(value) {
+  if (!value) return { date: '', time: '' };
+  const [date, time] = value.replace('T', ' ').split(' ');
+  return { date: date || '', time: (time || '').slice(0, 5) };
+}
+
+function joinDateTime(date, time) {
+  if (!date) return null;
+  const t = time && time.length >= 4 ? time : '00:00';
+  return `${date} ${t}:00`;
 }
 
 function parseMoney(v) {
@@ -52,13 +55,22 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
   const [form, setForm] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [pasosDisponibles, setPasosDisponibles] = useState([]);
-  const [descripcionDelPaso, setDescripcionDelPaso] = useState('');
   const [encargados, setEncargados] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  const [openPaso, setOpenPaso] = useState(false);
+  const [openEstado, setOpenEstado] = useState(false);
+  const [openEncargado, setOpenEncargado] = useState(false);
+  const pasoRef = useRef(null);
+  const estadoRef = useRef(null);
+  const encargadoRef = useRef(null);
+
   useEffect(() => {
     if (!cliente) return;
+    const cas = splitDateTime(cliente.dateCas);
+    const con = splitDateTime(cliente.dateCon);
+    const sim = splitDateTime(cliente.dateSimulation);
     setForm({
       emailAcces: cliente.emailAcces || '',
       passwordAcces: cliente.passwordAcces || '',
@@ -68,9 +80,12 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
       paidAll: cliente.paidAll ?? 0,
       advance: !!cliente.advance,
       haveSimulation: cliente.haveSimulation ?? 0,
-      dateCas: toDatetimeLocal(cliente.dateCas),
-      dateCon: toDatetimeLocal(cliente.dateCon),
-      dateSimulation: toDatetimeLocal(cliente.dateSimulation),
+      dateCas: cas.date,
+      timeCas: cas.time,
+      dateCon: con.date,
+      timeCon: con.time,
+      dateSimulation: sim.date,
+      timeSimulation: sim.time,
       dateStart: cliente.dateStart || '',
       casCity: cliente.casCity || '',
       conCity: cliente.conCity || '',
@@ -89,8 +104,6 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
           ? resultado.response.StepsTransacts
           : [];
         setPasosDisponibles(pasos);
-        const pasoActual = pasos.find((p) => p.stepNumber === cliente.stepProgress);
-        setDescripcionDelPaso(pasoActual?.description?.trim() || 'Sin descripción');
       } catch (error) {
         console.error('Error al obtener los pasos', error);
         setPasosDisponibles([]);
@@ -111,16 +124,23 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
     })();
   }, [show]);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (pasoRef.current && !pasoRef.current.contains(e.target)) setOpenPaso(false);
+      if (estadoRef.current && !estadoRef.current.contains(e.target)) setOpenEstado(false);
+      if (encargadoRef.current && !encargadoRef.current.contains(e.target)) setOpenEncargado(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   if (!show || !form) return null;
 
   const set = (patch) => setForm((prev) => ({ ...prev, ...patch }));
 
-  const handleStepChange = (e) => {
-    const stepNumber = Number(e.target.value);
-    set({ stepProgress: stepNumber });
-    const paso = pasosDisponibles.find((p) => p.stepNumber === stepNumber);
-    setDescripcionDelPaso(paso?.description?.trim() || 'Sin descripción');
-  };
+  const pasoActual = pasosDisponibles.find((p) => p.stepNumber === form.stepProgress);
+  const statusMeta = STATUS_META[form.status] || { label: 'Selecciona un estado', color: 'var(--muted)' };
+  const encargadoActual = encargados.find((e) => e.idUser === form.idEncargado);
 
   const saldoRestante = Math.max(parseMoney(form.paidAll) - (form.advance ? parseMoney(form.paid) : 0), 0);
 
@@ -156,9 +176,9 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
     try {
       const payload = {
         ...form,
-        dateCas: citaCas ? formatDateTimeForApi(form.dateCas) : null,
-        dateCon: citaCon ? formatDateTimeForApi(form.dateCon) : null,
-        dateSimulation: citaSimulacion ? formatDateTimeForApi(form.dateSimulation) : null,
+        dateCas: citaCas ? joinDateTime(form.dateCas, form.timeCas) : null,
+        dateCon: citaCon ? joinDateTime(form.dateCon, form.timeCon) : null,
+        dateSimulation: citaSimulacion ? joinDateTime(form.dateSimulation, form.timeSimulation) : null,
         paid: form.advance ? parseMoney(form.paid) : 0,
         paidAll: parseMoney(form.paidAll),
       };
@@ -177,8 +197,6 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
       setSubmitting(false);
     }
   };
-
-  const statusMeta = STATUS_META[form.status] || { label: 'Desconocido', color: 'var(--gray)' };
 
   return (
     <div className={styles.overlay} onMouseDown={(e) => { if (e.target === e.currentTarget) onHide(); }}>
@@ -250,7 +268,7 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
               </div>
               <div>
                 <div className={styles.secTitle}>Acceso a plataforma externa</div>
-                <div className={styles.secSub}>Credenciales del trámite consular</div>
+                <div className={styles.secSub}>Credenciales del trámite consular (DS-160, CGI, etc.)</div>
               </div>
             </div>
             <div className={styles.secBody}>
@@ -289,39 +307,104 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
             </div>
             <div className={styles.secBody}>
               <div className={styles.grid3}>
+                {/* Paso actual */}
                 <div className={styles.field}>
                   <label className={styles.fieldLabel}>Paso actual <span className={styles.req}>*</span></label>
-                  <select className={styles.inp} value={form.stepProgress} onChange={handleStepChange}>
-                    <option value="">Selecciona un paso</option>
-                    {pasosDisponibles.map((paso) => (
-                      <option key={paso.stepNumber} value={paso.stepNumber}>{paso.stepNumber}. {paso.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className={styles.field}>
-                  <label className={styles.fieldLabel}>Estado actual <span className={styles.req}>*</span></label>
-                  <div className={styles.selDotWrap}>
-                    <span className={styles.selDot} style={{ background: statusMeta.color }} />
-                    <select className={styles.inp} value={form.status} onChange={(e) => set({ status: Number(e.target.value) })}>
-                      {Object.entries(STATUS_META).map(([code, meta]) => (
-                        <option key={code} value={code}>{meta.label}</option>
-                      ))}
-                    </select>
+                  <div ref={pasoRef} className={`${styles.selWrap} ${openPaso ? styles.open : ''}`}>
+                    <button type="button" className={styles.selTrigger} onClick={() => setOpenPaso((v) => !v)}>
+                      {pasoActual ? (
+                        <>
+                          <span className={styles.selBadge}>{pasoActual.stepNumber}/{pasosDisponibles.length}</span>
+                          <span className={styles.selText}>{pasoActual.name}</span>
+                        </>
+                      ) : (
+                        <span className={styles.selPlaceholder}>Selecciona un paso</span>
+                      )}
+                      <svg className={styles.selChev} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    {openPaso && (
+                      <div className={styles.selMenu}>
+                        {pasosDisponibles.length === 0 && <div className={styles.selEmpty}>Sin pasos</div>}
+                        {pasosDisponibles.map((paso) => (
+                          <div
+                            key={paso.stepNumber}
+                            className={`${styles.selOpt} ${form.stepProgress === paso.stepNumber ? styles.active : ''}`}
+                            onClick={() => { set({ stepProgress: paso.stepNumber }); setOpenPaso(false); }}
+                          >
+                            <span className={styles.selBadge}>{paso.stepNumber}/{pasosDisponibles.length}</span>
+                            <span className={styles.selOptText}>{paso.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                {/* Estado actual */}
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Estado actual <span className={styles.req}>*</span></label>
+                  <div ref={estadoRef} className={`${styles.selWrap} ${openEstado ? styles.open : ''}`}>
+                    <button type="button" className={styles.selTrigger} onClick={() => setOpenEstado((v) => !v)}>
+                      <span className={styles.selDot} style={{ background: statusMeta.color }} />
+                      <span className={styles.selText}>{statusMeta.label}</span>
+                      <svg className={styles.selChev} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    {openEstado && (
+                      <div className={styles.selMenu}>
+                        {Object.entries(STATUS_META).map(([code, meta]) => (
+                          <div
+                            key={code}
+                            className={`${styles.selOpt} ${form.status === Number(code) ? styles.active : ''}`}
+                            onClick={() => { set({ status: Number(code) }); setOpenEstado(false); }}
+                          >
+                            <span className={styles.selDot} style={{ background: meta.color }} />
+                            <span className={styles.selOptText}>{meta.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Encargado asignado */}
                 <div className={styles.field}>
                   <label className={styles.fieldLabel}>Encargado asignado</label>
-                  <select className={styles.inp} value={form.idEncargado ?? ''} onChange={(e) => set({ idEncargado: e.target.value ? Number(e.target.value) : null })}>
-                    <option value="">Sin asignar</option>
-                    {encargados.map((enc) => (
-                      <option key={enc.idUser} value={enc.idUser}>{enc.name}</option>
-                    ))}
-                  </select>
+                  <div ref={encargadoRef} className={`${styles.selWrap} ${openEncargado ? styles.open : ''}`}>
+                    <button type="button" className={styles.selTrigger} onClick={() => setOpenEncargado((v) => !v)}>
+                      {encargadoActual ? (
+                        <>
+                          <span className={styles.selAvatar}>{getInitials(encargadoActual.name)}</span>
+                          <span className={styles.selText}>{encargadoActual.name}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className={`${styles.selAvatar} ${styles.empty}`}>?</span>
+                          <span className={styles.selPlaceholder}>Sin asignar</span>
+                        </>
+                      )}
+                      <svg className={styles.selChev} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    {openEncargado && (
+                      <div className={styles.selMenu}>
+                        <div className={styles.selOpt} onClick={() => { set({ idEncargado: null }); setOpenEncargado(false); }}>
+                          <span className={`${styles.selAvatar} ${styles.empty}`}>?</span>
+                          <span className={styles.selOptText}>Sin asignar</span>
+                        </div>
+                        {encargados.map((enc) => (
+                          <div
+                            key={enc.idUser}
+                            className={`${styles.selOpt} ${form.idEncargado === enc.idUser ? styles.active : ''}`}
+                            onClick={() => { set({ idEncargado: enc.idUser }); setOpenEncargado(false); }}
+                          >
+                            <span className={styles.selAvatar}>{getInitials(enc.name)}</span>
+                            <span className={styles.selOptText}>{enc.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-              {form.stepProgress !== '' && (
-                <p style={{ fontSize: 11.5, color: 'var(--muted)', marginTop: 10, lineHeight: 1.5 }}>{descripcionDelPaso}</p>
-              )}
             </div>
           </div>
 
@@ -333,17 +416,21 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                 </div>
                 <div><div className={styles.secTitle}>Cita CAS</div><div className={styles.secSub}>Centro de Atención al Solicitante</div></div>
-                <span className={styles.secFlag}>Aplica</span>
+                <span className={styles.secFlag}>Aplica para este servicio</span>
               </div>
               <div className={styles.secBody}>
-                <div className={styles.grid2}>
+                <div className={styles.grid3}>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Ciudad CAS</label>
                     <input className={styles.inp} value={form.casCity} onChange={(e) => set({ casCity: e.target.value })} placeholder="Ej. Ciudad de México" />
                   </div>
                   <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Fecha y hora CAS</label>
-                    <input className={styles.inp} type="datetime-local" value={form.dateCas} onChange={(e) => set({ dateCas: e.target.value })} />
+                    <label className={styles.fieldLabel}>Fecha CAS</label>
+                    <input className={styles.inp} type="date" value={form.dateCas} onChange={(e) => set({ dateCas: e.target.value })} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Horario CAS</label>
+                    <input className={styles.inp} type="time" value={form.timeCas} onChange={(e) => set({ timeCas: e.target.value })} />
                   </div>
                 </div>
               </div>
@@ -358,17 +445,21 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg>
                 </div>
                 <div><div className={styles.secTitle}>Cita Consular</div><div className={styles.secSub}>Entrevista en el consulado</div></div>
-                <span className={styles.secFlag}>Aplica</span>
+                <span className={styles.secFlag}>Aplica para este servicio</span>
               </div>
               <div className={styles.secBody}>
-                <div className={styles.grid2}>
+                <div className={styles.grid3}>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Ciudad Consulado</label>
                     <input className={styles.inp} value={form.conCity} onChange={(e) => set({ conCity: e.target.value })} placeholder="Ej. Ciudad de México" />
                   </div>
                   <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Fecha y hora Consular</label>
-                    <input className={styles.inp} type="datetime-local" value={form.dateCon} onChange={(e) => set({ dateCon: e.target.value })} />
+                    <label className={styles.fieldLabel}>Fecha Consular</label>
+                    <input className={styles.inp} type="date" value={form.dateCon} onChange={(e) => set({ dateCon: e.target.value })} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Horario Consular</label>
+                    <input className={styles.inp} type="time" value={form.timeCon} onChange={(e) => set({ timeCon: e.target.value })} />
                   </div>
                 </div>
               </div>
@@ -383,13 +474,17 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="14" rx="2" /><path d="M8 22h8M12 18v4" /><circle cx="9" cy="11" r="2" /></svg>
                 </div>
                 <div><div className={styles.secTitle}>Simulación de entrevista</div><div className={styles.secSub}>Práctica 1:1 con consultor</div></div>
-                <span className={styles.secFlag}>Aplica</span>
+                <span className={styles.secFlag}>Aplica para este servicio</span>
               </div>
               <div className={styles.secBody}>
-                <div className={styles.grid2}>
+                <div className={styles.grid3}>
                   <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Fecha y hora simulación</label>
-                    <input className={styles.inp} type="datetime-local" value={form.dateSimulation} onChange={(e) => set({ dateSimulation: e.target.value })} />
+                    <label className={styles.fieldLabel}>Fecha simulación</label>
+                    <input className={styles.inp} type="date" value={form.dateSimulation} onChange={(e) => set({ dateSimulation: e.target.value })} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Hora simulación</label>
+                    <input className={styles.inp} type="time" value={form.timeSimulation} onChange={(e) => set({ timeSimulation: e.target.value })} />
                   </div>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>¿Simulación realizada?</label>
@@ -424,17 +519,15 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                     <button type="button" className={!form.advance ? styles.on : ''} onClick={() => set({ advance: false })}>No</button>
                   </div>
                 </div>
-                {form.advance && (
-                  <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Monto de adelanto</label>
-                    <input className={styles.inp} value={form.paid} onChange={(e) => set({ paid: e.target.value })} />
-                  </div>
-                )}
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Monto de adelanto</label>
+                  <input className={styles.inp} value={form.paid} onChange={(e) => set({ paid: e.target.value })} />
+                </div>
               </div>
               <div className={styles.payCalc}>
                 <div className={styles.payRow}><span className={styles.lbl}>Pago total</span><span className={styles.val}>{fmtMoney(parseMoney(form.paidAll))}</span></div>
                 <div className={styles.payRow}><span className={styles.lbl}>Adelanto pagado</span><span className={styles.val} style={{ color: 'var(--green)' }}>{fmtMoney(form.advance ? parseMoney(form.paid) : 0)}</span></div>
-                <div className={`${styles.payRow} ${styles.liquidado}`}><span className={styles.lbl}>Monto por liquidar</span><span className={styles.val}>{fmtMoney(saldoRestante)}</span></div>
+                <div className={`${styles.payRow} ${styles.liquidado}`}><span className={styles.lbl}>Monto por liquidar (automático)</span><span className={styles.val}>{fmtMoney(saldoRestante)}</span></div>
               </div>
             </div>
           </div>
@@ -466,14 +559,24 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
               <div className={`${styles.secIcon} ${styles.green}`}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg>
               </div>
-              <div><div className={styles.secTitle}>Resultado final</div><div className={styles.secSub}>Emisión de la visa</div></div>
+              <div><div className={styles.secTitle}>Resultado final</div><div className={styles.secSub}>Estatus de la visa y emisión</div></div>
             </div>
             <div className={styles.secBody}>
-              <label className={styles.fieldLabel}>¿Visa emitida?</label>
-              <div className={styles.seg}>
-                <button type="button" className={form.visaIssued === true ? styles.onGreen : ''} onClick={() => set({ visaIssued: true })}>Emitida</button>
-                <button type="button" className={form.visaIssued === false ? styles.onRose : ''} onClick={() => set({ visaIssued: false })}>No emitida</button>
-                <button type="button" className={form.visaIssued == null ? styles.on : ''} onClick={() => set({ visaIssued: null })}>N/A</button>
+              <div className={styles.grid2}>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Estatus del trámite</label>
+                  <div className={styles.seg}>
+                    <button type="button" className={form.status === 7 ? styles.onGreen : ''} onClick={() => set({ status: 7 })}>Aprobada</button>
+                    <button type="button" className={form.status === 8 ? styles.onRose : ''} onClick={() => set({ status: 8 })}>Rechazada</button>
+                  </div>
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Emisión de visa</label>
+                  <div className={styles.seg}>
+                    <button type="button" className={form.visaIssued === true ? styles.onGreen : ''} onClick={() => set({ visaIssued: true })}>Emitida</button>
+                    <button type="button" className={form.visaIssued === false ? styles.onRose : ''} onClick={() => set({ visaIssued: false })}>No emitida</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -483,7 +586,7 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 6l-10 7L2 6" /></svg>
             </div>
             <div className={styles.emailNoticeText}>
-              Al guardar, <strong>{cliente?.user?.name || 'el cliente'}</strong> recibirá un correo con la actualización de su trámite.
+              Al guardar, <strong>{cliente?.user?.name || 'el cliente'}</strong> recibirá un correo con la actualización de su trámite (cambios de estado, citas y montos).
             </div>
           </div>
         </div>
