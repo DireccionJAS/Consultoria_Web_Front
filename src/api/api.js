@@ -117,6 +117,16 @@ export const actualizarStatusCliente = async (id_user, nuevoEstado) => {
   }
 };
 
+export const archivarCliente = async (id_user, archivado) => {
+  try {
+    const response = await axios.put(`${API_URL}/users/${id_user}/archive`, { archived: archivado });
+    return response.data;
+  } catch (error) {
+    console.error("Error al archivar el cliente", error);
+    throw error;
+  }
+};
+
 export const actualizar = async (idUser, datosActualizados) => {
   try {
     const response = await axios.put(`${API_URL}/users/${idUser}`, {

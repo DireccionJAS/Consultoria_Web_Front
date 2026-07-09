@@ -1,0 +1,129 @@
+/*
+  Estilos extraídos 1:1 de 08-Clientes-standalone.html.
+  Se mantienen los mismos valores (colores, tipografías, spacing) del diseño
+  original; lo único que cambia respecto al archivo fuente es que cada regla
+  queda anidada bajo ".clientes-jas-page" para no chocar con las clases
+  genéricas de Bootstrap/react-bootstrap (.table, .btn, etc.) que ya usa el
+  resto del panel de administración. El sidebar del mockup no se incluye:
+  esta página usa el sidebar real de la app (NavbarAdmin.jsx).
+*/
+
+.clientes-jas-page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --c2: #2D6CDF; --c3: #4E6A9C;
+  --c4: #B4C8D8; --c5: #E4ECF0; --white: #FFFFFF; --accent: #6FAEDB;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(0,0,42,0.10); --line-2: rgba(0,0,42,0.18); --muted: rgba(0,0,42,0.55); --muted-2: rgba(0,0,42,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F6F8;
+  -webkit-font-smoothing: antialiased;
+}
+.clientes-jas-page *,
+.clientes-jas-page *::before,
+.clientes-jas-page *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.clientes-jas-page button,
+.clientes-jas-page input { font-family: inherit; }
+.clientes-jas-page button { cursor: pointer; border: 0; background: none; color: inherit; }
+.clientes-jas-page a { color: inherit; text-decoration: none; }
+
+.clientes-jas-page .topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.clientes-jas-page .crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.clientes-jas-page .crumb .accent { color: var(--c2); }
+.clientes-jas-page .page-title-h { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
+.clientes-jas-page .top-actions { display: flex; align-items: center; gap: 8px; }
+.clientes-jas-page .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: #F4F6F8; display: flex; align-items: center; justify-content: center; transition: background 0.2s; position: relative; }
+.clientes-jas-page .icon-btn:hover { background: var(--c5); }
+.clientes-jas-page .badge-num { position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; padding: 0 4px; background: var(--rose); color: var(--white); border: 2px solid var(--white); border-radius: 999px; font-size: 9px; font-weight: 700; font-family: var(--mono); display: flex; align-items: center; justify-content: center; }
+.clientes-jas-page .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.clientes-jas-page .btn-accent { background: var(--c2); color: var(--white); }
+.clientes-jas-page .btn-accent:hover { background: #1f5dcc; transform: translateY(-1px); }
+.clientes-jas-page .btn-ghost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
+.clientes-jas-page .btn-ghost:hover { background: #F4F6F8; }
+.clientes-jas-page .btn-sm { padding: 8px 13px; font-size: 12px; }
+.clientes-jas-page .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.clientes-jas-page .content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 20px; }
+
+/* stats strip */
+.clientes-jas-page .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.clientes-jas-page .stat-mini { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+.clientes-jas-page .stat-mini .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.clientes-jas-page .stat-mini .val { font-family: var(--display); font-weight: 700; font-size: 30px; letter-spacing: -0.025em; line-height: 1; }
+.clientes-jas-page .stat-mini .val small { font-size: 12px; color: var(--muted); font-weight: 500; font-family: var(--sans); margin-left: 4px; }
+
+/* tabs */
+.clientes-jas-page .tabs { display: flex; gap: 4px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 5px; width: fit-content; }
+.clientes-jas-page .tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--muted); transition: all 0.2s; }
+.clientes-jas-page .tab.active { background: var(--c1); color: var(--c5); }
+.clientes-jas-page .tab .tab-count { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 999px; background: rgba(0,0,42,0.06); }
+.clientes-jas-page .tab.active .tab-count { background: rgba(228,236,240,0.18); color: var(--c5); }
+
+/* toolbar */
+.clientes-jas-page .toolbar { display: flex; align-items: center; gap: 12px; }
+.clientes-jas-page .search-box { display: flex; align-items: center; gap: 10px; padding: 11px 16px 11px 14px; background: var(--white); border: 1px solid var(--line-2); border-radius: 12px; flex: 1; max-width: 400px; }
+.clientes-jas-page .search-box input { border: 0; outline: 0; background: transparent; flex: 1; font: inherit; font-size: 13px; }
+
+/* table */
+.clientes-jas-page .table-card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.clientes-jas-page .table { width: 100%; border-collapse: collapse; }
+.clientes-jas-page .table th { text-align: left; padding: 13px 22px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: #F8FAFB; border-bottom: 1px solid var(--line); font-weight: 600; }
+.clientes-jas-page .table td { padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: middle; }
+.clientes-jas-page .table tr:last-child td { border-bottom: 0; }
+.clientes-jas-page .table tbody tr:hover td { background: #FAFBFC; }
+.clientes-jas-page .row-num { font-family: var(--mono); font-size: 11px; color: var(--muted-2); }
+.clientes-jas-page .client-cell { display: flex; align-items: center; gap: 12px; }
+.clientes-jas-page .client-avatar { width: 36px; height: 36px; border-radius: 50%; color: var(--white); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.clientes-jas-page .client-name { font-weight: 600; font-size: 13.5px; }
+.clientes-jas-page .client-meta { font-size: 11px; color: var(--muted); margin-top: 1px; font-family: var(--mono); }
+.clientes-jas-page .tramites-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(45,108,223,0.10); color: var(--c2); }
+.clientes-jas-page .tramites-pill.done { background: var(--green-soft); color: var(--green); }
+.clientes-jas-page .tramites-pill.none { background: var(--gray-soft); color: var(--gray); }
+
+/* toggle */
+.clientes-jas-page .tg { width: 42px; height: 24px; background: var(--line-2); border-radius: 999px; position: relative; cursor: pointer; transition: background 0.25s; display: inline-block; vertical-align: middle; }
+.clientes-jas-page .tg::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--white); top: 3px; left: 3px; transition: left 0.25s; box-shadow: 0 1px 3px rgba(0,0,42,0.2); }
+.clientes-jas-page .tg.on { background: var(--c2); }
+.clientes-jas-page .tg.on::after { left: 21px; }
+.clientes-jas-page .tg-wrap { display: flex; align-items: center; gap: 10px; }
+.clientes-jas-page .tg-label { font-size: 12px; font-weight: 500; }
+.clientes-jas-page .tg-label.on { color: var(--green); }
+.clientes-jas-page .tg-label.off { color: var(--muted); }
+
+.clientes-jas-page .row-actions { display: inline-flex; gap: 4px; }
+.clientes-jas-page .row-actions button { width: 30px; height: 30px; border-radius: 8px; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.clientes-jas-page .row-actions button:hover { background: var(--c5); color: var(--c1); }
+.clientes-jas-page .row-actions button.archive:hover { background: var(--amber-soft); color: var(--amber); }
+.clientes-jas-page .row-actions button.archive.ready { color: var(--amber); }
+
+/* archive hint */
+.clientes-jas-page .arc-ready { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: var(--mono); color: var(--amber); margin-top: 3px; }
+
+/* pagination */
+.clientes-jas-page .pagination { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; }
+.clientes-jas-page .pg-info { font-size: 12.5px; color: var(--muted); }
+.clientes-jas-page .pg-info strong { color: var(--c1); }
+.clientes-jas-page .pg-controls { display: flex; gap: 4px; align-items: center; }
+.clientes-jas-page .pg-btn { width: 34px; height: 34px; border-radius: 9px; background: var(--white); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--c1); transition: all 0.2s; }
+.clientes-jas-page .pg-btn:hover { background: #F4F6F8; }
+.clientes-jas-page .pg-btn.active { background: var(--c1); color: var(--c5); border-color: var(--c1); }
+.clientes-jas-page .pg-btn.disabled { color: var(--muted-2); cursor: not-allowed; }
+
+/* empty state */
+.clientes-jas-page .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; }
+.clientes-jas-page .empty-state.show { display: flex; }
+.clientes-jas-page .empty-icon { width: 72px; height: 72px; border-radius: 20px; background: #F4F6F8; color: var(--muted-2); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.clientes-jas-page .empty-title { font-family: var(--display); font-weight: 600; font-size: 20px; margin-bottom: 6px; }
+.clientes-jas-page .empty-sub { font-size: 13px; color: var(--muted); max-width: 320px; }
+
+/* Loading state (no existía en el mockup estático, necesario para datos reales) */
+.clientes-jas-page .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 12px; color: var(--muted); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .clientes-jas-page .stats-strip { grid-template-columns: repeat(2, 1fr); }
+  .clientes-jas-page .topbar { flex-wrap: wrap; }
+}
