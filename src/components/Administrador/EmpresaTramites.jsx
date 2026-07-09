@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import ModalRegistrarTramite from './RegistrarTramite.jsx';
 import ModalActualizarTramite from './ActualizarTramite.jsx';
+import CrearTramiteModal from '../tramites/CrearTramiteModal.jsx';
 import { trasacciones, actualizarT } from './../../api/api.js';
 import styles from './../../styles/EmpresaTramites.module.css';
 
@@ -87,7 +87,7 @@ export default function EmpresaTramites() {
   const [busqueda, setBusqueda] = useState('');
   const [datos, setDatos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showCrearTramite, setShowCrearTramite] = useState(false);
   const [showModalA, setShowModalA] = useState(false);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
@@ -187,7 +187,7 @@ export default function EmpresaTramites() {
               <BellIcon />
               <span className={styles.badgeNum}>8</span>
             </button>
-            <button className={styles.btnAccent} onClick={() => setShowModal(true)}>
+            <button className={styles.btnAccent} onClick={() => setShowCrearTramite(true)}>
               <PlusIcon />
               Agregar trámite
             </button>
@@ -325,10 +325,11 @@ export default function EmpresaTramites() {
         </div>
       </main>
 
-      <ModalRegistrarTramite
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        onClienteRegistrado={fetchServices}
+      <CrearTramiteModal
+        show={showCrearTramite}
+        onHide={() => setShowCrearTramite(false)}
+        scope="empresa"
+        onCreated={fetchServices}
       />
       <ModalActualizarTramite
         show={showModalA}
