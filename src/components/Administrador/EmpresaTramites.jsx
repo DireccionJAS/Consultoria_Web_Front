@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import ModalActualizarTramite from './ActualizarTramite.jsx';
 import CrearTramiteModal from '../tramites/CrearTramiteModal.jsx';
+import ActualizarTramiteModal from '../tramites/ActualizarTramiteModal.jsx';
 import { trasacciones, actualizarT } from './../../api/api.js';
 import styles from './../../styles/EmpresaTramites.module.css';
 
@@ -331,7 +331,7 @@ export default function EmpresaTramites() {
         scope="empresa"
         onCreated={fetchServices}
       />
-      <ModalActualizarTramite
+      <ActualizarTramiteModal
         show={showModalA}
         onHide={() => setShowModalA(false)}
         onClienteRegistrado={fetchServices}

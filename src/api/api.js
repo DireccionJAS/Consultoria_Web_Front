@@ -512,12 +512,27 @@ export const actualizarTC = async (idTransactProgress, datosActualizados) => {
         paid: datosActualizados.paid,
         paidAll: datosActualizados.paidAll,
         status: datosActualizados.status,
-        stepProgress: datosActualizados.stepProgress
+        stepProgress: datosActualizados.stepProgress,
+        casCity: datosActualizados.casCity ?? null,
+        conCity: datosActualizados.conCity ?? null,
+        documentsDelivered: !!datosActualizados.documentsDelivered,
+        visaIssued: datosActualizados.visaIssued ?? null,
+        idEncargado: datosActualizados.idEncargado ?? null
       }
     );
     return response.data;
   } catch (error) {
     console.error("Error al actualizar el trámite", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const listarEncargados = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/users/admins`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener los encargados", error);
     throw error;
   }
 };
