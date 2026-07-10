@@ -31,6 +31,18 @@
 .clientes-jas-page button { cursor: pointer; border: 0; background: none; color: inherit; }
 .clientes-jas-page a { color: inherit; text-decoration: none; }
 
+/* Offset para no quedar tapado por el sidebar real (NavbarAdmin.jsx / Sidebar.css),
+   que es position:fixed y no reserva espacio en el flujo normal. Los anchos (280px /
+   70px colapsado) están tomados de Sidebar.css. No existía en el mockup estático. */
+.clientes-jas-page .topbar,
+.clientes-jas-page .content { margin-left: 280px; transition: margin-left 0.3s ease; }
+.clientes-jas-page:has(.sidebar.collapsed) .topbar,
+.clientes-jas-page:has(.sidebar.collapsed) .content { margin-left: 70px; }
+@media (max-width: 768px) {
+  .clientes-jas-page .topbar,
+  .clientes-jas-page .content { margin-left: 0; }
+}
+
 .clientes-jas-page .topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
 .clientes-jas-page .crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
 .clientes-jas-page .crumb .accent { color: var(--c2); }
