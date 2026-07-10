@@ -17,6 +17,14 @@ function IconBell() {
   );
 }
 
+function IconPlus() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M12 5v14M5 12h14"></path>
+    </svg>
+  );
+}
+
 function IconSearch() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)' }}>
@@ -120,7 +128,8 @@ export default function EmpresaPagos() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [pagoDetalle, setPagoDetalle] = useState(null);
-  const [pagoEfectivo, setPagoEfectivo] = useState(null);
+  const [modalEfectivoAbierto, setModalEfectivoAbierto] = useState(false);
+  const [pagoContextoEfectivo, setPagoContextoEfectivo] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -230,6 +239,9 @@ export default function EmpresaPagos() {
             <button className={styles.iconBtn} aria-label="Notificaciones">
               <IconBell />
               <span className={styles.badgeNum}>2</span>
+            </button>
+            <button className={styles.btnAccent} onClick={() => { setPagoContextoEfectivo(null); setModalEfectivoAbierto(true); }}>
+              <IconPlus /> Agregar pago
             </button>
           </div>
         </header>
@@ -368,12 +380,12 @@ export default function EmpresaPagos() {
         onHide={() => setPagoDetalle(null)}
         pago={pagoDetalle}
         pagosDelTramite={pagoDetalle ? datos.filter((d) => d.idUser === pagoDetalle.idUser && d.idTransact === pagoDetalle.idTransact) : []}
-        onRegistrarEfectivo={(pago) => { setPagoDetalle(null); setPagoEfectivo(pago); }}
+        onRegistrarEfectivo={(pago) => { setPagoDetalle(null); setPagoContextoEfectivo(pago); setModalEfectivoAbierto(true); }}
       />
       <ModalConfirmarPagoEfectivo
-        show={!!pagoEfectivo}
-        onHide={() => setPagoEfectivo(null)}
-        pago={pagoEfectivo}
+        show={modalEfectivoAbierto}
+        onHide={() => setModalEfectivoAbierto(false)}
+        pago={pagoContextoEfectivo}
         onConfirmado={fetchServices}
       />
     </div>

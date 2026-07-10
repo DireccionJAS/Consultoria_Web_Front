@@ -131,7 +131,8 @@ export default function AdministradorPagos() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [pagoDetalle, setPagoDetalle] = useState(null);
-  const [pagoEfectivo, setPagoEfectivo] = useState(null);
+  const [modalEfectivoAbierto, setModalEfectivoAbierto] = useState(false);
+  const [pagoContextoEfectivo, setPagoContextoEfectivo] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -245,7 +246,7 @@ export default function AdministradorPagos() {
             <IconBell />
             <span className="badge-num">2</span>
           </button>
-          <button className="btn btn-accent">
+          <button className="btn btn-accent" onClick={() => { setPagoContextoEfectivo(null); setModalEfectivoAbierto(true); }}>
             <IconPlus /> Agregar pago
           </button>
         </div>
@@ -394,12 +395,12 @@ export default function AdministradorPagos() {
         onHide={() => setPagoDetalle(null)}
         pago={pagoDetalle}
         pagosDelTramite={pagoDetalle ? datos.filter((d) => d.idUser === pagoDetalle.idUser && d.idTransact === pagoDetalle.idTransact) : []}
-        onRegistrarEfectivo={(pago) => { setPagoDetalle(null); setPagoEfectivo(pago); }}
+        onRegistrarEfectivo={(pago) => { setPagoDetalle(null); setPagoContextoEfectivo(pago); setModalEfectivoAbierto(true); }}
       />
       <ModalConfirmarPagoEfectivo
-        show={!!pagoEfectivo}
-        onHide={() => setPagoEfectivo(null)}
-        pago={pagoEfectivo}
+        show={modalEfectivoAbierto}
+        onHide={() => setModalEfectivoAbierto(false)}
+        pago={pagoContextoEfectivo}
         onConfirmado={fetchServices}
       />
     </div>
