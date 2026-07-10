@@ -10,7 +10,7 @@ import {
 import styles from '../../styles/tramites/ActualizarTramiteModal.module.css';
 
 const STATUS_META = {
-  1: { label: 'En proceso', color: 'var(--c2)' },
+  1: { label: 'En proceso', color: 'var(--primary)' },
   2: { label: 'En espera', color: 'var(--amber)' },
   3: { label: 'Falta de pago', color: 'var(--rose)' },
   4: { label: 'Terminado', color: 'var(--green)' },
