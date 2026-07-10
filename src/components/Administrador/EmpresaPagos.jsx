@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { getAllPayments, clientePorId, getNameService, statusPayments } from './../../api/api.js';
+import ModalDetallePago from './ModalDetallePago.jsx';
+import ModalConfirmarPagoEfectivo from './ModalConfirmarPagoEfectivo.jsx';
 import styles from './../../styles/EmpresaPagos.module.css';
 
 const ITEMS_POR_PAGINA = 7;
@@ -117,6 +119,8 @@ export default function EmpresaPagos() {
   const [cargando, setCargando] = useState(true);
   const [paginaActual, setPaginaActual] = useState(1);
   const [filtroEstado, setFiltroEstado] = useState('todos');
+  const [pagoDetalle, setPagoDetalle] = useState(null);
+  const [pagoEfectivo, setPagoEfectivo] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -317,7 +321,7 @@ export default function EmpresaPagos() {
                           </td>
                           <td>
                             <div className={styles.rowActions}>
-                              <button title="Ver detalle"><IconEye /></button>
+                              <button title="Ver detalle" onClick={() => setPagoDetalle(pago)}><IconEye /></button>
                               <button title="Descargar"><IconDownload /></button>
                             </div>
                           </td>
@@ -358,6 +362,20 @@ export default function EmpresaPagos() {
           )}
         </div>
       </main>
+
+      <ModalDetallePago
+        show={!!pagoDetalle}
+        onHide={() => setPagoDetalle(null)}
+        pago={pagoDetalle}
+        pagosDelTramite={pagoDetalle ? datos.filter((d) => d.idUser === pagoDetalle.idUser && d.idTransact === pagoDetalle.idTransact) : []}
+        onRegistrarEfectivo={(pago) => { setPagoDetalle(null); setPagoEfectivo(pago); }}
+      />
+      <ModalConfirmarPagoEfectivo
+        show={!!pagoEfectivo}
+        onHide={() => setPagoEfectivo(null)}
+        pago={pagoEfectivo}
+        onConfirmado={fetchServices}
+      />
     </div>
   );
 }

@@ -647,6 +647,22 @@ export const getAllPayments = async () => {
   }
 };
 
+export const registrarPagoEfectivo = async ({ idUser, idTransact, total, quantity = 1 }) => {
+  try {
+    const response = await axios.post(`${API_URL}/payment`, {
+      idUser,
+      idTransact,
+      total,
+      quantity,
+      status: 1,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al registrar el pago en efectivo", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export const statusPayments = async (idPayment, datosActualizados) => {
   try {
     const response = await axios.put(`${API_URL}/payment/${idPayment}`, {

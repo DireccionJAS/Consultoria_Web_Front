@@ -1,0 +1,96 @@
+/*
+  PagoModals.module.css
+  Extraído 1:1 de 21-ModalesPago-standalone.html (Modal 1: Confirmar pago en
+  efectivo · Modal 2: Detalle del pago). Usa su propia paleta ("--primary:
+  #1FA0D1" etc.), distinta de la de la tabla de Pagos (PagosAdminJAS.css) —
+  así está definida en el archivo fuente, no se unificó con la otra paleta.
+*/
+
+.root {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --primary: #1FA0D1; --hover: #205C81; --light: #C4E7F5; --c5: #E4F4FB; --white: #FFFFFF;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(15,26,48,0.10); --line-2: rgba(15,26,48,0.18); --muted: rgba(15,26,48,0.55); --muted-2: rgba(15,26,48,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif; --sans: "Inter", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
+  font-family: var(--sans);
+  color: var(--c1);
+}
+.root button, .root input, .root select { cursor: pointer; border: 0; background: none; color: inherit; font-family: inherit; }
+.root input { cursor: text; }
+
+/* overlay (no existía en el mockup estático de 2 columnas; necesario para mostrarlos como modales reales) */
+.overlay {
+  position: fixed; inset: 0; background: rgba(15,26,48,0.45); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 1000;
+}
+
+.modal { width: 440px; max-width: 100%; background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(15,26,48,0.35), 0 0 0 1px rgba(15,26,48,0.05); display: flex; flex-direction: column; max-height: 90vh; }
+.modal.wide { width: 500px; }
+.modalBody { padding: 22px 24px; overflow-y: auto; }
+
+.modalHead { padding: 20px 24px; background: linear-gradient(135deg, var(--c1), var(--hover)); color: var(--white); position: relative; overflow: hidden; flex-shrink: 0; }
+.modalHead::after { content: ""; position: absolute; top: -55px; right: -45px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(31,160,209,0.22) 0%, transparent 70%); }
+.mhRow { display: flex; align-items: center; gap: 13px; position: relative; }
+.mhIcon { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mhEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,244,251,0.65); margin-bottom: 4px; }
+.mhTitle { font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -0.02em; }
+.mhClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.18); color: var(--white); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.mhClose:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+
+/* read-only rows */
+.roRow { display: flex; align-items: center; gap: 12px; padding: 13px 15px; background: #F4F8FB; border-radius: 12px; margin-bottom: 11px; }
+.roIcon { width: 36px; height: 36px; border-radius: 10px; background: var(--white); border: 1px solid var(--line); color: var(--hover); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.roLbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
+.roVal { font-size: 14px; font-weight: 600; margin-top: 1px; }
+
+.field { margin-bottom: 15px; }
+.fieldLabel { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 7px; }
+.fieldLabel .req { color: var(--primary); }
+.inp { width: 100%; padding: 12px 13px; background: var(--white); border: 1px solid var(--line-2); border-radius: 11px; font: inherit; font-size: 13.5px; color: var(--c1); transition: all 0.2s; }
+.inp:focus { outline: 0; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(31,160,209,0.1); }
+.moneyWrap { display: flex; align-items: center; background: var(--white); border: 1px solid var(--line-2); border-radius: 11px; transition: all 0.2s; }
+.moneyWrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(31,160,209,0.1); }
+.moneyPrefix { padding: 0 4px 0 13px; font-family: var(--display); font-weight: 600; font-size: 15px; color: var(--muted); }
+.moneyWrap input { flex: 1; border: 0; outline: 0; background: transparent; padding: 12px 8px 12px 4px; font-size: 15px; font-weight: 600; font-family: var(--display); color: var(--c1); min-width: 0; }
+.moneySuffix { padding: 0 13px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cashNote { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--green-soft); border-radius: 12px; margin-top: 4px; }
+.cashNote svg { color: var(--green); flex-shrink: 0; }
+.cashNoteText { font-size: 12px; color: #1a6b3a; line-height: 1.45; }
+
+.modalFoot { padding: 16px 24px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btnPrimary { background: var(--primary); color: #fff; }
+.btnPrimary:hover:not(:disabled) { background: var(--hover); transform: translateY(-1px); }
+.btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
+.btnGhost:hover { background: #F4F8FB; }
+
+/* detalle: resumen + tabla */
+.detSummary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.detBox { padding: 13px 14px; background: #F4F8FB; border-radius: 12px; }
+.detBoxLbl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.detBoxVal { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+.detBoxVal.paid { color: var(--green); }
+.detBoxVal.rest { color: var(--rose); }
+.detClientrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.dcLeft { display: flex; align-items: center; gap: 11px; }
+.dcAv { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--hover)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.dcName { font-size: 14px; font-weight: 600; }
+.dcSvc { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.stTag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.stTag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.stPend { background: var(--amber-soft); color: var(--amber); }
+.stPagado { background: var(--green-soft); color: var(--green); }
+.secLabel { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 11px; display: flex; align-items: center; gap: 8px; }
+.secLabel::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.htable { width: 100%; border-collapse: collapse; }
+.htable th { text-align: left; padding: 8px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); font-weight: 600; }
+.htable td { padding: 11px 10px; border-bottom: 1px solid var(--line); font-size: 12.5px; vertical-align: middle; }
+.htable tr:last-child td { border-bottom: 0; }
+.htdDate { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.htdAmt { font-family: var(--display); font-weight: 700; font-size: 13px; }
+.mlogo { padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; font-style: italic; }
+.mutedSmall { font-size: 11px; color: var(--muted-2); }
+
+.loadingRow { padding: 20px; text-align: center; color: var(--muted); font-size: 12.5px; }
