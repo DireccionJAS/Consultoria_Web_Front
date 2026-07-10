@@ -1,0 +1,188 @@
+/*
+  Estilos extraídos 1:1 de 11-Calendario-standalone.html.
+  Se mantienen los mismos valores (colores, tipografías, spacing) del diseño
+  original; lo único que cambia respecto al archivo fuente es que cada regla
+  queda anidada bajo ".calendario-jas-page" para no chocar con las clases
+  genéricas de Bootstrap/react-bootstrap que ya usa el resto del panel de
+  administración. El sidebar del mockup no se incluye: esta página usa el
+  sidebar real de la app (NavbarAdmin.jsx), igual que Pagos/Clientes.
+*/
+
+.calendario-jas-page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --c2: #2D6CDF; --c3: #4E6A9C;
+  --c4: #B4C8D8; --c5: #E4ECF0; --white: #FFFFFF; --accent: #6FAEDB;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --orange: #D9722E; --orange-soft: #FBE5D4; --rose: #B73E3E; --rose-soft: #F5DADA;
+  --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(0,0,42,0.10); --line-2: rgba(0,0,42,0.18); --muted: rgba(0,0,42,0.55); --muted-2: rgba(0,0,42,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F6F8;
+  -webkit-font-smoothing: antialiased;
+}
+.calendario-jas-page *,
+.calendario-jas-page *::before,
+.calendario-jas-page *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.calendario-jas-page button,
+.calendario-jas-page input,
+.calendario-jas-page select { font-family: inherit; }
+.calendario-jas-page button { cursor: pointer; border: 0; background: none; color: inherit; }
+.calendario-jas-page a { color: inherit; text-decoration: none; }
+
+/* Offset para no quedar tapado por el sidebar real (NavbarAdmin.jsx / Sidebar.css),
+   que es position:fixed y no reserva espacio en el flujo normal. Los anchos (280px /
+   70px colapsado) están tomados de Sidebar.css. No existía en el mockup estático. */
+.calendario-jas-page .topbar,
+.calendario-jas-page .content { margin-left: 280px; transition: margin-left 0.3s ease; }
+.calendario-jas-page:has(.sidebar.collapsed) .topbar,
+.calendario-jas-page:has(.sidebar.collapsed) .content { margin-left: 70px; }
+@media (max-width: 768px) {
+  .calendario-jas-page .topbar,
+  .calendario-jas-page .content { margin-left: 0; }
+}
+
+.calendario-jas-page .topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.calendario-jas-page .crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.calendario-jas-page .crumb .accent { color: var(--c2); }
+.calendario-jas-page .page-title-h { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
+.calendario-jas-page .top-actions { display: flex; align-items: center; gap: 8px; }
+.calendario-jas-page .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.calendario-jas-page .btn-accent { background: var(--c2); color: var(--white); }
+.calendario-jas-page .btn-accent:hover { background: #1f5dcc; transform: translateY(-1px); }
+.calendario-jas-page .btn-ghost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
+.calendario-jas-page .btn-ghost:hover { background: #F4F6F8; }
+.calendario-jas-page .btn-sm { padding: 8px 13px; font-size: 12px; }
+
+.calendario-jas-page .content { padding: 24px 32px 60px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+
+/* quick access row */
+.calendario-jas-page .quick-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.calendario-jas-page .quick-btn { display: inline-flex; align-items: center; gap: 9px; padding: 11px 16px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; font-size: 12.5px; font-weight: 600; transition: all 0.2s; }
+.calendario-jas-page .quick-btn:hover { border-color: var(--c3); transform: translateY(-1px); }
+.calendario-jas-page .quick-dot { width: 9px; height: 9px; border-radius: 50%; }
+.calendario-jas-page .quick-btn .qb-date { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 4px; }
+
+/* calendar card */
+.calendario-jas-page .cal-card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.calendario-jas-page .cal-head { padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.calendario-jas-page .cal-month { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px; }
+.calendario-jas-page .cal-nav { display: flex; gap: 4px; }
+.calendario-jas-page .cal-nav button { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.calendario-jas-page .cal-nav button:hover { background: var(--c5); }
+.calendario-jas-page .cal-filter { display: flex; align-items: center; gap: 10px; }
+.calendario-jas-page .cal-grid-head { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid var(--line); }
+.calendario-jas-page .cal-dow { padding: 12px 8px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.calendario-jas-page .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 104px; }
+.calendario-jas-page .cal-cell { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 8px; position: relative; overflow: hidden; }
+.calendario-jas-page .cal-cell:nth-child(7n) { border-right: 0; }
+.calendario-jas-page .cal-cell.other { background: #FAFBFC; }
+.calendario-jas-page .cal-daynum { font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 5px; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 7px; }
+.calendario-jas-page .cal-cell.other .cal-daynum { color: var(--muted-2); }
+.calendario-jas-page .cal-daynum.today { background: var(--c2); color: var(--white); }
+.calendario-jas-page .cal-events { display: flex; flex-direction: column; gap: 3px; }
+.calendario-jas-page .cal-ev { font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 6px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.calendario-jas-page .cal-ev:hover { transform: scale(1.02); }
+.calendario-jas-page .cal-ev .evdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.calendario-jas-page .ev-cas { background: rgba(45,108,223,0.12); color: var(--c2); }
+.calendario-jas-page .ev-cas .evdot { background: var(--c2); }
+.calendario-jas-page .ev-con { background: var(--green-soft); color: var(--green); }
+.calendario-jas-page .ev-con .evdot { background: var(--green); }
+.calendario-jas-page .ev-sim { background: var(--orange-soft); color: var(--orange); }
+.calendario-jas-page .ev-sim .evdot { background: var(--orange); }
+.calendario-jas-page .ev-aten { background: rgba(147,51,234,0.12); color: #9333EA; }
+.calendario-jas-page .ev-aten .evdot { background: #9333EA; }
+.calendario-jas-page .cal-more { font-size: 10px; color: var(--muted); font-weight: 600; padding: 1px 7px; }
+
+/* legend */
+.calendario-jas-page .cal-legend { display: flex; gap: 16px; padding: 14px 22px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.calendario-jas-page .leg-item { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--muted); }
+.calendario-jas-page .leg-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* side panel */
+.calendario-jas-page .side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 96px; }
+.calendario-jas-page .panel { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+.calendario-jas-page .panel-title { font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: -0.01em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.calendario-jas-page .panel-title .cnt { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+/* resumen citas por trámite */
+.calendario-jas-page .res-row { display: flex; align-items: center; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.calendario-jas-page .res-row:last-child { border-bottom: 0; }
+.calendario-jas-page .res-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.calendario-jas-page .res-info { flex: 1; min-width: 0; }
+.calendario-jas-page .res-name { font-size: 12.5px; font-weight: 600; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.calendario-jas-page .res-meta { font-size: 10.5px; color: var(--muted); margin-top: 2px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.calendario-jas-page .res-count { margin-left: auto; font-family: var(--display); font-weight: 700; font-size: 18px; flex-shrink: 0; padding-left: 8px; }
+
+/* notif config */
+.calendario-jas-page .notif-panel { background: linear-gradient(135deg, var(--c1), var(--c2)); color: var(--c5); border-radius: 16px; padding: 20px; position: relative; overflow: hidden; }
+.calendario-jas-page .notif-panel::after { content: ""; position: absolute; top: -50px; right: -50px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(111,174,219,0.25) 0%, transparent 70%); }
+.calendario-jas-page .notif-title { font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: -0.01em; margin-bottom: 4px; position: relative; display: flex; align-items: center; gap: 8px; }
+.calendario-jas-page .notif-sub { font-size: 11.5px; color: rgba(228,236,240,0.65); margin-bottom: 16px; position: relative; line-height: 1.45; }
+.calendario-jas-page .notif-time-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; position: relative; margin-bottom: 14px; }
+.calendario-jas-page .notif-time { background: rgba(228,236,240,0.08); border: 1px solid rgba(228,236,240,0.12); border-radius: 11px; padding: 10px; text-align: center; }
+.calendario-jas-page .notif-time-val { font-family: var(--display); font-weight: 700; font-size: 24px; line-height: 1; }
+.calendario-jas-page .notif-time-lbl { font-size: 9px; font-family: var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: rgba(228,236,240,0.55); margin-top: 5px; }
+.calendario-jas-page .notif-stepper { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px; }
+.calendario-jas-page .notif-stepper button { width: 20px; height: 20px; border-radius: 6px; background: rgba(228,236,240,0.12); color: var(--c5); display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.2s; }
+.calendario-jas-page .notif-stepper button:hover { background: rgba(228,236,240,0.22); }
+.calendario-jas-page .notif-channels { display: flex; gap: 8px; position: relative; margin-bottom: 14px; }
+.calendario-jas-page .notif-chip { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; background: rgba(228,236,240,0.08); border: 1px solid rgba(228,236,240,0.12); border-radius: 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.calendario-jas-page .notif-chip.on { background: var(--accent); color: var(--c1); border-color: var(--accent); }
+.calendario-jas-page .notif-save { width: 100%; padding: 11px; background: var(--accent); color: var(--c1); border-radius: 10px; font-size: 12.5px; font-weight: 600; position: relative; transition: all 0.2s; }
+.calendario-jas-page .notif-save:hover { background: var(--white); }
+
+/* popup event detail */
+.calendario-jas-page .ev-popup { position: fixed; inset: 0; background: rgba(15,26,48,0.45); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+.calendario-jas-page .ev-modal { width: 100%; max-width: 420px; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 40px 100px -20px rgba(0,0,42,0.5); animation: calModalIn 0.3s cubic-bezier(0.2,0.8,0.3,1); }
+@keyframes calModalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+.calendario-jas-page .ev-modal-head { padding: 20px 22px; color: var(--white); position: relative; }
+.calendario-jas-page .ev-modal-head.cas { background: linear-gradient(135deg, #2D6CDF, #1f5dcc); }
+.calendario-jas-page .ev-modal-head.con { background: linear-gradient(135deg, #28A052, #1B6B3A); }
+.calendario-jas-page .ev-modal-head.sim { background: linear-gradient(135deg, #D9722E, #b85d22); }
+.calendario-jas-page .ev-modal-head.aten { background: linear-gradient(135deg, #9333EA, #7526b8); }
+.calendario-jas-page .ev-modal-type { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; margin-bottom: 6px; }
+.calendario-jas-page .ev-modal-title { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
+.calendario-jas-page .ev-modal-close { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(228,236,240,0.18); display: flex; align-items: center; justify-content: center; }
+.calendario-jas-page .ev-modal-body { padding: 20px 22px; }
+.calendario-jas-page .ev-detail { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.calendario-jas-page .ev-detail:last-child { border-bottom: 0; }
+.calendario-jas-page .ev-detail-icon { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8; color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.calendario-jas-page .ev-detail-lbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
+.calendario-jas-page .ev-detail-val { font-size: 14px; font-weight: 600; margin-top: 1px; }
+
+/* nueva cita modal */
+.calendario-jas-page .nc-modal { width: 100%; max-width: 480px; background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 40px 100px -20px rgba(0,0,42,0.5); animation: calModalIn 0.3s cubic-bezier(0.2,0.8,0.3,1); max-height: calc(100vh - 80px); display: flex; flex-direction: column; }
+.calendario-jas-page .nc-head { padding: 22px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: var(--c5); position: relative; overflow: hidden; flex-shrink: 0; }
+.calendario-jas-page .nc-head::after { content: ""; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(111,174,219,0.30) 0%, transparent 70%); }
+.calendario-jas-page .nc-head-row { display: flex; align-items: center; gap: 13px; position: relative; }
+.calendario-jas-page .nc-head-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(228,236,240,0.15); border: 1px solid rgba(228,236,240,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.calendario-jas-page .nc-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,236,240,0.6); margin-bottom: 4px; }
+.calendario-jas-page .nc-title { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; line-height: 1; }
+.calendario-jas-page .nc-close { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 50%; background: rgba(228,236,240,0.15); color: var(--c5); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.calendario-jas-page .nc-close:hover { background: rgba(228,236,240,0.25); transform: rotate(90deg); }
+.calendario-jas-page .nc-body { padding: 22px; overflow-y: auto; }
+.calendario-jas-page .nc-field { margin-bottom: 15px; }
+.calendario-jas-page .nc-label { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 7px; }
+.calendario-jas-page .nc-label .req { color: var(--c2); }
+.calendario-jas-page .nc-inp { width: 100%; padding: 11px 13px; background: var(--white); border: 1px solid var(--line-2); border-radius: 10px; font: inherit; font-size: 13.5px; color: var(--c1); transition: all 0.2s; }
+.calendario-jas-page .nc-inp:focus { outline: 0; border-color: var(--c2); box-shadow: 0 0 0 4px rgba(45,108,223,0.08); }
+.calendario-jas-page .nc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.calendario-jas-page .nc-types { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.calendario-jas-page .nc-type { padding: 12px 8px; border: 1.5px solid var(--line-2); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+.calendario-jas-page .nc-type:hover { border-color: var(--c3); }
+.calendario-jas-page .nc-type.sel-cas { border-color: var(--c2); background: rgba(45,108,223,0.06); }
+.calendario-jas-page .nc-type.sel-con { border-color: var(--green); background: var(--green-soft); }
+.calendario-jas-page .nc-type.sel-sim { border-color: var(--orange); background: var(--orange-soft); }
+.calendario-jas-page .nc-type-dot { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 7px; }
+.calendario-jas-page .nc-type-name { font-size: 12px; font-weight: 600; }
+.calendario-jas-page .nc-type-sub { font-size: 9px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+.calendario-jas-page .nc-foot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; }
+
+@media (max-width: 1100px) {
+  .calendario-jas-page .content { grid-template-columns: 1fr; }
+  .calendario-jas-page .side { position: static; }
+}

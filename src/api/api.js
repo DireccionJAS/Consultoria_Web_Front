@@ -510,7 +510,6 @@ export const actualizarTC = async (idTransactProgress, datosActualizados) => {
   try {
     const response = await axios.put(`${API_URL}/progress/${idTransactProgress}`,
       {
-        idTransactProgress,
         advance: datosActualizados.advance ? 1 : 0,
         dateCas: datosActualizados.dateCas ? dayjs(datosActualizados.dateCas).format('YYYY-MM-DD HH:mm:ss') : null,
         dateCon: datosActualizados.dateCon ? dayjs(datosActualizados.dateCon).format('YYYY-MM-DD HH:mm:ss') : null,

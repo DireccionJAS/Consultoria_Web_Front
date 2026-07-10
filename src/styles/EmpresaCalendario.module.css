@@ -1,0 +1,158 @@
+/*
+  EmpresaCalendario.module.css
+  Mismo calendario que ve el Admin (ver CalendarioAdminJAS.css, extraída 1:1
+  de 11-Calendario-standalone.html), adaptada al layout de CSS Modules que
+  ya usan las páginas de Empresa (EmpresaPagos.module.css / EmpresaSidebar
+  con position:sticky, sin el hack de offset que necesita NavbarAdmin).
+*/
+
+.page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --c2: #2D6CDF; --c3: #4E6A9C;
+  --c4: #B4C8D8; --c5: #E4ECF0; --white: #FFFFFF; --accent: #6FAEDB;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --orange: #D9722E; --orange-soft: #FBE5D4; --rose: #B73E3E; --rose-soft: #F5DADA;
+  --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(0,0,42,0.10); --line-2: rgba(0,0,42,0.18); --muted: rgba(0,0,42,0.55); --muted-2: rgba(0,0,42,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F6F8;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+}
+.page button, .page input, .page select { font-family: inherit; }
+.page button { cursor: pointer; border: 0; background: none; color: inherit; }
+.page a { color: inherit; text-decoration: none; }
+
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.crumbSep { color: var(--muted-2); }
+.accent { color: var(--c2); }
+.pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
+.topActions { display: flex; align-items: center; gap: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.btnAccent { background: var(--c2); color: var(--white); }
+.btnAccent:hover { background: #1f5dcc; transform: translateY(-1px); }
+.btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
+.btnGhost:hover { background: #F4F6F8; }
+.btnSm { padding: 8px 13px; font-size: 12px; }
+
+.content { padding: 24px 32px 60px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+
+/* quick access row */
+.quickRow { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.quickBtn { display: inline-flex; align-items: center; gap: 9px; padding: 11px 16px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; font-size: 12.5px; font-weight: 600; transition: all 0.2s; }
+.quickBtn:hover { border-color: var(--c3); transform: translateY(-1px); }
+.quickDot { width: 9px; height: 9px; border-radius: 50%; }
+.qbDate { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 4px; }
+
+/* calendar card */
+.calCard { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.calHead { padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.calMonth { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px; }
+.calNav { display: flex; gap: 4px; }
+.calNav button { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.calNav button:hover { background: var(--c5); }
+.calGridHead { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid var(--line); }
+.calDow { padding: 12px 8px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 104px; }
+.calCell { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 8px; position: relative; overflow: hidden; }
+.calCell:nth-child(7n) { border-right: 0; }
+.calCell.other { background: #FAFBFC; }
+.calDaynum { font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 5px; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 7px; }
+.calCell.other .calDaynum { color: var(--muted-2); }
+.calDaynum.today { background: var(--c2); color: var(--white); }
+.calEvents { display: flex; flex-direction: column; gap: 3px; }
+.calEv { font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 6px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.calEv:hover { transform: scale(1.02); }
+.calEv .evdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.evCas { background: rgba(45,108,223,0.12); color: var(--c2); }
+.evCas .evdot { background: var(--c2); }
+.evCon { background: var(--green-soft); color: var(--green); }
+.evCon .evdot { background: var(--green); }
+.evSim { background: var(--orange-soft); color: var(--orange); }
+.evSim .evdot { background: var(--orange); }
+.evAten { background: rgba(147,51,234,0.12); color: #9333EA; }
+.evAten .evdot { background: #9333EA; }
+.calMore { font-size: 10px; color: var(--muted); font-weight: 600; padding: 1px 7px; }
+
+/* legend */
+.calLegend { display: flex; gap: 16px; padding: 14px 22px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.legItem { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--muted); }
+.legDot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* side panel */
+.side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 96px; }
+.panel { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+.panelTitle { font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: -0.01em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.panelTitle .cnt { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+/* resumen citas por trámite */
+.resRow { display: flex; align-items: center; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.resRow:last-child { border-bottom: 0; }
+.resIcon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.resInfo { flex: 1; min-width: 0; }
+.resName { font-size: 12.5px; font-weight: 600; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.resMeta { font-size: 10.5px; color: var(--muted); margin-top: 2px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.resCount { margin-left: auto; font-family: var(--display); font-weight: 700; font-size: 18px; flex-shrink: 0; padding-left: 8px; }
+
+/* popup event detail */
+.evPopup { position: fixed; inset: 0; background: rgba(15,26,48,0.45); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+.evModal { width: 100%; max-width: 420px; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 40px 100px -20px rgba(0,0,42,0.5); animation: calModalIn 0.3s cubic-bezier(0.2,0.8,0.3,1); }
+@keyframes calModalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+.evModalHead { padding: 20px 22px; color: var(--white); position: relative; }
+.evModalHead.cas { background: linear-gradient(135deg, #2D6CDF, #1f5dcc); }
+.evModalHead.con { background: linear-gradient(135deg, #28A052, #1B6B3A); }
+.evModalHead.sim { background: linear-gradient(135deg, #D9722E, #b85d22); }
+.evModalHead.aten { background: linear-gradient(135deg, #9333EA, #7526b8); }
+.evModalType { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; margin-bottom: 6px; }
+.evModalTitle { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
+.evModalClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(228,236,240,0.18); display: flex; align-items: center; justify-content: center; }
+.evModalBody { padding: 20px 22px; }
+.evDetail { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.evDetail:last-child { border-bottom: 0; }
+.evDetailIcon { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8; color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.evDetailLbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
+.evDetailVal { font-size: 14px; font-weight: 600; margin-top: 1px; }
+
+/* nueva cita modal */
+.ncModal { width: 100%; max-width: 480px; background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 40px 100px -20px rgba(0,0,42,0.5); animation: calModalIn 0.3s cubic-bezier(0.2,0.8,0.3,1); max-height: calc(100vh - 80px); display: flex; flex-direction: column; }
+.ncHead { padding: 22px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: var(--c5); position: relative; overflow: hidden; flex-shrink: 0; }
+.ncHead::after { content: ""; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(111,174,219,0.30) 0%, transparent 70%); }
+.ncHeadRow { display: flex; align-items: center; gap: 13px; position: relative; }
+.ncHeadIcon { width: 44px; height: 44px; border-radius: 12px; background: rgba(228,236,240,0.15); border: 1px solid rgba(228,236,240,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ncEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,236,240,0.6); margin-bottom: 4px; }
+.ncTitle { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; line-height: 1; }
+.ncClose { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 50%; background: rgba(228,236,240,0.15); color: var(--c5); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.ncClose:hover { background: rgba(228,236,240,0.25); transform: rotate(90deg); }
+.ncBody { padding: 22px; overflow-y: auto; }
+.ncField { margin-bottom: 15px; }
+.ncLabel { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 7px; }
+.ncLabel .req { color: var(--c2); }
+.ncInp { width: 100%; padding: 11px 13px; background: var(--white); border: 1px solid var(--line-2); border-radius: 10px; font: inherit; font-size: 13.5px; color: var(--c1); transition: all 0.2s; }
+.ncInp:focus { outline: 0; border-color: var(--c2); box-shadow: 0 0 0 4px rgba(45,108,223,0.08); }
+.ncGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ncTypes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.ncType { padding: 12px 8px; border: 1.5px solid var(--line-2); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+.ncType:hover { border-color: var(--c3); }
+.ncType.selCas { border-color: var(--c2); background: rgba(45,108,223,0.06); }
+.ncType.selCon { border-color: var(--green); background: var(--green-soft); }
+.ncType.selSim { border-color: var(--orange); background: var(--orange-soft); }
+.ncTypeDot { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 7px; }
+.ncTypeName { font-size: 12px; font-weight: 600; }
+.ncTypeSub { font-size: 9px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+.ncFoot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; }
+
+.loadingWrap { display: flex; justify-content: center; padding: 80px 0; }
+
+@media (max-width: 1100px) {
+  .content { grid-template-columns: 1fr; }
+  .side { position: static; }
+}
