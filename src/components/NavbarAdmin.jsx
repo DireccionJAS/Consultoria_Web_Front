@@ -23,6 +23,7 @@ export default function NavbarAdmin({ title }) {
   const [id6, setId6] = useState("");
   const [id7, setId7] = useState("");
   const [id8, setId8] = useState("");
+  const [id9, setId9] = useState("");
 
   // Manejo de rutas responsivas
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function NavbarAdmin({ title }) {
       setId6("/Perfil");
       setId7("/Calendar");
       setId8("/pdf");
+      setId9("/HorariosAdmin");
       
       if (mobile) {
         setSidebarOpen(false); // Cerrar sidebar en mobile al redimensionar
@@ -151,6 +153,10 @@ export default function NavbarAdmin({ title }) {
           <a href={id7} onClick={handleLinkClick}>
             <Icon icon="mdi:calendar-month" className='icon' />
             <span className="nav-text">Calendario</span>
+          </a>
+          <a href={id9} onClick={handleLinkClick}>
+            <Icon icon="mdi:clock-outline" className='icon' />
+            <span className="nav-text">Horarios</span>
           </a>
           <a href={id6} onClick={handleLinkClick}>
             <Icon icon="mdi:account" className='icon' />

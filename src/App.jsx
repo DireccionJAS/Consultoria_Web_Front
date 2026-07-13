@@ -23,6 +23,7 @@ import MisTramites from "./components/Cliente/MisTramites";
 import MisTramitesMobile from "./components/Cliente/MisTramitesMobile";
 import Calendario from "./components/Cliente/Calendario.jsx";
 import CalendarioAdmin from "./components/Administrador/CalendarioAdmin.jsx";
+import AdministradorHorarios from "./components/Administrador/AdministradorHorarios.jsx";
 import ClienteHomeMobile from "./components/Cliente/ClienteHomeMobile.jsx";
 
 import NoAutorizado from "./components/NoAutorizado";
@@ -167,6 +168,12 @@ function App() {
         <Route path="/Calendar" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <CalendarioAdmin />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/HorariosAdmin" element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdministradorHorarios />
           </ProtectedRoute>
         } />
 
