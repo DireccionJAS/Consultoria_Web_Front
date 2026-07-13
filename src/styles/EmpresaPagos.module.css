@@ -59,10 +59,10 @@
 .pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
 .topActions { display: flex; align-items: center; gap: 8px; }
 .iconBtn {
-  width: 40px; height: 40px; border-radius: 50%; background: #F4F6F8;
+  width: 40px; height: 40px; border-radius: 50%; background: #F4F6F8 !important;
   display: flex; align-items: center; justify-content: center; transition: background 0.2s; position: relative;
 }
-.iconBtn:hover { background: var(--c5); }
+.iconBtn:hover { background: var(--c5) !important; }
 .badgeNum {
   position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; padding: 0 4px;
   background: var(--rose); color: var(--white); border: 2px solid var(--white); border-radius: 999px;
@@ -70,9 +70,9 @@
 }
 .btnAccent {
   display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px;
-  font-size: 13px; font-weight: 600; background: var(--c2); color: var(--white); transition: all 0.2s;
+  font-size: 13px; font-weight: 600; background: var(--c2) !important; color: var(--white); transition: all 0.2s;
 }
-.btnAccent:hover { background: #1f5dcc; transform: translateY(-1px); }
+.btnAccent:hover { background: #1f5dcc !important; transform: translateY(-1px); }
 
 .content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 20px; }
 
@@ -135,7 +135,7 @@
 .pgInfo strong { color: var(--c1); font-weight: 600; }
 .pgControls { display: flex; gap: 4px; align-items: center; }
 .pgBtn {
-  min-width: 34px; height: 34px; padding: 0 8px; border-radius: 9px; border: 1px solid var(--line); background: var(--white);
+  min-width: 34px; height: 34px; padding: 0 8px; border-radius: 9px; border: 1px solid var(--line); background: var(--white) !important;
   display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--c1); transition: all 0.2s;
 }
 .pgBtn:hover:not(:disabled) { border-color: var(--c3); }
