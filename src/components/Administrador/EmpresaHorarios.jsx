@@ -42,12 +42,6 @@ const SIM_HORAS_DEFAULT = horasIniciales(HORAS_SIM, ['8:00', '9:00', '10:00', '1
 const LLAMADA_DIAS_DEFAULT = diasIniciales(['lunes', 'martes', 'miercoles', 'jueves', 'viernes']);
 const LLAMADA_HORAS_DEFAULT = horasIniciales(HORAS_REMOTA, ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']);
 
-const VIDEO_DIAS_DEFAULT = diasIniciales(['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']);
-const VIDEO_HORAS_DEFAULT = horasIniciales(HORAS_REMOTA, ['8:00', '9:00', '10:00', '11:00', '12:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00']);
-
-const MENSAJE_DIAS_DEFAULT = diasIniciales(['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']);
-const MENSAJE_HORAS_DEFAULT = horasIniciales(HORAS_REMOTA, HORAS_REMOTA);
-
 function IconMonitor() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="14" rx="2"></rect><path d="M8 22h8M12 18v4"></path></svg>;
 }
@@ -71,9 +65,6 @@ function IconPhone({ size = 13 }) {
 }
 function IconVideo({ size = 18 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 10l4.55-2.27A1 1 0 0 1 21 8.6v6.8a1 1 0 0 1-1.45.87L15 14M3 6h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"></path></svg>;
-}
-function IconChat({ size = 13 }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z"></path></svg>;
 }
 function IconLock() {
   return <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
@@ -127,16 +118,12 @@ function proximasFechas(dias, cantidad = 6) {
 export default function EmpresaHorarios() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sim');
-  const [activeSubTab, setActiveSubTab] = useState('llamada');
 
   const [simDias, setSimDias] = useState(SIM_DIAS_DEFAULT);
   const [simHoras, setSimHoras] = useState(SIM_HORAS_DEFAULT);
 
-  const [remota, setRemota] = useState({
-    llamada: { dias: LLAMADA_DIAS_DEFAULT, horas: LLAMADA_HORAS_DEFAULT },
-    video: { dias: VIDEO_DIAS_DEFAULT, horas: VIDEO_HORAS_DEFAULT },
-    mensaje: { dias: MENSAJE_DIAS_DEFAULT, horas: MENSAJE_HORAS_DEFAULT },
-  });
+  const [llamadaDias, setLlamadaDias] = useState(LLAMADA_DIAS_DEFAULT);
+  const [llamadaHoras, setLlamadaHoras] = useState(LLAMADA_HORAS_DEFAULT);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -160,8 +147,8 @@ export default function EmpresaHorarios() {
   const simHorasSeleccionadas = useMemo(() => Object.values(simHoras).filter(Boolean).length, [simHoras]);
   const simFechas = useMemo(() => proximasFechas(simDias), [simDias]);
 
-  const toggleRemotaDia = (canal, key) => setRemota((prev) => ({ ...prev, [canal]: { ...prev[canal], dias: { ...prev[canal].dias, [key]: !prev[canal].dias[key] } } }));
-  const toggleRemotaHora = (canal, h) => setRemota((prev) => ({ ...prev, [canal]: { ...prev[canal], horas: { ...prev[canal].horas, [h]: !prev[canal].horas[h] } } }));
+  const toggleLlamadaDia = (key) => setLlamadaDias((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleLlamadaHora = (h) => setLlamadaHoras((prev) => ({ ...prev, [h]: !prev[h] }));
 
   const handleGuardar = () => {
     Swal.fire({
@@ -172,11 +159,7 @@ export default function EmpresaHorarios() {
   };
 
   const handleCancelarSim = () => { setSimDias(SIM_DIAS_DEFAULT); setSimHoras(SIM_HORAS_DEFAULT); };
-  const handleCancelarRemota = () => setRemota({
-    llamada: { dias: LLAMADA_DIAS_DEFAULT, horas: LLAMADA_HORAS_DEFAULT },
-    video: { dias: VIDEO_DIAS_DEFAULT, horas: VIDEO_HORAS_DEFAULT },
-    mensaje: { dias: MENSAJE_DIAS_DEFAULT, horas: MENSAJE_HORAS_DEFAULT },
-  });
+  const handleCancelarRemota = () => { setLlamadaDias(LLAMADA_DIAS_DEFAULT); setLlamadaHoras(LLAMADA_HORAS_DEFAULT); };
 
   return (
     <div className={styles.page}>
@@ -251,27 +234,23 @@ export default function EmpresaHorarios() {
               <div className={styles.card}>
                 <div className={styles.cardHead}>
                   <div className={styles.cardIcon}><IconVideo /></div>
-                  <div><div className={styles.cardTitle}>Atención remota</div><div className={styles.cardSub}>Configura cada canal: Llamada, Videollamada y Mensaje</div></div>
+                  <div><div className={styles.cardTitle}>Atención remota</div><div className={styles.cardSub}>Configura el canal de llamada</div></div>
                 </div>
                 <div className={styles.cardBody}>
                   <div className={styles.subTabs}>
-                    <button className={`${styles.subTab} ${activeSubTab === 'llamada' ? styles.active : ''}`} onClick={() => setActiveSubTab('llamada')}><IconPhone /> Llamada</button>
-                    <button className={`${styles.subTab} ${activeSubTab === 'video' ? styles.active : ''}`} onClick={() => setActiveSubTab('video')}><IconVideo size={13} /> Videollamada</button>
-                    <button className={`${styles.subTab} ${activeSubTab === 'mensaje' ? styles.active : ''}`} onClick={() => setActiveSubTab('mensaje')}><IconChat /> Mensaje</button>
+                    <button className={`${styles.subTab} ${styles.active}`}><IconPhone /> Llamada</button>
                   </div>
 
-                  {['llamada', 'video', 'mensaje'].map((canal) => activeSubTab === canal && (
-                    <div className={styles.subPane} key={canal}>
-                      <div className={styles.field}>
-                        <label className={styles.fieldLabel}>Días disponibles</label>
-                        <DayChips dias={remota[canal].dias} onToggle={(key) => toggleRemotaDia(canal, key)} />
-                      </div>
-                      <div className={styles.field} style={{ marginBottom: 0 }}>
-                        <label className={styles.fieldLabel}>Horas disponibles</label>
-                        <HourChips horas={remota[canal].horas} lista={HORAS_REMOTA} onToggle={(h) => toggleRemotaHora(canal, h)} />
-                      </div>
+                  <div className={styles.subPane}>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Días disponibles</label>
+                      <DayChips dias={llamadaDias} onToggle={toggleLlamadaDia} />
                     </div>
-                  ))}
+                    <div className={styles.field} style={{ marginBottom: 0 }}>
+                      <label className={styles.fieldLabel}>Horas disponibles</label>
+                      <HourChips horas={llamadaHoras} lista={HORAS_REMOTA} onToggle={toggleLlamadaHora} />
+                    </div>
+                  </div>
                 </div>
                 <div className={styles.secFoot}>
                   <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleCancelarRemota}>Cancelar</button>
