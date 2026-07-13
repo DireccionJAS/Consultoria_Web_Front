@@ -236,3 +236,72 @@
   .calendario-jas-page .content { grid-template-columns: 1fr; }
   .calendario-jas-page .side { position: static; }
 }
+
+/*
+  Cambiar cita: extraído 1:1 de "Cambiar Cita (standalone).html". Paleta
+  propia (--cc-primary/--cc-hover) distinta de la del resto de la página,
+  tal como está definida en el archivo fuente. Prefijo cc- para no chocar
+  con .btn/.field-label ya usados en el resto de calendario-jas-page.
+*/
+.calendario-jas-page .cc-modal {
+  --cc-primary: #1FA0D1; --cc-hover: #205C81; --cc-light: #C4E7F5; --cc-c5: #E4F4FB;
+  --cc-line: rgba(15,26,48,0.10); --cc-line-2: rgba(15,26,48,0.18); --cc-muted: rgba(15,26,48,0.55);
+  --cc-amber-soft: #FBEBC9; --cc-amber: #C68714; --cc-rose-soft: #F5DADA; --cc-rose: #B73E3E;
+  width: 100%; max-width: 440px; background: #fff; border-radius: 22px; overflow: hidden;
+  box-shadow: 0 24px 60px -24px rgba(15,26,48,0.35), 0 0 0 1px rgba(15,26,48,0.05);
+  display: flex; flex-direction: column; color: var(--c1); font-family: var(--sans);
+}
+.calendario-jas-page .cc-head { padding: 20px 24px; background: linear-gradient(135deg, var(--c1), var(--cc-hover)); color: #fff; position: relative; overflow: hidden; }
+.calendario-jas-page .cc-head::after { content: ""; position: absolute; top: -55px; right: -45px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(31,160,209,0.22) 0%, transparent 70%); }
+.calendario-jas-page .cc-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,244,251,0.65); margin-bottom: 5px; position: relative; }
+.calendario-jas-page .cc-title { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; position: relative; }
+.calendario-jas-page .cc-close { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.18); color: #fff; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.calendario-jas-page .cc-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+
+.calendario-jas-page .cc-body { padding: 22px 24px; max-height: calc(100vh - 220px); overflow-y: auto; }
+.calendario-jas-page .cc-sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cc-muted); margin-bottom: 11px; display: flex; align-items: center; gap: 8px; }
+.calendario-jas-page .cc-sec-label::after { content: ""; flex: 1; height: 1px; background: var(--cc-line); }
+
+.calendario-jas-page .cc-current { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #F4F8FB; border-radius: 14px; margin-bottom: 22px; }
+.calendario-jas-page .cc-cur-date { width: 54px; flex-shrink: 0; text-align: center; border-radius: 11px; padding: 9px 0; background: var(--cc-amber-soft); color: var(--cc-amber); }
+.calendario-jas-page .cc-cur-day { font-family: var(--display); font-weight: 700; font-size: 22px; line-height: 1; }
+.calendario-jas-page .cc-cur-mon { font-size: 9px; font-family: var(--mono); text-transform: uppercase; margin-top: 2px; }
+.calendario-jas-page .cc-cur-info { flex: 1; min-width: 0; }
+.calendario-jas-page .cc-cur-type { font-size: 14px; font-weight: 600; }
+.calendario-jas-page .cc-cur-time { font-size: 12px; color: var(--cc-muted); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
+.calendario-jas-page .cc-cur-badge { font-size: 10px; font-family: var(--mono); padding: 3px 9px; border-radius: 999px; background: var(--cc-amber-soft); color: var(--cc-amber); letter-spacing: 0.04em; font-weight: 600; flex-shrink: 0; }
+
+.calendario-jas-page .cc-field { margin-bottom: 15px; }
+.calendario-jas-page .cc-field-label { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 7px; }
+.calendario-jas-page .cc-req { color: var(--cc-primary); }
+.calendario-jas-page .cc-inp-wrap { display: flex; align-items: center; background: #fff; border: 1px solid var(--cc-line-2); border-radius: 11px; transition: all 0.2s; }
+.calendario-jas-page .cc-inp-wrap:focus-within { border-color: var(--cc-primary); box-shadow: 0 0 0 4px rgba(31,160,209,0.1); }
+.calendario-jas-page .cc-inp-icon { padding: 0 9px 0 13px; color: var(--cc-muted); display: flex; }
+.calendario-jas-page .cc-inp { flex: 1; border: 0; outline: 0; background: transparent; padding: 12px 13px 12px 2px; font-size: 13.5px; color: var(--c1); min-width: 0; cursor: text; }
+.calendario-jas-page .cc-time-pills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.calendario-jas-page .cc-time-pill { padding: 9px; border: 1.5px solid var(--cc-line-2); border-radius: 10px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 12px; font-weight: 600; font-family: var(--mono); }
+.calendario-jas-page .cc-time-pill:hover { border-color: var(--cc-primary); }
+.calendario-jas-page .cc-time-pill.sel { border-color: var(--cc-primary); background: var(--cc-primary); color: #fff; }
+
+.calendario-jas-page .cc-warn { padding: 14px 16px; background: var(--cc-rose-soft); border: 1px solid rgba(183,62,62,0.25); border-radius: 14px; margin: 6px 0 16px; }
+.calendario-jas-page .cc-warn-top { display: flex; gap: 10px; }
+.calendario-jas-page .cc-warn-top svg { color: var(--cc-rose); flex-shrink: 0; margin-top: 1px; }
+.calendario-jas-page .cc-warn-text { font-size: 12px; color: #7a2020; line-height: 1.5; }
+.calendario-jas-page .cc-pay-q { font-size: 12px; font-weight: 600; margin: 16px 0 9px; }
+.calendario-jas-page .cc-pay-toggle { display: flex; padding: 4px; background: rgba(255,255,255,0.6); border: 1px solid rgba(183,62,62,0.2); border-radius: 11px; }
+.calendario-jas-page .cc-pay-toggle-opt { flex: 1; padding: 9px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--cc-muted); transition: all 0.2s; text-align: center; cursor: pointer; }
+.calendario-jas-page .cc-pay-toggle-opt.active { background: var(--c1); color: var(--cc-c5); }
+.calendario-jas-page .cc-pay-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
+.calendario-jas-page .cc-pay-method { padding: 13px; border: 1.5px solid var(--cc-line-2); background: #fff; border-radius: 11px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 9px; }
+.calendario-jas-page .cc-pay-method:hover { border-color: var(--cc-primary); }
+.calendario-jas-page .cc-pay-method.sel { border-color: var(--cc-primary); background: var(--cc-light); }
+.calendario-jas-page .cc-pm-logo { width: 36px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-style: italic; color: #fff; flex-shrink: 0; }
+.calendario-jas-page .cc-pm-name { font-size: 12.5px; font-weight: 600; }
+.calendario-jas-page .cc-pres-note { margin-top: 12px; padding: 12px 14px; background: #fff; border: 1px solid var(--cc-line); border-radius: 11px; font-size: 12px; color: var(--cc-muted); line-height: 1.5; display: flex; gap: 9px; }
+.calendario-jas-page .cc-pres-note svg { color: var(--cc-primary); flex-shrink: 0; margin-top: 1px; }
+
+.calendario-jas-page .cc-foot { padding: 16px 24px; border-top: 1px solid var(--cc-line); }
+.calendario-jas-page .cc-btn { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px; border-radius: 12px; font-size: 13.5px; font-weight: 600; transition: all 0.2s; }
+.calendario-jas-page .cc-btn-primary { background: var(--cc-primary) !important; color: #fff; }
+.calendario-jas-page .cc-btn-primary:hover:not(:disabled) { background: var(--cc-hover) !important; transform: translateY(-1px); }
+.calendario-jas-page .cc-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
