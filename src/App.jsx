@@ -9,6 +9,7 @@ import EmpresaTramites from "./components/Administrador/EmpresaTramites.jsx";
 import EmpresaClientes from "./components/Administrador/EmpresaClientes.jsx";
 import EmpresaPagos from "./components/Administrador/EmpresaPagos.jsx";
 import EmpresaCalendario from "./components/Administrador/EmpresaCalendario.jsx";
+import EmpresaHorarios from "./components/Administrador/EmpresaHorarios.jsx";
 import AdministradorServicios from "./components/Administrador/AdministradorServicios";
 import AdministradorCliente from "./components/Administrador/AdministradorClientes";
 import AdministradorTramites from "./components/Administrador/AdministradorTramites";
@@ -23,7 +24,6 @@ import MisTramites from "./components/Cliente/MisTramites";
 import MisTramitesMobile from "./components/Cliente/MisTramitesMobile";
 import Calendario from "./components/Cliente/Calendario.jsx";
 import CalendarioAdmin from "./components/Administrador/CalendarioAdmin.jsx";
-import AdministradorHorarios from "./components/Administrador/AdministradorHorarios.jsx";
 import ClienteHomeMobile from "./components/Cliente/ClienteHomeMobile.jsx";
 
 import NoAutorizado from "./components/NoAutorizado";
@@ -105,6 +105,11 @@ function App() {
             <EmpresaCalendario />
           </ProtectedRoute>
         } />
+        <Route path="/EmpresaHorarios" element={
+          <ProtectedRoute allowedRoles={["EMPRESA"]}>
+            <EmpresaHorarios />
+          </ProtectedRoute>
+        } />
         <Route path="/PDF" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <UploadPfd />
@@ -168,12 +173,6 @@ function App() {
         <Route path="/Calendar" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <CalendarioAdmin />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/HorariosAdmin" element={
-          <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <AdministradorHorarios />
           </ProtectedRoute>
         } />
 

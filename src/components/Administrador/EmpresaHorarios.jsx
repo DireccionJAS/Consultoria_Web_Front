@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
-import Navbar from '../NavbarAdmin.jsx';
-import '../../styles/HorariosAdminJAS.css';
+import EmpresaSidebar from './EmpresaSidebar.jsx';
+import styles from './../../styles/EmpresaHorarios.module.css';
 
 // Página nueva: no existe ninguna entidad ni endpoint en el backend para
 // guardar horarios/disponibilidad (ni de Simulación ni de Atención al
@@ -84,11 +84,11 @@ function IconAlert() {
 
 function DayChips({ dias, onToggle }) {
   return (
-    <div className="days">
+    <div className={styles.days}>
       {DIAS.map((d) => (
-        <label key={d.key} className={`day-chip ${dias[d.key] ? 'on' : ''}`} onClick={() => onToggle(d.key)}>
-          <span className="day-box">{dias[d.key] && <IconCheckTiny />}</span>
-          <span className="day-name">{d.label}</span>
+        <label key={d.key} className={`${styles.dayChip} ${dias[d.key] ? styles.on : ''}`} onClick={() => onToggle(d.key)}>
+          <span className={styles.dayBox}>{dias[d.key] && <IconCheckTiny />}</span>
+          <span className={styles.dayName}>{d.label}</span>
         </label>
       ))}
     </div>
@@ -97,9 +97,9 @@ function DayChips({ dias, onToggle }) {
 
 function HourChips({ horas, lista, onToggle }) {
   return (
-    <div className="hours" style={{ gridTemplateColumns: 'repeat(7,1fr)' }}>
+    <div className={styles.hours} style={{ gridTemplateColumns: 'repeat(7,1fr)' }}>
       {lista.map((h) => (
-        <div key={h} className={`hour-chip ${horas[h] ? 'on' : ''}`} onClick={() => onToggle(h)}>{h}</div>
+        <div key={h} className={`${styles.hourChip} ${horas[h] ? styles.on : ''}`} onClick={() => onToggle(h)}>{h}</div>
       ))}
     </div>
   );
@@ -124,7 +124,7 @@ function proximasFechas(dias, cantidad = 6) {
   return fechas;
 }
 
-export default function AdministradorHorarios() {
+export default function EmpresaHorarios() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sim');
   const [activeSubTab, setActiveSubTab] = useState('llamada');
@@ -143,16 +143,17 @@ export default function AdministradorHorarios() {
     if (!token) { navigate('/'); return; }
     try {
       const decoded = jwtDecode(token);
-      if (decoded.role !== 'ADMIN') {
-        Swal.fire({ icon: 'error', title: 'Acceso denegado', text: 'No tienes permiso para acceder a esta página.' });
-        navigate('/');
-      }
+      if (decoded.role !== 'EMPRESA') { navigate('/'); return; }
     } catch (error) {
-      console.error('Error decoding token:', error);
+      console.error('Token inválido', error);
       localStorage.removeItem('token');
       navigate('/');
     }
   }, [navigate]);
+
+  const handleNavigate = (key) => {
+    console.log('Navegar a sección de sidebar:', key);
+  };
 
   const toggleSimDia = (key) => setSimDias((prev) => ({ ...prev, [key]: !prev[key] }));
   const toggleSimHora = (h) => setSimHoras((prev) => ({ ...prev, [h]: !prev[h] }));
@@ -178,109 +179,109 @@ export default function AdministradorHorarios() {
   });
 
   return (
-    <div className="tramites-container horarios-jas-page">
-      <div className="fixed-top">
-        <Navbar title={'- Horarios'} />
-      </div>
+    <div className={styles.page}>
+      <EmpresaSidebar active="horarios" onNavigate={handleNavigate} />
 
-      <header className="topbar">
-        <div>
-          <div className="crumb"><span>Admin</span> <span style={{ color: 'var(--muted-2)' }}>/</span> <span className="accent">Horarios</span></div>
-          <div className="page-title-h">Gestión de horarios</div>
-        </div>
-      </header>
+      <main className={styles.main}>
+        <header className={styles.topbar}>
+          <div>
+            <div className={styles.crumb}><span>Empresa</span> <span className={styles.crumbSep}>/</span> <span className={styles.accent}>Horarios</span></div>
+            <div className={styles.pageTitle}>Gestión de horarios</div>
+          </div>
+        </header>
 
-      <div className="content">
-        <div className="tabs">
-          <button className={`tab ${activeTab === 'sim' ? 'active' : ''}`} onClick={() => setActiveTab('sim')}><IconMonitor /> Simulación</button>
-          <button className={`tab ${activeTab === 'aten' ? 'active' : ''}`} onClick={() => setActiveTab('aten')}><IconUser /> Atención al cliente</button>
-        </div>
+        <div className={styles.content}>
+          <div className={styles.tabs}>
+            <button className={`${styles.tab} ${activeTab === 'sim' ? styles.active : ''}`} onClick={() => setActiveTab('sim')}><IconMonitor /> Simulación</button>
+            <button className={`${styles.tab} ${activeTab === 'aten' ? styles.active : ''}`} onClick={() => setActiveTab('aten')}><IconUser /> Atención al cliente</button>
+          </div>
 
-        {activeTab === 'sim' && (
-          <div className="pane">
-            <div className="card">
-              <div className="card-head">
-                <div className="card-icon amber"><IconMonitor /></div>
-                <div><div className="card-title">Horarios de simulación</div><div className="card-sub">Días y horas disponibles para prácticas de entrevista</div></div>
-              </div>
-              <div className="card-body">
-                <div className="field">
-                  <label className="field-label">Días disponibles</label>
-                  <DayChips dias={simDias} onToggle={toggleSimDia} />
-                  <div className="next-dates">
-                    <div className="nd-label">Próximas fechas de los días seleccionados</div>
-                    <div className="nd-list">
-                      {simFechas.length === 0 ? (
-                        <span style={{ fontSize: 12, color: 'var(--muted)' }}>Selecciona al menos un día</span>
-                      ) : simFechas.map((f, i) => (
-                        <span key={i} className="nd-pill"><span className="nd-dot"></span>{f.getDate()} {MESES_CORTOS[f.getMonth()]} <span className="nd-day">{DOW_CORTO[f.getDay()]}</span></span>
-                      ))}
+          {activeTab === 'sim' && (
+            <div className={styles.pane}>
+              <div className={styles.card}>
+                <div className={styles.cardHead}>
+                  <div className={`${styles.cardIcon} ${styles.amber}`}><IconMonitor /></div>
+                  <div><div className={styles.cardTitle}>Horarios de simulación</div><div className={styles.cardSub}>Días y horas disponibles para prácticas de entrevista</div></div>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Días disponibles</label>
+                    <DayChips dias={simDias} onToggle={toggleSimDia} />
+                    <div className={styles.nextDates}>
+                      <div className={styles.ndLabel}>Próximas fechas de los días seleccionados</div>
+                      <div className={styles.ndList}>
+                        {simFechas.length === 0 ? (
+                          <span style={{ fontSize: 12, color: 'var(--muted)' }}>Selecciona al menos un día</span>
+                        ) : simFechas.map((f, i) => (
+                          <span key={i} className={styles.ndPill}><span className={styles.ndDot}></span>{f.getDate()} {MESES_CORTOS[f.getMonth()]} <span className={styles.ndDay}>{DOW_CORTO[f.getDay()]}</span></span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="field" style={{ marginBottom: 0 }}>
-                  <label className="field-label">Horas disponibles <span className="field-hint">— selecciona las que estarán abiertas</span></label>
-                  <HourChips horas={simHoras} lista={HORAS_SIM} onToggle={toggleSimHora} />
-                  <div className="hours-meta"><IconAlert /> {simHorasSeleccionadas} horas seleccionadas</div>
-                </div>
-              </div>
-              <div className="sec-foot">
-                <button className="btn btn-ghost" onClick={handleCancelarSim}>Cancelar</button>
-                <button className="btn btn-primary" onClick={handleGuardar}><IconCheck /> Guardar</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'aten' && (
-          <div className="pane">
-            <div className="card">
-              <div className="card-head">
-                <div className="card-icon green"><IconPin /></div>
-                <div><div className="card-title">Atención presencial</div><div className="card-sub">Horario fijo de oficina</div></div>
-              </div>
-              <div className="card-body">
-                <div className="fixed-box">
-                  <div className="fixed-icon"><IconClockOutline /></div>
-                  <div><div className="fixed-time">Lunes a Viernes · 8:00 AM – 4:00 PM</div><div className="fixed-lbl">Horario de oficina</div></div>
-                  <span className="lock-tag"><IconLock /> No editable</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="card-head">
-                <div className="card-icon"><IconVideo /></div>
-                <div><div className="card-title">Atención remota</div><div className="card-sub">Configura cada canal: Llamada, Videollamada y Mensaje</div></div>
-              </div>
-              <div className="card-body">
-                <div className="sub-tabs">
-                  <button className={`sub-tab ${activeSubTab === 'llamada' ? 'active' : ''}`} onClick={() => setActiveSubTab('llamada')}><IconPhone /> Llamada</button>
-                  <button className={`sub-tab ${activeSubTab === 'video' ? 'active' : ''}`} onClick={() => setActiveSubTab('video')}><IconVideo size={13} /> Videollamada</button>
-                  <button className={`sub-tab ${activeSubTab === 'mensaje' ? 'active' : ''}`} onClick={() => setActiveSubTab('mensaje')}><IconChat /> Mensaje</button>
-                </div>
-
-                {['llamada', 'video', 'mensaje'].map((canal) => activeSubTab === canal && (
-                  <div className="sub-pane active" key={canal}>
-                    <div className="field">
-                      <label className="field-label">Días disponibles</label>
-                      <DayChips dias={remota[canal].dias} onToggle={(key) => toggleRemotaDia(canal, key)} />
-                    </div>
-                    <div className="field" style={{ marginBottom: 0 }}>
-                      <label className="field-label">Horas disponibles</label>
-                      <HourChips horas={remota[canal].horas} lista={HORAS_REMOTA} onToggle={(h) => toggleRemotaHora(canal, h)} />
-                    </div>
+                  <div className={styles.field} style={{ marginBottom: 0 }}>
+                    <label className={styles.fieldLabel}>Horas disponibles <span className={styles.fieldHint}>— selecciona las que estarán abiertas</span></label>
+                    <HourChips horas={simHoras} lista={HORAS_SIM} onToggle={toggleSimHora} />
+                    <div className={styles.hoursMeta}><IconAlert /> {simHorasSeleccionadas} horas seleccionadas</div>
                   </div>
-                ))}
-              </div>
-              <div className="sec-foot">
-                <button className="btn btn-ghost" onClick={handleCancelarRemota}>Cancelar</button>
-                <button className="btn btn-primary" onClick={handleGuardar}><IconCheck /> Guardar</button>
+                </div>
+                <div className={styles.secFoot}>
+                  <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleCancelarSim}>Cancelar</button>
+                  <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardar}><IconCheck /> Guardar</button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+
+          {activeTab === 'aten' && (
+            <div className={styles.pane}>
+              <div className={styles.card}>
+                <div className={styles.cardHead}>
+                  <div className={`${styles.cardIcon} ${styles.green}`}><IconPin /></div>
+                  <div><div className={styles.cardTitle}>Atención presencial</div><div className={styles.cardSub}>Horario fijo de oficina</div></div>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.fixedBox}>
+                    <div className={styles.fixedIcon}><IconClockOutline /></div>
+                    <div><div className={styles.fixedTime}>Lunes a Viernes · 8:00 AM – 4:00 PM</div><div className={styles.fixedLbl}>Horario de oficina</div></div>
+                    <span className={styles.lockTag}><IconLock /> No editable</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardHead}>
+                  <div className={styles.cardIcon}><IconVideo /></div>
+                  <div><div className={styles.cardTitle}>Atención remota</div><div className={styles.cardSub}>Configura cada canal: Llamada, Videollamada y Mensaje</div></div>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.subTabs}>
+                    <button className={`${styles.subTab} ${activeSubTab === 'llamada' ? styles.active : ''}`} onClick={() => setActiveSubTab('llamada')}><IconPhone /> Llamada</button>
+                    <button className={`${styles.subTab} ${activeSubTab === 'video' ? styles.active : ''}`} onClick={() => setActiveSubTab('video')}><IconVideo size={13} /> Videollamada</button>
+                    <button className={`${styles.subTab} ${activeSubTab === 'mensaje' ? styles.active : ''}`} onClick={() => setActiveSubTab('mensaje')}><IconChat /> Mensaje</button>
+                  </div>
+
+                  {['llamada', 'video', 'mensaje'].map((canal) => activeSubTab === canal && (
+                    <div className={styles.subPane} key={canal}>
+                      <div className={styles.field}>
+                        <label className={styles.fieldLabel}>Días disponibles</label>
+                        <DayChips dias={remota[canal].dias} onToggle={(key) => toggleRemotaDia(canal, key)} />
+                      </div>
+                      <div className={styles.field} style={{ marginBottom: 0 }}>
+                        <label className={styles.fieldLabel}>Horas disponibles</label>
+                        <HourChips horas={remota[canal].horas} lista={HORAS_REMOTA} onToggle={(h) => toggleRemotaHora(canal, h)} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.secFoot}>
+                  <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleCancelarRemota}>Cancelar</button>
+                  <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardar}><IconCheck /> Guardar</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
