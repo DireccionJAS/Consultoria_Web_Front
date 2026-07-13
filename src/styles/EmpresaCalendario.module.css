@@ -112,13 +112,20 @@
 .evModalHead.con { background: linear-gradient(135deg, #28A052, #1B6B3A); }
 .evModalHead.sim { background: linear-gradient(135deg, #D9722E, #b85d22); }
 .evModalHead.aten { background: linear-gradient(135deg, #9333EA, #7526b8); }
+.evModalHead::after { content: ""; position: absolute; top: -55px; right: -45px; width: 170px; height: 170px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%); }
+.evModalBadge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; background: rgba(255,255,255,0.2); border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; position: relative; margin-bottom: 13px; }
+.evModalBadge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--white); }
 .evModalType { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; margin-bottom: 6px; }
-.evModalTitle { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
-.evModalClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(228,236,240,0.18) !important; display: flex; align-items: center; justify-content: center; }
+.evModalTitle { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; position: relative; line-height: 1.1; }
+.evModalClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(228,236,240,0.18) !important; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 2; }
+.evModalClose:hover { background: rgba(228,236,240,0.3) !important; transform: rotate(90deg); }
 .evModalBody { padding: 20px 22px; }
 .evDetail { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
 .evDetail:last-child { border-bottom: 0; }
 .evDetailIcon { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8; color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.evDetailIcon.cas { background: var(--c5); color: var(--c2); }
+.evDetailIcon.con { background: var(--green-soft); color: var(--green); }
+.evDetailIcon.sim { background: var(--orange-soft); color: var(--orange); }
 .evDetailLbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
 .evDetailVal { font-size: 14px; font-weight: 600; margin-top: 1px; }
 

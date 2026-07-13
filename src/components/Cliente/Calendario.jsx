@@ -8,10 +8,31 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { tramitesPorId } from './../../api/api';
 import Navbar from '../NavbarUser';
 
+const CITA_META = {
+    SIMULACION: { headClass: 'sim', badge: 'Simulación' },
+    CAS: { headClass: 'cas', badge: 'CAS' },
+    CONSULADO: { headClass: 'con', badge: 'Consulado' },
+};
+
+function IconCliClose() {
+    return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 6l12 12M6 18L18 6"></path></svg>;
+}
+function IconCliSim() {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="14" rx="2"></rect><path d="M8 22h8M12 18v4"></path><circle cx="9" cy="11" r="2"></circle></svg>;
+}
+function IconCliCas() {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
+}
+function IconCliCon() {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"></path></svg>;
+}
+const CLI_ICONS = { SIMULACION: IconCliSim, CAS: IconCliCas, CONSULADO: IconCliCon };
+
 export default function Calendario() {
     const navigate = useNavigate();
     const calendarRef = useRef(null);
     const [eventos, setEventos] = useState([]);
+    const [citaDetalle, setCitaDetalle] = useState(null);
     const [usuario, setUsuario] = useState('');
     const [filtroTipo, setFiltroTipo] = useState('');
     const [tiposUnicos, setTiposUnicos] = useState([]);
@@ -110,6 +131,9 @@ export default function Calendario() {
 
                     const baseProps = {
                         transactDesc: item.transact.description,
+                        tramiteName: item.transact.description,
+                        casCity: item.casCity,
+                        conCity: item.conCity,
                         backgroundColor: color,
                         borderColor: color
                     };
@@ -500,11 +524,86 @@ export default function Calendario() {
                         padding: 2px;
                     }
                 }
+
+                /* modal detalle de cita - extraído 1:1 de "Modales Cita (standalone).html" (vista cliente) */
+                .cli-cita-overlay {
+                    position: fixed; inset: 0; background: rgba(15,26,48,0.45); backdrop-filter: blur(3px);
+                    display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
+                }
+                .cli-cita-modal {
+                    width: 100%; max-width: 360px; background: #FFFFFF; border-radius: 22px; overflow: hidden;
+                    box-shadow: 0 24px 60px -24px rgba(15,26,48,0.35), 0 0 0 1px rgba(15,26,48,0.05);
+                    font-family: "Inter", system-ui, sans-serif; color: #1B2A4A;
+                }
+                .cli-cita-head { padding: 20px 22px; color: #fff; position: relative; overflow: hidden; }
+                .cli-cita-head.sim { background: linear-gradient(135deg, #D9722E, #b85d22); }
+                .cli-cita-head.cas { background: linear-gradient(135deg, #1FA0D1, #205C81); }
+                .cli-cita-head.con { background: linear-gradient(135deg, #28A052, #1b6b3a); }
+                .cli-cita-head::after {
+                    content: ""; position: absolute; top: -55px; right: -45px; width: 170px; height: 170px;
+                    border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+                }
+                .cli-cita-badge {
+                    display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; background: rgba(255,255,255,0.2);
+                    border-radius: 999px; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10px; font-weight: 700;
+                    letter-spacing: 0.1em; text-transform: uppercase; position: relative; margin-bottom: 13px;
+                }
+                .cli-cita-badge .cli-cita-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+                .cli-cita-title { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; position: relative; line-height: 1.1; }
+                .cli-cita-close {
+                    position: absolute; top: 17px; right: 17px; width: 30px; height: 30px; border-radius: 50%;
+                    background: rgba(255,255,255,0.18); color: #fff; border: 0; cursor: pointer;
+                    display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 2;
+                }
+                .cli-cita-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+                .cli-cita-body { padding: 20px 22px; }
+                .cli-cita-msg { display: flex; gap: 13px; align-items: flex-start; }
+                .cli-cita-msg-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+                .cli-cita-msg-icon.sim { background: #FBE5D4; color: #D9722E; }
+                .cli-cita-msg-icon.cas { background: #C4E7F5; color: #205C81; }
+                .cli-cita-msg-icon.con { background: #DFF5E5; color: #28A052; }
+                .cli-cita-msg-text { font-size: 13.5px; line-height: 1.6; color: #1B2A4A; }
+                .cli-cita-msg-text strong { font-weight: 600; }
+                .cli-cita-hl-sim { color: #D9722E; font-weight: 600; }
+                .cli-cita-hl-cas { color: #205C81; font-weight: 600; }
+                .cli-cita-hl-con { color: #28A052; font-weight: 600; }
             `}</style>
 
             <div className="navbar-fixed">
                 <Navbar title={"- Calendario"} />
             </div>
+
+            {citaDetalle && (() => {
+                const meta = CITA_META[citaDetalle.tipo];
+                const CliIcon = CLI_ICONS[citaDetalle.tipo];
+                return (
+                    <div className="cli-cita-overlay" onClick={(e) => { if (e.target === e.currentTarget) setCitaDetalle(null); }}>
+                        <div className="cli-cita-modal">
+                            <div className={`cli-cita-head ${meta.headClass}`}>
+                                <span className="cli-cita-badge"><span className="cli-cita-dot"></span> {meta.badge}</span>
+                                <div className="cli-cita-title">{citaDetalle.tramiteName}</div>
+                                <button className="cli-cita-close" onClick={() => setCitaDetalle(null)}><IconCliClose /></button>
+                            </div>
+                            <div className="cli-cita-body">
+                                <div className="cli-cita-msg">
+                                    <div className={`cli-cita-msg-icon ${meta.headClass}`}><CliIcon /></div>
+                                    <div className="cli-cita-msg-text">
+                                        {citaDetalle.tipo === 'SIMULACION' && (
+                                            <>Tienes una cita de <strong>simulación</strong> con el equipo de Consultoría JAS el <span className="cli-cita-hl-sim">{citaDetalle.diaHora}</span> hrs.</>
+                                        )}
+                                        {citaDetalle.tipo === 'CAS' && (
+                                            <>Tienes una cita <strong>CAS</strong> el <span className="cli-cita-hl-cas">{citaDetalle.diaHora}</span> en <strong>{citaDetalle.casCity || 'ubicación por confirmar'}</strong>.</>
+                                        )}
+                                        {citaDetalle.tipo === 'CONSULADO' && (
+                                            <>Tienes una cita en el <strong>Consulado</strong> el <span className="cli-cita-hl-con">{citaDetalle.diaHora}</span> en <strong>{citaDetalle.conCity || 'ubicación por confirmar'}</strong>.</>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
 
             <div className={`calendario-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
                 <div className="calendario-content">
@@ -541,7 +640,7 @@ export default function Calendario() {
                                 locale={esLocale}
                                 events={eventosFiltrados}
                                 eventClick={(info) => {
-                                    const { description, text } = info.event.extendedProps;
+                                    const { tipo, tramiteName, casCity, conCity, text } = info.event.extendedProps;
                                     const fechaObj = new Date(text);
 
                                     const diaSemana = fechaObj.toLocaleDateString('es-MX', { weekday: 'long' });
@@ -556,10 +655,12 @@ export default function Calendario() {
                                         hour12: false
                                     });
 
-                                    Swal.fire({
-                                        title: info.event.title,
-                                        text: `${description} el ${diaSemana}, ${fecha} a las ${hora}`,
-                                        icon: 'info'
+                                    setCitaDetalle({
+                                        tipo,
+                                        tramiteName: tramiteName || 'Trámite',
+                                        casCity,
+                                        conCity,
+                                        diaHora: `${diaSemana}, ${fecha} a las ${hora}`
                                     });
                                 }}
 

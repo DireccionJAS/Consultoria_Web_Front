@@ -11,10 +11,10 @@ const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', '
 const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
 const EV_META = {
-  cas: { headClass: 'cas', type: 'Cita CAS · Centro de Atención al Solicitante' },
-  con: { headClass: 'con', type: 'Cita Consular · Entrevista en el Consulado' },
-  sim: { headClass: 'sim', type: 'Simulación · Práctica de entrevista 1:1' },
-  aten: { headClass: 'aten', type: 'Atención a cliente · Vía Zoom' },
+  cas: { headClass: 'cas', type: 'Cita CAS · Centro de Atención al Solicitante', badge: 'CAS' },
+  con: { headClass: 'con', type: 'Cita Consular · Entrevista en el Consulado', badge: 'Consulado' },
+  sim: { headClass: 'sim', type: 'Simulación · Práctica de entrevista 1:1', badge: 'Simulación' },
+  aten: { headClass: 'aten', type: 'Atención a cliente · Vía Zoom', badge: 'Atención a cliente' },
 };
 
 // "Cita externa" (Atención al cliente) no tiene backend: ni entidad, ni
@@ -457,31 +457,29 @@ export default function EmpresaCalendario() {
           <div className={styles.evPopup} onClick={(e) => { if (e.target === e.currentTarget) setEventoDetalle(null); }}>
             <div className={styles.evModal}>
               <div className={`${styles.evModalHead} ${styles[EV_META[eventoDetalle.tipo].headClass]}`}>
-                <div className={styles.evModalType}>{EV_META[eventoDetalle.tipo].type}</div>
+                <div className={styles.evModalBadge}><span className={styles.dot}></span> {EV_META[eventoDetalle.tipo].badge}</div>
                 <div className={styles.evModalTitle}>{eventoDetalle.item.transact?.name || 'Trámite'}</div>
                 <button className={styles.evModalClose} onClick={() => setEventoDetalle(null)}><IconClose /></button>
               </div>
               <div className={styles.evModalBody}>
                 <div className={styles.evDetail}>
-                  <div className={styles.evDetailIcon}><IconUser /></div>
+                  <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconUser /></div>
                   <div><div className={styles.evDetailLbl}>Cliente</div><div className={styles.evDetailVal}>{eventoDetalle.item.user?.name || 'No disponible'}</div></div>
                 </div>
                 <div className={styles.evDetail}>
-                  <div className={styles.evDetailIcon}><IconPhone /></div>
+                  <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconPhone /></div>
                   <div><div className={styles.evDetailLbl}>Teléfono</div><div className={styles.evDetailVal}>{eventoDetalle.item.user?.phone || 'No disponible'}</div></div>
                 </div>
                 <div className={styles.evDetail}>
-                  <div className={styles.evDetailIcon}><IconCalendar /></div>
+                  <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconCalendar /></div>
                   <div><div className={styles.evDetailLbl}>Fecha y hora</div><div className={styles.evDetailVal}>{formatFechaHora(eventoDetalle.fecha, eventoDetalle.hora)}</div></div>
                 </div>
-                {eventoDetalle.tipo !== 'sim' && (
-                  <div className={styles.evDetail}>
-                    <div className={styles.evDetailIcon}><IconPin /></div>
-                    <div><div className={styles.evDetailLbl}>Ciudad</div><div className={styles.evDetailVal}>{(eventoDetalle.tipo === 'cas' ? eventoDetalle.item.casCity : eventoDetalle.item.conCity) || 'No registrada'}</div></div>
-                  </div>
-                )}
                 <div className={styles.evDetail}>
-                  <div className={styles.evDetailIcon}><IconEncargado /></div>
+                  <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconPin /></div>
+                  <div><div className={styles.evDetailLbl}>Ubicación</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'sim' ? 'Modalidad por confirmar' : ((eventoDetalle.tipo === 'cas' ? eventoDetalle.item.casCity : eventoDetalle.item.conCity) || 'No registrada')}</div></div>
+                </div>
+                <div className={styles.evDetail}>
+                  <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconEncargado /></div>
                   <div><div className={styles.evDetailLbl}>Encargado asignado</div><div className={styles.evDetailVal}>{eventoDetalle.item.encargado?.name || 'Sin asignar'}</div></div>
                 </div>
                 <button className={`${styles.btn} ${styles.btnAccent}`} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={() => navigate('/EmpresaTramites')}>
