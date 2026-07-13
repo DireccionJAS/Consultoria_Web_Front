@@ -38,17 +38,17 @@
 .pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
 .topActions { display: flex; align-items: center; gap: 8px; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
-.btnAccent { background: var(--c2); color: var(--white); }
-.btnAccent:hover { background: #1f5dcc; transform: translateY(-1px); }
-.btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
-.btnGhost:hover { background: #F4F6F8; }
+.btnAccent { background: var(--c2) !important; color: var(--white); }
+.btnAccent:hover { background: #1f5dcc !important; transform: translateY(-1px); }
+.btnGhost { background: transparent !important; color: var(--c1); border: 1px solid var(--line-2); }
+.btnGhost:hover { background: #F4F6F8 !important; }
 .btnSm { padding: 8px 13px; font-size: 12px; }
 
 .content { padding: 24px 32px 60px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
 
 /* quick access row */
 .quickRow { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
-.quickBtn { display: inline-flex; align-items: center; gap: 9px; padding: 11px 16px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; font-size: 12.5px; font-weight: 600; transition: all 0.2s; }
+.quickBtn { display: inline-flex; align-items: center; gap: 9px; padding: 11px 16px; background: var(--white) !important; border: 1px solid var(--line); border-radius: 12px; font-size: 12.5px; font-weight: 600; transition: all 0.2s; }
 .quickBtn:hover { border-color: var(--c3); transform: translateY(-1px); }
 .quickDot { width: 9px; height: 9px; border-radius: 50%; }
 .qbDate { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 4px; }
@@ -58,8 +58,8 @@
 .calHead { padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
 .calMonth { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px; }
 .calNav { display: flex; gap: 4px; }
-.calNav button { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-.calNav button:hover { background: var(--c5); }
+.calNav button { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8 !important; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.calNav button:hover { background: var(--c5) !important; }
 .calGridHead { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid var(--line); }
 .calDow { padding: 12px 8px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .calGrid { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 104px; }
@@ -114,7 +114,7 @@
 .evModalHead.aten { background: linear-gradient(135deg, #9333EA, #7526b8); }
 .evModalType { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; margin-bottom: 6px; }
 .evModalTitle { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
-.evModalClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(228,236,240,0.18); display: flex; align-items: center; justify-content: center; }
+.evModalClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(228,236,240,0.18) !important; display: flex; align-items: center; justify-content: center; }
 .evModalBody { padding: 20px 22px; }
 .evDetail { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
 .evDetail:last-child { border-bottom: 0; }
@@ -122,33 +122,75 @@
 .evDetailLbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
 .evDetailVal { font-size: 14px; font-weight: 600; margin-top: 1px; }
 
-/* nueva cita modal */
-.ncModal { width: 100%; max-width: 480px; background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 40px 100px -20px rgba(0,0,42,0.5); animation: calModalIn 0.3s cubic-bezier(0.2,0.8,0.3,1); max-height: calc(100vh - 80px); display: flex; flex-direction: column; }
-.ncHead { padding: 22px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: var(--c5); position: relative; overflow: hidden; flex-shrink: 0; }
-.ncHead::after { content: ""; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(111,174,219,0.30) 0%, transparent 70%); }
-.ncHeadRow { display: flex; align-items: center; gap: 13px; position: relative; }
-.ncHeadIcon { width: 44px; height: 44px; border-radius: 12px; background: rgba(228,236,240,0.15); border: 1px solid rgba(228,236,240,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.ncEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,236,240,0.6); margin-bottom: 4px; }
-.ncTitle { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; line-height: 1; }
-.ncClose { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 50%; background: rgba(228,236,240,0.15); color: var(--c5); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-.ncClose:hover { background: rgba(228,236,240,0.25); transform: rotate(90deg); }
-.ncBody { padding: 22px; overflow-y: auto; }
-.ncField { margin-bottom: 15px; }
-.ncLabel { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 7px; }
-.ncLabel .req { color: var(--c2); }
-.ncInp { width: 100%; padding: 11px 13px; background: var(--white); border: 1px solid var(--line-2); border-radius: 10px; font: inherit; font-size: 13.5px; color: var(--c1); transition: all 0.2s; }
-.ncInp:focus { outline: 0; border-color: var(--c2); box-shadow: 0 0 0 4px rgba(45,108,223,0.08); }
-.ncGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.ncTypes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-.ncType { padding: 12px 8px; border: 1.5px solid var(--line-2); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
-.ncType:hover { border-color: var(--c3); }
-.ncType.selCas { border-color: var(--c2); background: rgba(45,108,223,0.06); }
-.ncType.selCon { border-color: var(--green); background: var(--green-soft); }
-.ncType.selSim { border-color: var(--orange); background: var(--orange-soft); }
-.ncTypeDot { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 7px; }
-.ncTypeName { font-size: 12px; font-weight: 600; }
-.ncTypeSub { font-size: 9px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
-.ncFoot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; }
+/*
+  Nueva cita (v2) + Cita externa: extraídos 1:1 de
+  "Modal Nueva Cita - Simulacion (standalone).html". Paleta propia
+  (--navy/--teal) distinta de la del resto de la página, tal como está
+  definida en el archivo fuente.
+*/
+.ncModal {
+  --navy: #0B2A45; --teal: #1FBAD6; --ncmGrad: linear-gradient(115deg, var(--navy) 0%, var(--teal) 100%);
+  --ncmInk: #10202E; --ncmMuted: #7C8B96; --ncmLine: #E4EAEE; --ncmGreen: #22B07A; --ncmBlue: #2D6CDF;
+  --ncmOrange: #E08A2C; --ncmAccentSoft: #E7F7FB;
+  width: 100%; max-width: 480px; max-height: calc(100vh - 32px); display: flex; flex-direction: column;
+  background: #fff; border-radius: 22px; box-shadow: 0 30px 70px rgba(11,42,69,0.25), 0 4px 14px rgba(11,42,69,0.08);
+  overflow: hidden; color: var(--ncmInk); font-family: var(--sans);
+}
+.ncHead { background: var(--ncmGrad); padding: 16px 22px 18px; position: relative; color: #fff; flex-shrink: 0; }
+.ncHeadRow { display: flex; align-items: center; gap: 12px; }
+.ncHeadIcon { width: 36px; height: 36px; border-radius: 11px; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ncEyebrow { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; opacity: 0.75; white-space: nowrap; }
+.ncTitle { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; margin-top: 1px; white-space: nowrap; }
+.ncClose { position: absolute; top: 20px; right: 20px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.18) !important; border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.ncClose:hover { background: rgba(255,255,255,0.28) !important; }
+.ncBody { padding: 18px 22px; overflow-y: auto; }
+.ncTopRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+.ncFieldLabel { font-size: 12px; font-weight: 600; color: var(--ncmInk); white-space: nowrap; }
+.req { color: var(--teal); }
+.ncExtBtn { background: var(--navy) !important; color: #fff; border: none; font-size: 11.5px; font-weight: 600; padding: 7px 12px; border-radius: 9px; display: flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.ncExtBtn:hover { background: #0f3a5c !important; }
+.ncTypeGrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+.ncTypeCard { border: 1.5px solid var(--ncmLine); border-radius: 11px; padding: 10px 6px 9px; text-align: center; cursor: pointer; transition: all .15s; }
+.ncTypeDot { width: 7px; height: 7px; border-radius: 50%; margin: 0 auto 6px; }
+.ncTypeName { font-size: 12.5px; font-weight: 700; color: var(--ncmInk); }
+.ncTypeSub { font-size: 10px; color: var(--ncmMuted); margin-top: 1px; }
+.ncTypeCard.active { border-color: var(--teal); background: var(--ncmAccentSoft); }
+.ncField { margin-bottom: 12px; }
+.ncRow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ncSelectWrap, .ncInpWrap { border: 1.5px solid var(--ncmLine); border-radius: 10px; padding: 9px 12px; font-size: 13px; color: var(--ncmInk); display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; background: #fff; }
+.ncSelectWrap:focus-within, .ncInpWrap:focus-within { border-color: var(--teal); }
+.ncSelectWrap select, .ncInpWrap input { border: 0; outline: 0; background: transparent; font: inherit; font-size: 13px; color: var(--ncmInk); flex: 1; min-width: 0; }
+.ncSelectWrap svg, .ncInpWrap svg { color: var(--ncmMuted); flex-shrink: 0; }
+.ncInpWrap input::-webkit-calendar-picker-indicator { display: none; -webkit-appearance: none; }
+.ncAtenGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.ncAtenCard { border: 1.5px solid var(--ncmLine); border-radius: 11px; padding: 11px 10px; text-align: center; cursor: pointer; }
+.ncAtenIcon { width: 32px; height: 32px; border-radius: 9px; background: #EEF1F3; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; color: var(--ncmMuted); }
+.ncAtenCard.active { border-color: var(--teal); background: var(--ncmAccentSoft); }
+.ncAtenCard.active .ncAtenIcon { background: var(--teal); color: #fff; }
+.ncAtenName { font-size: 12.5px; font-weight: 700; color: var(--ncmInk); }
+.ncFoot { border-top: 1px solid var(--ncmLine); padding: 13px 22px; display: flex; justify-content: flex-end; gap: 9px; flex-shrink: 0; }
+.ncBtn { padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.ncBtn:disabled { opacity: .55; cursor: not-allowed; }
+.ncBtnGhost { background: #fff !important; border: 1.5px solid var(--ncmLine); color: var(--ncmInk); }
+.ncBtnGhost:hover { background: #F7F9FA !important; }
+.ncBtnDark { background: var(--navy) !important; color: #fff; }
+.ncBtnDark:hover { background: #0f3a5c !important; }
+
+/* cita externa (Atención al cliente) */
+.extModal { width: 100%; max-width: 480px; max-height: calc(100vh - 32px); display: flex; flex-direction: column; background: #fff; border-radius: 22px; box-shadow: 0 30px 70px rgba(11,42,69,0.25), 0 4px 14px rgba(11,42,69,0.08); overflow: hidden; color: #10202E; font-family: var(--sans); }
+.extClientCard { border: 1.5px solid #2D6CDF; border-radius: 14px; padding: 22px; text-align: center; width: 220px; margin: 0 auto 22px; }
+.extClientIcon { width: 38px; height: 38px; border-radius: 10px; background: #E6F6FB; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: #2D6CDF; }
+.extClientName { font-size: 14px; font-weight: 700; color: #0B2A45; }
+.extClientSub { font-size: 11.5px; color: #7C8B96; margin-top: 1px; }
+.extDayGrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 10px 0 18px; }
+.extDayCard { border: 1.5px solid #E4EAEE; border-radius: 12px; padding: 10px 0; text-align: center; cursor: pointer; }
+.extDayCard .d { font-size: 17px; font-weight: 800; color: #0B2A45; }
+.extDayCard .m { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #7C8B96; }
+.extDayCard.active { background: #E6F6FB; border-color: #2D6CDF; }
+.extTimeGrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 10px 0 18px; }
+.extTimeCard { border: 1.5px solid #E4EAEE; border-radius: 10px; padding: 10px 0; text-align: center; font-size: 13px; font-weight: 700; color: #10202E; cursor: pointer; }
+.extTimeCard.active { background: #2D6CDF; border-color: #2D6CDF; color: #fff; }
+.extTimeCard.disabled { color: #C7CDD3; text-decoration: line-through; cursor: not-allowed; }
 
 .loadingWrap { display: flex; justify-content: center; padding: 80px 0; }
 

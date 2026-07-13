@@ -17,6 +17,27 @@ const EV_META = {
   aten: { headClass: 'aten', type: 'Atención a cliente · Vía Zoom' },
 };
 
+// "Cita externa" (Atención al cliente) no tiene backend: ni entidad, ni
+// sistema de disponibilidad. Estos días/horarios son los mismos datos de
+// demo del mockup ("Modal Nueva Cita - Simulacion (standalone).html"); la
+// selección es solo visual y "Guardar cita" no persiste nada real.
+const EXT_DIAS = [
+  { d: '16', m: 'JUN' },
+  { d: '23', m: 'MAR' },
+  { d: '25', m: 'JUN' },
+  { d: '30', m: 'MAR' },
+];
+const EXT_HORAS = [
+  { hora: '09:00' },
+  { hora: '10:00' },
+  { hora: '12:00', disabled: true },
+  { hora: '13:00' },
+  { hora: '14:00' },
+  { hora: '15:00', disabled: true },
+  { hora: '17:00' },
+  { hora: '19:00' },
+];
+
 function IconChevronLeft() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"></path></svg>;
 }
@@ -34,9 +55,6 @@ function IconClose({ size = 13 }) {
 }
 function IconCalendar() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ color: 'var(--c2)' }}><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
-}
-function IconCalendarPlus() {
-  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"></path></svg>;
 }
 function IconPin() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
@@ -61,6 +79,33 @@ function IconEncargado() {
 }
 function IconExternal() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10"></path></svg>;
+}
+function IconNcHead() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
+}
+function IconArrowRight() {
+  return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>;
+}
+function IconChevDown() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"></path></svg>;
+}
+function IconCalSmall() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
+}
+function IconClockOutline() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>;
+}
+function IconZoomCam() {
+  return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-4v12l-6-4"></path></svg>;
+}
+function IconLocationPin() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 12 3a7 7 0 0 1 7 6.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.3"></circle></svg>;
+}
+function IconCallOutline() {
+  return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.6 21 3 12.4 3 2c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8z"></path></svg>;
+}
+function IconClientGroup() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>;
 }
 
 function pad2(n) { return String(n).padStart(2, '0'); }
@@ -112,6 +157,12 @@ export default function EmpresaCalendario() {
   const [ncHora, setNcHora] = useState('');
   const [ncCiudad, setNcCiudad] = useState('');
   const [ncEncargado, setNcEncargado] = useState('');
+  const [ncAtencion, setNcAtencion] = useState('zoom');
+
+  const [extAbierta, setExtAbierta] = useState(false);
+  const [extDia, setExtDia] = useState(0);
+  const [extHora, setExtHora] = useState('10:00');
+  const [extAtencion, setExtAtencion] = useState('zoom');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -206,7 +257,24 @@ export default function EmpresaCalendario() {
     setNcHora('09:00');
     setNcCiudad('');
     setNcEncargado('');
+    setNcAtencion('zoom');
     setNuevaCitaAbierta(true);
+  };
+
+  const abrirExterna = () => {
+    setExtDia(0);
+    setExtHora('10:00');
+    setExtAtencion('zoom');
+    setNuevaCitaAbierta(false);
+    setExtAbierta(true);
+  };
+
+  const handleGuardarExterna = () => {
+    Swal.fire({
+      icon: 'info',
+      title: 'Cita externa no conectada',
+      text: 'Esta función aún no tiene un backend real donde guardar la cita (no existe entidad ni sistema de disponibilidad para "Atención al cliente").',
+    });
   };
 
   const seleccionarTramiteNc = (idTransactProgress) => {
@@ -430,59 +498,170 @@ export default function EmpresaCalendario() {
             <div className={styles.ncModal}>
               <div className={styles.ncHead}>
                 <div className={styles.ncHeadRow}>
-                  <div className={styles.ncHeadIcon}><IconCalendarPlus /></div>
-                  <div><div className={styles.ncEyebrow}>Agendar</div><div className={styles.ncTitle}>Nueva cita</div></div>
+                  <div className={styles.ncHeadIcon}><IconNcHead /></div>
+                  <div><div className={styles.ncEyebrow}>Agendar</div><div className={styles.ncTitle}>Nueva Cita</div></div>
                 </div>
-                <button className={styles.ncClose} onClick={() => setNuevaCitaAbierta(false)}><IconClose size={14} /></button>
+                <button className={styles.ncClose} onClick={() => setNuevaCitaAbierta(false)}><IconClose size={13} /></button>
               </div>
               <div className={styles.ncBody}>
+                <div className={styles.ncTopRow}>
+                  <div className={styles.ncFieldLabel}>Tipo de cita <span className={styles.req}>*</span></div>
+                  <button className={styles.ncExtBtn} onClick={abrirExterna}>Cita externa <IconArrowRight /></button>
+                </div>
+                <div className={styles.ncTypeGrid}>
+                  <div className={`${styles.ncTypeCard} ${ncTipo === 'cas' ? styles.active : ''}`} onClick={() => setNcTipo('cas')}>
+                    <div className={styles.ncTypeDot} style={{ background: 'var(--ncmGreen, #22B07A)' }}></div>
+                    <div className={styles.ncTypeName}>CAS</div><div className={styles.ncTypeSub}>Atención</div>
+                  </div>
+                  <div className={`${styles.ncTypeCard} ${ncTipo === 'con' ? styles.active : ''}`} onClick={() => setNcTipo('con')}>
+                    <div className={styles.ncTypeDot} style={{ background: 'var(--ncmBlue, #2D6CDF)' }}></div>
+                    <div className={styles.ncTypeName}>Consulado</div><div className={styles.ncTypeSub}>Entrevista</div>
+                  </div>
+                  <div className={`${styles.ncTypeCard} ${ncTipo === 'sim' ? styles.active : ''}`} onClick={() => setNcTipo('sim')}>
+                    <div className={styles.ncTypeDot} style={{ background: 'var(--ncmOrange, #E08A2C)' }}></div>
+                    <div className={styles.ncTypeName}>Simulación</div><div className={styles.ncTypeSub}>Práctica</div>
+                  </div>
+                </div>
+
                 <div className={styles.ncField}>
-                  <label className={styles.ncLabel}>Tipo de cita <span className={styles.req}>*</span></label>
-                  <div className={styles.ncTypes}>
-                    <div className={`${styles.ncType} ${ncTipo === 'cas' ? styles.selCas : ''}`} onClick={() => setNcTipo('cas')}>
-                      <div className={styles.ncTypeDot} style={{ background: 'var(--c2)' }}></div><div className={styles.ncTypeName}>CAS</div><div className={styles.ncTypeSub}>Atención</div>
+                  <div className={styles.ncFieldLabel}>Trámite asociado <span className={styles.req}>*</span></div>
+                  <div className={styles.ncSelectWrap}>
+                    <select value={ncTramite} onChange={(e) => seleccionarTramiteNc(e.target.value)}>
+                      <option value="">Selecciona un trámite</option>
+                      {datos.map((d) => (
+                        <option key={d.idTransactProgress} value={d.idTransactProgress}>
+                          {d.transact?.name} · {d.user?.name} · #{d.idTransactProgress}
+                        </option>
+                      ))}
+                    </select>
+                    <IconChevDown />
+                  </div>
+                </div>
+
+                <div className={styles.ncRow2}>
+                  <div className={styles.ncField}>
+                    <div className={styles.ncFieldLabel}>Fecha <span className={styles.req}>*</span></div>
+                    <div className={styles.ncInpWrap}>
+                      <input type="date" value={ncFecha} onChange={(e) => setNcFecha(e.target.value)} />
+                      <IconCalSmall />
                     </div>
-                    <div className={`${styles.ncType} ${ncTipo === 'con' ? styles.selCon : ''}`} onClick={() => setNcTipo('con')}>
-                      <div className={styles.ncTypeDot} style={{ background: 'var(--green)' }}></div><div className={styles.ncTypeName}>Consulado</div><div className={styles.ncTypeSub}>Entrevista</div>
-                    </div>
-                    <div className={`${styles.ncType} ${ncTipo === 'sim' ? styles.selSim : ''}`} onClick={() => setNcTipo('sim')}>
-                      <div className={styles.ncTypeDot} style={{ background: 'var(--orange)' }}></div><div className={styles.ncTypeName}>Simulación</div><div className={styles.ncTypeSub}>Práctica</div>
+                  </div>
+                  <div className={styles.ncField}>
+                    <div className={styles.ncFieldLabel}>Hora <span className={styles.req}>*</span></div>
+                    <div className={styles.ncInpWrap}>
+                      <input type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} />
+                      <IconClockOutline />
                     </div>
                   </div>
                 </div>
-                <div className={styles.ncField}>
-                  <label className={styles.ncLabel}>Trámite asociado <span className={styles.req}>*</span></label>
-                  <select className={styles.ncInp} value={ncTramite} onChange={(e) => seleccionarTramiteNc(e.target.value)}>
-                    <option value="">Selecciona un trámite</option>
-                    {datos.map((d) => (
-                      <option key={d.idTransactProgress} value={d.idTransactProgress}>
-                        {d.transact?.name} · {d.user?.name} · #{d.idTransactProgress}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className={styles.ncField}>
-                  <div className={styles.ncGrid}>
-                    <div><label className={styles.ncLabel}>Fecha <span className={styles.req}>*</span></label><input className={styles.ncInp} type="date" value={ncFecha} onChange={(e) => setNcFecha(e.target.value)} /></div>
-                    <div><label className={styles.ncLabel}>Hora <span className={styles.req}>*</span></label><input className={styles.ncInp} type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} /></div>
+
+                {ncTipo === 'sim' ? (
+                  <div className={styles.ncField} style={{ marginBottom: 0 }}>
+                    <div className={styles.ncFieldLabel}>Tipo de atención <span className={styles.req}>*</span></div>
+                    <div className={styles.ncAtenGrid}>
+                      <div className={`${styles.ncAtenCard} ${ncAtencion === 'zoom' ? styles.active : ''}`} onClick={() => setNcAtencion('zoom')}>
+                        <div className={styles.ncAtenIcon}><IconZoomCam /></div>
+                        <div className={styles.ncAtenName}>Zoom</div>
+                      </div>
+                      <div className={`${styles.ncAtenCard} ${ncAtencion === 'presencial' ? styles.active : ''}`} onClick={() => setNcAtencion('presencial')}>
+                        <div className={styles.ncAtenIcon}><IconLocationPin /></div>
+                        <div className={styles.ncAtenName}>Presencial</div>
+                      </div>
+                    </div>
                   </div>
+                ) : (
+                  <>
+                    <div className={styles.ncField}>
+                      <div className={styles.ncFieldLabel}>Ciudad / sede <span className={styles.req}>*</span></div>
+                      <div className={styles.ncInpWrap}>
+                        <input value={ncCiudad} onChange={(e) => setNcCiudad(e.target.value)} placeholder="Ej. Ciudad de México · Hamburgo 213" />
+                        <IconLocationPin />
+                      </div>
+                    </div>
+                    <div className={styles.ncField} style={{ marginBottom: 0 }}>
+                      <div className={styles.ncFieldLabel}>Admin encargado <span className={styles.req}>*</span></div>
+                      <div className={styles.ncSelectWrap}>
+                        <select value={ncEncargado} onChange={(e) => setNcEncargado(e.target.value)}>
+                          <option value="">Sin asignar</option>
+                          {encargados.map((enc) => <option key={enc.idUser} value={enc.idUser}>{enc.name}</option>)}
+                        </select>
+                        <IconChevDown />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className={styles.ncFoot}>
+                <button className={`${styles.ncBtn} ${styles.ncBtnGhost}`} onClick={() => setNuevaCitaAbierta(false)}>Cancelar</button>
+                <button className={`${styles.ncBtn} ${styles.ncBtnDark}`} disabled={!puedeAgendar} onClick={handleAgendar}>
+                  <IconCheck /> {guardando ? 'Agendando…' : 'Agendar cita'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CITA EXTERNA MODAL (Atención al cliente) */}
+        {extAbierta && (
+          <div className={styles.evPopup} onClick={(e) => { if (e.target === e.currentTarget) setExtAbierta(false); }}>
+            <div className={styles.extModal}>
+              <div className={styles.ncHead}>
+                <div className={styles.ncHeadRow}>
+                  <div><div className={styles.ncEyebrow}>Agendar</div><div className={styles.ncTitle}>Cita externa</div></div>
                 </div>
-                <div className={styles.ncField}>
-                  <label className={styles.ncLabel}>Ciudad / sede {ncTipo === 'sim' && <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(no aplica para simulación)</span>}</label>
-                  <input className={styles.ncInp} value={ncCiudad} onChange={(e) => setNcCiudad(e.target.value)} disabled={ncTipo === 'sim'} placeholder="Ej. Ciudad de México · Hamburgo 213" />
+                <button className={styles.ncClose} onClick={() => setExtAbierta(false)}><IconClose size={13} /></button>
+              </div>
+              <div className={styles.ncBody}>
+                <div className={styles.extClientCard}>
+                  <div className={styles.extClientIcon}><IconClientGroup /></div>
+                  <div className={styles.extClientName}>Atención al cliente</div>
+                  <div className={styles.extClientSub}>Asesoría general</div>
                 </div>
-                <div className={styles.ncField}>
-                  <label className={styles.ncLabel}>Encargado asignado</label>
-                  <select className={styles.ncInp} value={ncEncargado} onChange={(e) => setNcEncargado(e.target.value)}>
-                    <option value="">Sin asignar</option>
-                    {encargados.map((enc) => <option key={enc.idUser} value={enc.idUser}>{enc.name}</option>)}
-                  </select>
+
+                <div className={styles.ncFieldLabel}>Día disponible</div>
+                <div className={styles.extDayGrid}>
+                  {EXT_DIAS.map((dia, i) => (
+                    <div key={i} className={`${styles.extDayCard} ${extDia === i ? styles.active : ''}`} onClick={() => setExtDia(i)}>
+                      <div className={styles.d}>{dia.d}</div><div className={styles.m}>{dia.m}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.ncFieldLabel}>Horario disponible <span className={styles.req}>*</span></div>
+                <div className={styles.extTimeGrid}>
+                  {EXT_HORAS.map((h) => (
+                    <div
+                      key={h.hora}
+                      className={`${styles.extTimeCard} ${h.disabled ? styles.disabled : ''} ${extHora === h.hora ? styles.active : ''}`}
+                      onClick={() => !h.disabled && setExtHora(h.hora)}
+                    >
+                      {h.hora}
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.ncField} style={{ marginBottom: 0 }}>
+                  <div className={styles.ncFieldLabel}>Tipo de atención <span className={styles.req}>*</span></div>
+                  <div className={styles.ncAtenGrid} style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
+                    <div className={`${styles.ncAtenCard} ${extAtencion === 'zoom' ? styles.active : ''}`} onClick={() => setExtAtencion('zoom')}>
+                      <div className={styles.ncAtenIcon}><IconZoomCam /></div>
+                      <div className={styles.ncAtenName}>Zoom</div>
+                    </div>
+                    <div className={`${styles.ncAtenCard} ${extAtencion === 'llamada' ? styles.active : ''}`} onClick={() => setExtAtencion('llamada')}>
+                      <div className={styles.ncAtenIcon}><IconCallOutline /></div>
+                      <div className={styles.ncAtenName}>Llamada</div>
+                    </div>
+                    <div className={`${styles.ncAtenCard} ${extAtencion === 'presencial' ? styles.active : ''}`} onClick={() => setExtAtencion('presencial')}>
+                      <div className={styles.ncAtenIcon}><IconLocationPin /></div>
+                      <div className={styles.ncAtenName}>Presencial</div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className={styles.ncFoot}>
-                <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setNuevaCitaAbierta(false)}>Cancelar</button>
-                <button className={`${styles.btn} ${styles.btnAccent}`} disabled={!puedeAgendar} onClick={handleAgendar}>
-                  <IconCheck /> {guardando ? 'Agendando…' : 'Agendar cita'}
+                <button className={`${styles.ncBtn} ${styles.ncBtnGhost}`} onClick={() => setExtAbierta(false)}>Cancelar</button>
+                <button className={`${styles.ncBtn} ${styles.ncBtnDark}`} onClick={handleGuardarExterna}>
+                  <IconCheck /> Guardar cita
                 </button>
               </div>
             </div>

@@ -18,6 +18,27 @@ const EV_META = {
   aten: { headClass: 'aten', type: 'Atención a cliente · Vía Zoom' },
 };
 
+// "Cita externa" (Atención al cliente) no tiene backend: ni entidad, ni
+// sistema de disponibilidad. Estos días/horarios son los mismos datos de
+// demo del mockup ("Modal Nueva Cita - Simulacion (standalone).html"); la
+// selección es solo visual y "Guardar cita" no persiste nada real.
+const EXT_DIAS = [
+  { d: '16', m: 'JUN' },
+  { d: '23', m: 'MAR' },
+  { d: '25', m: 'JUN' },
+  { d: '30', m: 'MAR' },
+];
+const EXT_HORAS = [
+  { hora: '09:00' },
+  { hora: '10:00' },
+  { hora: '12:00', disabled: true },
+  { hora: '13:00' },
+  { hora: '14:00' },
+  { hora: '15:00', disabled: true },
+  { hora: '17:00' },
+  { hora: '19:00' },
+];
+
 function IconChevronLeft() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"></path></svg>;
 }
@@ -35,9 +56,6 @@ function IconClose({ size = 13 }) {
 }
 function IconCalendar() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ color: 'var(--c2)' }}><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
-}
-function IconCalendarPlus() {
-  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"></path></svg>;
 }
 function IconPin() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
@@ -62,6 +80,33 @@ function IconEncargado() {
 }
 function IconExternal() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10"></path></svg>;
+}
+function IconNcHead() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
+}
+function IconArrowRight() {
+  return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>;
+}
+function IconChevDown() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"></path></svg>;
+}
+function IconCalSmall() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
+}
+function IconClockOutline() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>;
+}
+function IconZoomCam() {
+  return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-4v12l-6-4"></path></svg>;
+}
+function IconLocationPin() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 12 3a7 7 0 0 1 7 6.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.3"></circle></svg>;
+}
+function IconCallOutline() {
+  return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.6 21 3 12.4 3 2c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8z"></path></svg>;
+}
+function IconClientGroup() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>;
 }
 
 function pad2(n) { return String(n).padStart(2, '0'); }
@@ -113,6 +158,12 @@ export default function CalendarioAdmin() {
   const [ncHora, setNcHora] = useState('');
   const [ncCiudad, setNcCiudad] = useState('');
   const [ncEncargado, setNcEncargado] = useState('');
+  const [ncAtencion, setNcAtencion] = useState('zoom');
+
+  const [extAbierta, setExtAbierta] = useState(false);
+  const [extDia, setExtDia] = useState(0);
+  const [extHora, setExtHora] = useState('10:00');
+  const [extAtencion, setExtAtencion] = useState('zoom');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -210,7 +261,24 @@ export default function CalendarioAdmin() {
     setNcHora('09:00');
     setNcCiudad('');
     setNcEncargado('');
+    setNcAtencion('zoom');
     setNuevaCitaAbierta(true);
+  };
+
+  const abrirExterna = () => {
+    setExtDia(0);
+    setExtHora('10:00');
+    setExtAtencion('zoom');
+    setNuevaCitaAbierta(false);
+    setExtAbierta(true);
+  };
+
+  const handleGuardarExterna = () => {
+    Swal.fire({
+      icon: 'info',
+      title: 'Cita externa no conectada',
+      text: 'Esta función aún no tiene un backend real donde guardar la cita (no existe entidad ni sistema de disponibilidad para "Atención al cliente").',
+    });
   };
 
   const seleccionarTramiteNc = (idTransactProgress) => {
@@ -433,62 +501,173 @@ export default function CalendarioAdmin() {
       {/* NUEVA CITA MODAL */}
       {nuevaCitaAbierta && (
         <div className="ev-popup" onClick={(e) => { if (e.target === e.currentTarget) setNuevaCitaAbierta(false); }}>
-          <div className="nc-modal">
-            <div className="nc-head">
-              <div className="nc-head-row">
-                <div className="nc-head-icon"><IconCalendarPlus /></div>
-                <div><div className="nc-eyebrow">Agendar</div><div className="nc-title">Nueva cita</div></div>
+          <div className="ncm-modal">
+            <div className="ncm-head">
+              <div className="ncm-head-row">
+                <div className="ncm-head-icon"><IconNcHead /></div>
+                <div className="ncm-head-text"><div className="ncm-eyebrow">Agendar</div><div className="ncm-title">Nueva Cita</div></div>
               </div>
-              <button className="nc-close" onClick={() => setNuevaCitaAbierta(false)}><IconClose size={14} /></button>
+              <button className="ncm-close" onClick={() => setNuevaCitaAbierta(false)}><IconClose size={13} /></button>
             </div>
-            <div className="nc-body">
-              <div className="nc-field">
-                <label className="nc-label">Tipo de cita <span className="req">*</span></label>
-                <div className="nc-types">
-                  <div className={`nc-type ${ncTipo === 'cas' ? 'sel-cas' : ''}`} onClick={() => setNcTipo('cas')}>
-                    <div className="nc-type-dot" style={{ background: 'var(--c2)' }}></div><div className="nc-type-name">CAS</div><div className="nc-type-sub">Atención</div>
+            <div className="ncm-body">
+              <div className="ncm-top-row">
+                <div className="ncm-field-label">Tipo de cita <span className="ncm-req">*</span></div>
+                <button className="ncm-ext-btn" onClick={abrirExterna}>Cita externa <IconArrowRight /></button>
+              </div>
+              <div className="ncm-type-grid">
+                <div className={`ncm-type-card ${ncTipo === 'cas' ? 'active' : ''}`} onClick={() => setNcTipo('cas')}>
+                  <div className="ncm-type-dot" style={{ background: 'var(--ncm-green, #22B07A)' }}></div>
+                  <div className="ncm-type-name">CAS</div><div className="ncm-type-sub">Atención</div>
+                </div>
+                <div className={`ncm-type-card ${ncTipo === 'con' ? 'active' : ''}`} onClick={() => setNcTipo('con')}>
+                  <div className="ncm-type-dot" style={{ background: 'var(--ncm-blue, #2D6CDF)' }}></div>
+                  <div className="ncm-type-name">Consulado</div><div className="ncm-type-sub">Entrevista</div>
+                </div>
+                <div className={`ncm-type-card ${ncTipo === 'sim' ? 'active' : ''}`} onClick={() => setNcTipo('sim')}>
+                  <div className="ncm-type-dot" style={{ background: 'var(--ncm-orange, #E08A2C)' }}></div>
+                  <div className="ncm-type-name">Simulación</div><div className="ncm-type-sub">Práctica</div>
+                </div>
+              </div>
+
+              <div className="ncm-field">
+                <div className="ncm-field-label">Trámite asociado <span className="ncm-req">*</span></div>
+                <div className="ncm-select-wrap">
+                  <select value={ncTramite} onChange={(e) => seleccionarTramiteNc(e.target.value)}>
+                    <option value="">Selecciona un trámite</option>
+                    {datos.map((d) => (
+                      <option key={d.idTransactProgress} value={d.idTransactProgress}>
+                        {d.transact?.name} · {d.user?.name} · #{d.idTransactProgress}
+                      </option>
+                    ))}
+                  </select>
+                  <IconChevDown />
+                </div>
+              </div>
+
+              <div className="ncm-row2">
+                <div className="ncm-field">
+                  <div className="ncm-field-label">Fecha <span className="ncm-req">*</span></div>
+                  <div className="ncm-inp-wrap">
+                    <input type="date" value={ncFecha} onChange={(e) => setNcFecha(e.target.value)} />
+                    <IconCalSmall />
                   </div>
-                  <div className={`nc-type ${ncTipo === 'con' ? 'sel-con' : ''}`} onClick={() => setNcTipo('con')}>
-                    <div className="nc-type-dot" style={{ background: 'var(--green)' }}></div><div className="nc-type-name">Consulado</div><div className="nc-type-sub">Entrevista</div>
-                  </div>
-                  <div className={`nc-type ${ncTipo === 'sim' ? 'sel-sim' : ''}`} onClick={() => setNcTipo('sim')}>
-                    <div className="nc-type-dot" style={{ background: 'var(--orange)' }}></div><div className="nc-type-name">Simulación</div><div className="nc-type-sub">Práctica</div>
+                </div>
+                <div className="ncm-field">
+                  <div className="ncm-field-label">Hora <span className="ncm-req">*</span></div>
+                  <div className="ncm-inp-wrap">
+                    <input type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} />
+                    <IconClockOutline />
                   </div>
                 </div>
               </div>
-              <div className="nc-field">
-                <label className="nc-label">Trámite asociado <span className="req">*</span></label>
-                <select className="nc-inp" value={ncTramite} onChange={(e) => seleccionarTramiteNc(e.target.value)}>
-                  <option value="">Selecciona un trámite</option>
-                  {datos.map((d) => (
-                    <option key={d.idTransactProgress} value={d.idTransactProgress}>
-                      {d.transact?.name} · {d.user?.name} · #{d.idTransactProgress}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="nc-field">
-                <div className="nc-grid">
-                  <div><label className="nc-label">Fecha <span className="req">*</span></label><input className="nc-inp" type="date" value={ncFecha} onChange={(e) => setNcFecha(e.target.value)} /></div>
-                  <div><label className="nc-label">Hora <span className="req">*</span></label><input className="nc-inp" type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} /></div>
+
+              {ncTipo === 'sim' ? (
+                <div className="ncm-field" style={{ marginBottom: 0 }}>
+                  <div className="ncm-field-label">Tipo de atención <span className="ncm-req">*</span></div>
+                  <div className="ncm-aten-grid">
+                    <div className={`ncm-aten-card ${ncAtencion === 'zoom' ? 'active' : ''}`} onClick={() => setNcAtencion('zoom')}>
+                      <div className="ncm-aten-icon"><IconZoomCam /></div>
+                      <div className="ncm-aten-name">Zoom</div>
+                    </div>
+                    <div className={`ncm-aten-card ${ncAtencion === 'presencial' ? 'active' : ''}`} onClick={() => setNcAtencion('presencial')}>
+                      <div className="ncm-aten-icon"><IconLocationPin /></div>
+                      <div className="ncm-aten-name">Presencial</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="nc-field">
-                <label className="nc-label">Ciudad / sede {ncTipo === 'sim' && <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(no aplica para simulación)</span>}</label>
-                <input className="nc-inp" value={ncCiudad} onChange={(e) => setNcCiudad(e.target.value)} disabled={ncTipo === 'sim'} placeholder="Ej. Ciudad de México · Hamburgo 213" />
-              </div>
-              <div className="nc-field">
-                <label className="nc-label">Encargado asignado</label>
-                <select className="nc-inp" value={ncEncargado} onChange={(e) => setNcEncargado(e.target.value)}>
-                  <option value="">Sin asignar</option>
-                  {encargados.map((enc) => <option key={enc.idUser} value={enc.idUser}>{enc.name}</option>)}
-                </select>
-              </div>
+              ) : (
+                <>
+                  <div className="ncm-field">
+                    <div className="ncm-field-label">Ciudad / sede <span className="ncm-req">*</span></div>
+                    <div className="ncm-inp-wrap">
+                      <input value={ncCiudad} onChange={(e) => setNcCiudad(e.target.value)} placeholder="Ej. Ciudad de México · Hamburgo 213" />
+                      <IconLocationPin />
+                    </div>
+                  </div>
+                  <div className="ncm-field" style={{ marginBottom: 0 }}>
+                    <div className="ncm-field-label">Admin encargado <span className="ncm-req">*</span></div>
+                    <div className="ncm-select-wrap">
+                      <select value={ncEncargado} onChange={(e) => setNcEncargado(e.target.value)}>
+                        <option value="">Sin asignar</option>
+                        {encargados.map((enc) => <option key={enc.idUser} value={enc.idUser}>{enc.name}</option>)}
+                      </select>
+                      <IconChevDown />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-            <div className="nc-foot">
-              <button className="btn btn-ghost" onClick={() => setNuevaCitaAbierta(false)}>Cancelar</button>
-              <button className="btn btn-accent" disabled={!puedeAgendar} onClick={handleAgendar}>
+            <div className="ncm-footer">
+              <button className="ncm-btn ncm-btn-ghost" onClick={() => setNuevaCitaAbierta(false)}>Cancelar</button>
+              <button className="ncm-btn ncm-btn-dark" disabled={!puedeAgendar} onClick={handleAgendar}>
                 <IconCheck /> {guardando ? 'Agendando…' : 'Agendar cita'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CITA EXTERNA MODAL (Atención al cliente) */}
+      {extAbierta && (
+        <div className="ev-popup" onClick={(e) => { if (e.target === e.currentTarget) setExtAbierta(false); }}>
+          <div className="extm-modal">
+            <div className="ncm-head">
+              <div className="ncm-head-row">
+                <div className="ncm-head-text"><div className="ncm-eyebrow">Agendar</div><div className="ncm-title">Cita externa</div></div>
+              </div>
+              <button className="ncm-close" onClick={() => setExtAbierta(false)}><IconClose size={13} /></button>
+            </div>
+            <div className="ncm-body">
+              <div className="extm-client-card">
+                <div className="extm-client-icon"><IconClientGroup /></div>
+                <div className="extm-client-name">Atención al cliente</div>
+                <div className="extm-client-sub">Asesoría general</div>
+              </div>
+
+              <div className="ncm-field-label">Día disponible</div>
+              <div className="extm-day-grid">
+                {EXT_DIAS.map((dia, i) => (
+                  <div key={i} className={`extm-day-card ${extDia === i ? 'active' : ''}`} onClick={() => setExtDia(i)}>
+                    <div className="d">{dia.d}</div><div className="m">{dia.m}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="ncm-field-label">Horario disponible <span className="ncm-req">*</span></div>
+              <div className="extm-time-grid">
+                {EXT_HORAS.map((h) => (
+                  <div
+                    key={h.hora}
+                    className={`extm-time-card ${h.disabled ? 'disabled' : ''} ${extHora === h.hora ? 'active' : ''}`}
+                    onClick={() => !h.disabled && setExtHora(h.hora)}
+                  >
+                    {h.hora}
+                  </div>
+                ))}
+              </div>
+
+              <div className="ncm-field" style={{ marginBottom: 0 }}>
+                <div className="ncm-field-label">Tipo de atención <span className="ncm-req">*</span></div>
+                <div className="ncm-aten-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
+                  <div className={`ncm-aten-card ${extAtencion === 'zoom' ? 'active' : ''}`} onClick={() => setExtAtencion('zoom')}>
+                    <div className="ncm-aten-icon"><IconZoomCam /></div>
+                    <div className="ncm-aten-name">Zoom</div>
+                  </div>
+                  <div className={`ncm-aten-card ${extAtencion === 'llamada' ? 'active' : ''}`} onClick={() => setExtAtencion('llamada')}>
+                    <div className="ncm-aten-icon"><IconCallOutline /></div>
+                    <div className="ncm-aten-name">Llamada</div>
+                  </div>
+                  <div className={`ncm-aten-card ${extAtencion === 'presencial' ? 'active' : ''}`} onClick={() => setExtAtencion('presencial')}>
+                    <div className="ncm-aten-icon"><IconLocationPin /></div>
+                    <div className="ncm-aten-name">Presencial</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="ncm-footer">
+              <button className="ncm-btn ncm-btn-ghost" onClick={() => setExtAbierta(false)}>Cancelar</button>
+              <button className="ncm-btn ncm-btn-dark" onClick={handleGuardarExterna}>
+                <IconCheck /> Guardar cita
               </button>
             </div>
           </div>
