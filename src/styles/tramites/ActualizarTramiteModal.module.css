@@ -100,7 +100,7 @@
 .modalBody { padding: 22px 26px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
 
 /* sections */
-.section { background: var(--white); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; flex-shrink: 0; }
+.section { background: var(--white); border: 1px solid var(--line); border-radius: 16px; flex-shrink: 0; }
 .section.conditional { border-color: rgba(31,160,209,0.25); }
 .secHead { padding: 13px 18px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
 .secIcon { width: 30px; height: 30px; border-radius: 8px; background: var(--c5); color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }

@@ -81,9 +81,9 @@
 }
 .modalClose:hover { background: rgba(228, 236, 240, 0.2); transform: rotate(90deg); }
 
-.modalBody { padding: 26px 28px; overflow-y: auto; }
+.modalBody { padding: 26px 28px; overflow-y: auto; overflow-x: hidden; }
 
-.field { margin-bottom: 18px; }
+.field { margin-bottom: 18px; min-width: 0; }
 .field:last-child { margin-bottom: 0; }
 .fieldLabel { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 8px; }
 .req { color: var(--c2); margin-left: 2px; }
@@ -134,7 +134,7 @@
 .moneySuffix { padding: 0 14px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .fieldMsg { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 5px; color: var(--rose); }
 
-.amountGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.amountGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
 
 /* Summary */
 .summary { padding: 16px 18px; background: #F8FAFB; border: 1px solid var(--line); border-radius: 14px; margin-top: 4px; }

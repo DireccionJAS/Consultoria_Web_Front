@@ -6,8 +6,7 @@ import { Spinner } from 'react-bootstrap';
 import Navbar from '../NavbarAdmin.jsx';
 import { clientes, actualizarStatusCliente, archivarCliente } from './../../api/api.js';
 import '../../styles/ClientesAdminJAS.css';
-import ModalRegistrarCliente from './RegistrarCliente.jsx';
-import ModalActualizarCliente from './ActualizarCliente.jsx';
+import ClienteModal from './ClienteModal.jsx';
 
 const ITEMS_POR_PAGINA = 7;
 
@@ -155,8 +154,7 @@ export default function AdministradorClientes() {
   const [busqueda, setBusqueda] = useState('');
   const [datos, setDatos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [showModalA, setShowModalA] = useState(false);
+  const [showClienteModal, setShowClienteModal] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [tabActiva, setTabActiva] = useState('activos');
@@ -219,9 +217,30 @@ export default function AdministradorClientes() {
   };
 
   const handleArchivar = async (cliente) => {
+    const archivar = !cliente.archived;
+
+    const confirmacion = await Swal.fire({
+      icon: 'warning',
+      title: archivar ? '¿Estás seguro de archivar a este cliente?' : '¿Estás seguro de desarchivar a este cliente?',
+      showCancelButton: true,
+      confirmButtonText: archivar ? 'Archivar' : 'Desarchivar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
     try {
-      await archivarCliente(cliente.idUser, !cliente.archived);
-      fetchServices();
+      await archivarCliente(cliente.idUser, archivar);
+      await fetchServices();
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: archivar ? 'Cliente archivado' : 'Cliente desarchivado',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+      });
     } catch (error) {
       console.error('Error al archivar el cliente', error);
       Swal.fire({
@@ -272,7 +291,7 @@ export default function AdministradorClientes() {
             <IconBell />
             <span className="badge-num">8</span>
           </button>
-          <button className="btn btn-accent" onClick={() => setShowModal(true)}>
+          <button className="btn btn-accent" onClick={() => { setClienteSeleccionado(null); setShowClienteModal(true); }}>
             <IconPlus /> Agregar cliente
           </button>
         </div>
@@ -376,7 +395,7 @@ export default function AdministradorClientes() {
                               title="Editar"
                               onClick={() => {
                                 setClienteSeleccionado(cliente);
-                                setShowModalA(true);
+                                setShowClienteModal(true);
                               }}
                             >
                               <IconEdit />
@@ -461,15 +480,10 @@ export default function AdministradorClientes() {
         )}
       </div>
 
-      <ModalRegistrarCliente
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        onClienteRegistrado={fetchServices}
-      />
-      <ModalActualizarCliente
-        show={showModalA}
-        onHide={() => setShowModalA(false)}
-        onClienteRegistrado={fetchServices}
+      <ClienteModal
+        show={showClienteModal}
+        onHide={() => setShowClienteModal(false)}
+        onGuardado={fetchServices}
         cliente={clienteSeleccionado}
       />
     </div>

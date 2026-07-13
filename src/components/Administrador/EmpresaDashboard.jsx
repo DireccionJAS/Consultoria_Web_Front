@@ -130,7 +130,10 @@ export default function EmpresaDashboard() {
                   <div
                     key={card.key}
                     className={`${styles.navCard} ${card.featured ? styles.featured : ''}`}
-                    onClick={() => card.key === 'tramites' && navigate('/EmpresaTramites')}
+                    onClick={() => {
+                      if (card.key === 'tramites') navigate('/EmpresaTramites');
+                      if (card.key === 'clientes') navigate('/EmpresaClientes');
+                    }}
                   >
                     <div className={styles.navCardTop}>
                       <div className={styles.navCardIcon}><Icon /></div>
