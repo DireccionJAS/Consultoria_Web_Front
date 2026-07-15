@@ -63,6 +63,7 @@ export default function EmpresaSidebar({
     if (key === 'pagos') navigate('/EmpresaPagos');
     if (key === 'calendario') navigate('/EmpresaCalendario');
     if (key === 'horarios') navigate('/EmpresaHorarios');
+    if (key === 'servicios') navigate('/EmpresaServicios');
   };
 
   const handleLogout = () => {

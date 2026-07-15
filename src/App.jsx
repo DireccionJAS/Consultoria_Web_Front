@@ -10,6 +10,7 @@ import EmpresaClientes from "./components/Administrador/EmpresaClientes.jsx";
 import EmpresaPagos from "./components/Administrador/EmpresaPagos.jsx";
 import EmpresaCalendario from "./components/Administrador/EmpresaCalendario.jsx";
 import EmpresaHorarios from "./components/Administrador/EmpresaHorarios.jsx";
+import EmpresaServicios from "./components/Administrador/EmpresaServicios.jsx";
 import AdministradorServicios from "./components/Administrador/AdministradorServicios";
 import AdministradorCliente from "./components/Administrador/AdministradorClientes";
 import AdministradorTramites from "./components/Administrador/AdministradorTramites";
@@ -108,6 +109,11 @@ function App() {
         <Route path="/EmpresaHorarios" element={
           <ProtectedRoute allowedRoles={["EMPRESA"]}>
             <EmpresaHorarios />
+          </ProtectedRoute>
+        } />
+        <Route path="/EmpresaServicios" element={
+          <ProtectedRoute allowedRoles={["EMPRESA"]}>
+            <EmpresaServicios />
           </ProtectedRoute>
         } />
         <Route path="/PDF" element={
