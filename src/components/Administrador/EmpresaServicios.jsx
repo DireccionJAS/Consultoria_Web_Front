@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -5,9 +8,8 @@ import Swal from 'sweetalert2';
 import { Spinner } from 'react-bootstrap';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { getAllProcess, getStepById, updateService } from './../../api/api.js';
-import StepsModal from './StepsModal.jsx';
-import ModalErrorBoundary from '../common/ModalErrorBoundary.jsx';
-import modalUtils from '../../utils/modalUtils.js';
+import ModalServicio from './ModalServicio.jsx';
+import ModalPasos from './ModalPasos.jsx';
 import styles from './../../styles/EmpresaServicios.module.css';
 
 // Extraído 1:1 de "14-Servicios (standalone).html". El mockup incluye
@@ -49,10 +51,10 @@ export default function EmpresaServicios() {
   const [filtro, setFiltro] = useState('todos');
   const [pasosCount, setPasosCount] = useState({});
 
-  const [steps, setSteps] = useState([]);
-  const [serviceId, setServiceId] = useState(null);
-  const [stepsModalIsOpen, setStepsModalIsOpen] = useState(false);
-  const [shouldNavigateToAddSteps, setShouldNavigateToAddSteps] = useState(false);
+  const [modalServicioAbierto, setModalServicioAbierto] = useState(false);
+  const [servicioEditando, setServicioEditando] = useState(null);
+  const [modalPasosAbierto, setModalPasosAbierto] = useState(false);
+  const [servicioPasos, setServicioPasos] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -100,26 +102,9 @@ export default function EmpresaServicios() {
     setPasosCount(Object.fromEntries(entries));
   };
 
-  const openStepsModal = async (idTransact) => {
-    try {
-      setServiceId(idTransact);
-      const response = await getStepById(idTransact);
-      setSteps(response.response.StepsTransacts || []);
-      setStepsModalIsOpen(true);
-    } catch (error) {
-      console.error('Error al obtener pasos:', error);
-      setSteps([]);
-    }
-  };
-
-  const handleRequestAddSteps = () => {
-    setShouldNavigateToAddSteps(true);
-    setStepsModalIsOpen(false);
-  };
-
-  const handleEditClick = (service) => {
-    navigate('/ActualizarServicio', { state: { service } });
-  };
+  const abrirModalAgregar = () => { setServicioEditando(null); setModalServicioAbierto(true); };
+  const abrirModalEditar = (service) => { setServicioEditando(service); setModalServicioAbierto(true); };
+  const abrirModalPasos = (service) => { setServicioPasos(service); setModalPasosAbierto(true); };
 
   const handleToggleStatus = async (service) => {
     const payload = {
@@ -166,7 +151,7 @@ export default function EmpresaServicios() {
             <div className={styles.pageTitle}>Gestión de servicios</div>
           </div>
           <div className={styles.topActions}>
-            <button className={`${styles.btn} ${styles.btnAccent}`} onClick={() => navigate('/RegistrarServicio')}><IconPlus /> Agregar servicio</button>
+            <button className={`${styles.btn} ${styles.btnAccent}`} onClick={abrirModalAgregar}><IconPlus /> Agregar servicio</button>
           </div>
         </header>
 
@@ -208,8 +193,8 @@ export default function EmpresaServicios() {
                       </div>
                       <div className={styles.svcPrice}>${formatPrice(service.cost)}<small>MXN</small></div>
                       <div className={styles.svcActions}>
-                        <button className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`} onClick={() => openStepsModal(service.idTransact)}><IconSteps /> Ver pasos</button>
-                        <button className={`${styles.btn} ${styles.btnAccent} ${styles.btnSm}`} onClick={() => handleEditClick(service)}><IconEdit /> Editar</button>
+                        <button className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`} onClick={() => abrirModalPasos(service)}><IconSteps /> Ver pasos</button>
+                        <button className={`${styles.btn} ${styles.btnAccent} ${styles.btnSm}`} onClick={() => abrirModalEditar(service)}><IconEdit /> Editar</button>
                       </div>
                     </div>
                   </div>
@@ -220,23 +205,18 @@ export default function EmpresaServicios() {
         )}
       </main>
 
-      <ModalErrorBoundary onReset={() => { setStepsModalIsOpen(false); setSteps([]); }}>
-        <StepsModal
-          show={stepsModalIsOpen}
-          onHide={() => setStepsModalIsOpen(false)}
-          serviceId={serviceId}
-          steps={steps}
-          onClearSteps={() => setSteps([])}
-          onAddSteps={handleRequestAddSteps}
-          onExited={() => {
-            modalUtils.smartCleanup();
-            if (shouldNavigateToAddSteps && serviceId) {
-              setShouldNavigateToAddSteps(false);
-              navigate('/RegistrarPasos', { state: { serviceID: serviceId } });
-            }
-          }}
-        />
-      </ModalErrorBoundary>
+      <ModalServicio
+        show={modalServicioAbierto}
+        onHide={() => setModalServicioAbierto(false)}
+        servicio={servicioEditando}
+        onGuardado={fetchServices}
+      />
+      <ModalPasos
+        show={modalPasosAbierto}
+        onHide={() => setModalPasosAbierto(false)}
+        servicio={servicioPasos}
+        onGuardado={fetchServices}
+      />
     </div>
   );
 }

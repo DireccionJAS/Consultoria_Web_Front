@@ -24,13 +24,13 @@
 @keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 .modalHead { padding: 24px 28px; position: relative; overflow: hidden; background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 100%); color: var(--c5); }
-.modalHead::after { content: ""; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(111,174,219,0.30) 0%, transparent 70%); }
+.modalHead::after { content: ""; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(111,174,219,0.30) 0%, transparent 70%); pointer-events: none; }
 .modalHeadRow { display: flex; align-items: center; gap: 14px; position: relative; }
 .modalHeadIcon { width: 46px; height: 46px; border-radius: 13px; background: rgba(228,236,240,0.15); border: 1px solid rgba(228,236,240,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .modalEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,236,240,0.6); margin-bottom: 4px; }
 .modalTitle { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; line-height: 1; }
-.modalClose { position: absolute; top: 22px; right: 22px; width: 34px; height: 34px; border-radius: 50%; background: rgba(228,236,240,0.12); border: 1px solid rgba(228,236,240,0.18); color: var(--c5); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-.modalClose:hover { background: rgba(228,236,240,0.2); transform: rotate(90deg); }
+.modalClose { position: absolute; top: 22px; right: 22px; width: 34px; height: 34px; border-radius: 50%; background: rgba(228,236,240,0.12) !important; border: 1px solid rgba(228,236,240,0.18); color: var(--c5) !important; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.modalClose:hover { background: rgba(228,236,240,0.2) !important; transform: rotate(90deg); }
 
 .modalBody { padding: 24px 28px; overflow-y: auto; }
 
@@ -92,8 +92,8 @@
 
 .modalFoot { padding: 18px 28px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; background: var(--white); }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 12px; font-size: 13.5px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
-.btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
-.btnGhost:hover { background: #F4F6F8; }
-.btnPrimary { background: var(--c1); color: var(--c5); }
-.btnPrimary:hover { background: var(--c2); transform: translateY(-1px); }
+.btnGhost { background: transparent !important; color: var(--c1) !important; border: 1px solid var(--line-2); }
+.btnGhost:hover { background: #F4F6F8 !important; }
+.btnPrimary { background: var(--c1) !important; color: var(--c5) !important; }
+.btnPrimary:hover { background: var(--c2) !important; transform: translateY(-1px); }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
