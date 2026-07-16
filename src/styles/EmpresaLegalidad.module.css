@@ -1,0 +1,82 @@
+/*
+  EmpresaLegalidad.module.css
+  Extraído 1:1 de "19-Legalidad (standalone).html".
+*/
+
+.page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --c2: #2D6CDF; --c3: #4E6A9C;
+  --c4: #B4C8D8; --c5: #E4ECF0; --white: #FFFFFF; --accent: #6FAEDB;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(0,0,42,0.10); --line-2: rgba(0,0,42,0.18); --muted: rgba(0,0,42,0.55); --muted-2: rgba(0,0,42,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F6F8;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+}
+.page button, .page input, .page textarea { font-family: inherit; }
+.page button { cursor: pointer; border: 0; background: none; color: inherit; }
+
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.crumbSep { color: var(--muted-2); }
+.accent { color: var(--c2); }
+.pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
+
+.content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 18px; max-width: 1080px; margin: 0 auto; width: 100%; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.cardHead { padding: 16px 22px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
+.cardIcon { width: 36px; height: 36px; border-radius: 10px; background: var(--c5); color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cardTitle { font-family: var(--display); font-weight: 600; font-size: 16px; letter-spacing: -0.015em; }
+.cardSub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.cardStatus { margin-left: auto; font-size: 10px; font-family: var(--mono); letter-spacing: 0.05em; padding: 4px 10px; border-radius: 999px; background: var(--green-soft); color: var(--green); display: inline-flex; align-items: center; gap: 5px; }
+.cardStatus::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.cardStatus.pending { background: var(--gray-soft); color: var(--muted); }
+.cardStatus.pending::before { background: var(--muted-2); }
+.cardBody { padding: 20px 22px; }
+
+.pdfRow { display: flex; align-items: center; gap: 14px; padding: 16px; background: #F8FAFB; border-radius: 14px; }
+.pdfThumb { width: 48px; height: 58px; border-radius: 8px; background: var(--white); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; color: var(--rose); }
+.pdfThumbLabel { position: absolute; bottom: 5px; font-family: var(--mono); font-size: 7px; font-weight: 700; color: var(--rose); }
+.pdfInfo { flex: 1; min-width: 0; }
+.pdfName { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pdfMeta { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+.pdfActions { display: flex; gap: 6px; margin-top: 14px; }
+.pdfBtn { flex: 1; justify-content: center; display: inline-flex; align-items: center; gap: 6px; padding: 10px 13px; border-radius: 9px; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+.pdfBtn.view { background: #F4F6F8 !important; color: var(--c1) !important; border: 1px solid var(--line); }
+.pdfBtn.view:hover { background: var(--c5) !important; }
+.pdfBtn.upload { background: var(--c1) !important; color: var(--c5) !important; }
+.pdfBtn.upload:hover { background: var(--c2) !important; }
+.pdfBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.fieldLabel { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 8px; }
+.fieldHint { color: var(--muted-2); font-weight: 400; font-size: 11px; }
+.inp { width: 100%; padding: 12px 14px; background: var(--white); border: 1px solid var(--line-2); border-radius: 10px; font: inherit; font-size: 13px; color: var(--c1); resize: vertical; min-height: 120px; line-height: 1.6; transition: all 0.2s; }
+.inp:focus { outline: 0; border-color: var(--c2); box-shadow: 0 0 0 4px rgba(45,108,223,0.08); }
+.charCount { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 8px; text-align: right; }
+.editorBar { display: flex; gap: 2px; padding: 8px; background: #F8FAFB; border: 1px solid var(--line-2); border-bottom: 0; border-radius: 10px 10px 0 0; }
+.editorBar button { width: 30px; height: 30px; border-radius: 7px; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 13px; font-weight: 700; }
+.editorBar button:hover { background: var(--c5); color: var(--c1); }
+.editorBar .sep { width: 1px; background: var(--line); margin: 4px 4px; }
+.inp.withBar { border-radius: 0 0 10px 10px; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.btnPrimary { background: var(--c1) !important; color: var(--c5) !important; }
+.btnPrimary:hover { background: var(--c2) !important; }
+.saveHint { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 14px; }
+
+@media (max-width: 767.98px) {
+  .topbar { padding: 14px 20px; }
+  .content { padding: 20px; }
+  .row2 { grid-template-columns: 1fr; }
+}

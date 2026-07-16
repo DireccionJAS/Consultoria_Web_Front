@@ -168,6 +168,23 @@ export const getAllProcess = async () => {
   }
 };
 
+export const subirPdfLegal = async (tipo, file) => {
+  try {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await axios.post(`${API_URL}/pdf/upload/${tipo}`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al subir el PDF', error);
+    throw error;
+  }
+};
+
+export const getPdfLegalUrl = (tipo) => `${API_URL}/pdf/download/${tipo}`;
+
 export const servicios = async () => {
   try {
     const response = await axios.get(`${API_URL}/transaction`);
