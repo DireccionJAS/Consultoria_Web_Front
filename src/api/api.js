@@ -107,6 +107,16 @@ export const RegistrarCliente = async (data) => {
   }
 };
 
+export const createAdmin = async (data) => {
+  try {
+    const response = await axios.post(`${API_URL}/users/admin`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear el admin', error);
+    throw error;
+  }
+};
+
 export const actualizarStatusCliente = async (id_user, nuevoEstado) => {
   try {
     const response = await axios.put(`${API_URL}/users/${id_user}/status`, { status: nuevoEstado });

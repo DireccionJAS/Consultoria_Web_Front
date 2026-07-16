@@ -11,6 +11,7 @@ import EmpresaPagos from "./components/Administrador/EmpresaPagos.jsx";
 import EmpresaCalendario from "./components/Administrador/EmpresaCalendario.jsx";
 import EmpresaHorarios from "./components/Administrador/EmpresaHorarios.jsx";
 import EmpresaServicios from "./components/Administrador/EmpresaServicios.jsx";
+import EmpresaAdmins from "./components/Administrador/EmpresaAdmins.jsx";
 import AdministradorServicios from "./components/Administrador/AdministradorServicios";
 import AdministradorCliente from "./components/Administrador/AdministradorClientes";
 import AdministradorTramites from "./components/Administrador/AdministradorTramites";
@@ -114,6 +115,11 @@ function App() {
         <Route path="/EmpresaServicios" element={
           <ProtectedRoute allowedRoles={["EMPRESA"]}>
             <EmpresaServicios />
+          </ProtectedRoute>
+        } />
+        <Route path="/EmpresaAdmins" element={
+          <ProtectedRoute allowedRoles={["EMPRESA"]}>
+            <EmpresaAdmins />
           </ProtectedRoute>
         } />
         <Route path="/PDF" element={
