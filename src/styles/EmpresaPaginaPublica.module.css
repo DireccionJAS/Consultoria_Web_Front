@@ -100,7 +100,8 @@
 .faqItemHead { display: flex; align-items: center; gap: 12px; padding: 13px 16px; }
 .faqGrip { color: var(--muted-2); cursor: grab; }
 .faqNum { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent); }
-.faqQ { flex: 1; font-size: 13px; font-weight: 500; }
+.faqQ { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; display: flex; flex-direction: column; gap: 3px; }
+.faqAPreview { font-size: 11.5px; font-weight: 400; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .faqActions { display: flex; gap: 4px; }
 .faqActions button { width: 30px; height: 30px; border-radius: 8px; background: transparent !important; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .faqActions button:hover { background: #F4F6F8 !important; color: var(--c1); }
@@ -127,6 +128,19 @@
 .socSfx { padding-right: 12px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
 
 .saveFoot { position: sticky; bottom: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 14px 0; display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+
+/* faq modal (fmodal) */
+.scrim { position: fixed; inset: 0; background: rgba(11,26,48,0.55); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.fmodal { width: 460px; max-width: 100%; max-height: calc(100vh - 40px); overflow-y: auto; background: var(--white); border-radius: 18px; box-shadow: 0 30px 70px rgba(11,26,48,0.3); }
+.fmodalHead { background: linear-gradient(115deg, var(--c1) 0%, var(--c2) 100%); color: var(--white); padding: 18px 22px; display: flex; align-items: center; gap: 12px; position: relative; }
+.fmodalIcon { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fmodalTitleTxt { font-family: var(--display); font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+.fmodalSub { font-size: 11px; opacity: 0.8; margin-top: 1px; }
+.fmodalClose { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.18) !important; color: var(--white) !important; display: flex; align-items: center; justify-content: center; }
+.fmodalClose:hover { background: rgba(255,255,255,0.28) !important; }
+.fmodalBody { padding: 20px 22px; }
+.fmodalFoot { padding: 14px 22px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 9px; }
+textarea.inp { resize: vertical; line-height: 1.5; }
 
 @media (max-width: 991.98px) {
   .topbar { padding: 14px 20px; }

@@ -44,12 +44,12 @@ const TESTIMONIOS_INICIALES = [
 ];
 
 const FAQ_INICIALES = [
-  { id: 1, question: '¿Cuánto tarda el proceso completo de visa americana?' },
-  { id: 2, question: '¿Qué documentos necesito para mi visa?' },
-  { id: 3, question: '¿Tienen garantía de aprobación?' },
-  { id: 4, question: '¿Qué pasa si mi visa es rechazada?' },
-  { id: 5, question: '¿Aceptan meses sin intereses?' },
-  { id: 6, question: '¿Atienden trámites urgentes?' },
+  { id: 1, question: '¿Cuánto tarda el proceso completo de visa americana?', answer: 'En 2026, el promedio en CDMX es de 8–14 semanas entre el llenado del DS-160 y la entrevista consular. Con JAS conseguimos la primera cita disponible y reducimos el tiempo de espera al mínimo.' },
+  { id: 2, question: '¿Qué documentos necesito para mi visa?', answer: 'Pasaporte vigente con 6 meses, comprobante de domicilio, comprobante de ingresos, foto digital 5×5 cm con fondo blanco y, si aplica, documentos de arraigo familiar y laboral. Te enviamos una lista personalizada.' },
+  { id: 3, question: '¿Tienen garantía de aprobación?', answer: 'La decisión consular es soberana, así que ninguna consultoría seria puede garantizar al 100%. Lo que sí garantizamos es preparar tu caso con la máxima rigurosidad — nuestra tasa de aprobación es del 96%.' },
+  { id: 4, question: '¿Qué pasa si mi visa es rechazada?', answer: 'Analizamos las razones del rechazo y te asesoramos en la reapertura del caso sin costo adicional. Nuestro objetivo es que viajes — no cobrarte de nuevo.' },
+  { id: 5, question: '¿Aceptan meses sin intereses?', answer: 'Sí. Aceptamos efectivo, transferencia, débito y crédito. Para algunos servicios ofrecemos hasta 3 meses sin intereses con tarjetas participantes.' },
+  { id: 6, question: '¿Atienden trámites urgentes?', answer: 'Sí, tenemos un proceso expedito para emergencias médicas, familiares o de trabajo. Llámanos al 777 395 6677 y un consultor evalúa tu caso el mismo día.' },
 ];
 
 const UBICACIONES_INICIALES = [
@@ -81,6 +81,7 @@ function IconGrip() { return <svg width="14" height="14" viewBox="0 0 24 24" fil
 function IconFacebook() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>; }
 function IconInstagram() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor"></circle></svg>; }
 function IconTiktok() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9a5 5 0 0 1-3-1v6.5a5.5 5.5 0 1 1-5.5-5.5V13a2.5 2.5 0 1 0 2.5 2.5V3h2.5a3 3 0 0 0 3.5 3z"></path></svg>; }
+function IconCheckFaq() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"></path></svg>; }
 
 function UploadRow({ thumbStyle, title, sub, onPick, onClear }) {
   const inputId = `upload-${title.replace(/[^a-zA-Z0-9]/g, '')}`;
@@ -126,6 +127,10 @@ export default function EmpresaPaginaPublica() {
 
   // FAQ (real: FAQSection.jsx)
   const [faqs, setFaqs] = useState(FAQ_INICIALES);
+  const [faqModalAbierto, setFaqModalAbierto] = useState(false);
+  const [faqEditandoId, setFaqEditandoId] = useState(null);
+  const [faqDraftQuestion, setFaqDraftQuestion] = useState('');
+  const [faqDraftAnswer, setFaqDraftAnswer] = useState('');
 
   // Contacto (real: ContactSection.jsx)
   const [tituloLocalidad, setTituloLocalidad] = useState('Visítanos en Jiutepec o en línea');
@@ -195,22 +200,25 @@ export default function EmpresaPaginaPublica() {
     setTestimonios((prev) => [...prev, { id: Date.now(), img: URL.createObjectURL(file), tag: tagVal }]);
   };
 
-  const handleNuevaFaq = async () => {
-    const { value: question } = await Swal.fire({
-      title: 'Nueva pregunta', input: 'text', inputPlaceholder: '¿...?',
-      showCancelButton: true, confirmButtonText: 'Agregar', cancelButtonText: 'Cancelar',
-    });
-    if (!question) return;
-    setFaqs((prev) => [...prev, { id: Date.now(), question }]);
+  const abrirFaqModal = (item) => {
+    setFaqEditandoId(item ? item.id : null);
+    setFaqDraftQuestion(item ? item.question : '');
+    setFaqDraftAnswer(item ? item.answer : '');
+    setFaqModalAbierto(true);
   };
 
-  const handleEditarFaq = async (id, actual) => {
-    const { value: question } = await Swal.fire({
-      title: 'Editar pregunta', input: 'text', inputValue: actual,
-      showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
-    });
+  const cerrarFaqModal = () => setFaqModalAbierto(false);
+
+  const guardarFaq = () => {
+    const question = faqDraftQuestion.trim();
     if (!question) return;
-    setFaqs((prev) => prev.map((f) => (f.id === id ? { ...f, question } : f)));
+    const answer = faqDraftAnswer.trim();
+    if (faqEditandoId != null) {
+      setFaqs((prev) => prev.map((f) => (f.id === faqEditandoId ? { ...f, question, answer } : f)));
+    } else {
+      setFaqs((prev) => [...prev, { id: Date.now(), question, answer }]);
+    }
+    setFaqModalAbierto(false);
   };
 
   const handleEliminarFaq = (id) => setFaqs((prev) => prev.filter((f) => f.id !== id));
@@ -426,7 +434,7 @@ export default function EmpresaPaginaPublica() {
                 <div className={styles.cardHead}>
                   <div className={styles.cardIcon}><IconHelp /></div>
                   <div><div className={styles.cardTitle}>Preguntas frecuentes</div><div className={styles.cardSub}>{faqs.length} preguntas activas · arrastra para reordenar</div></div>
-                  <button className={`${styles.btn} ${styles.btnAccent} ${styles.btnSm}`} style={{ marginLeft: 'auto' }} onClick={handleNuevaFaq}>
+                  <button className={`${styles.btn} ${styles.btnAccent} ${styles.btnSm}`} style={{ marginLeft: 'auto' }} onClick={() => abrirFaqModal(null)}>
                     <IconPlus size={12} /> Nueva
                   </button>
                 </div>
@@ -436,9 +444,12 @@ export default function EmpresaPaginaPublica() {
                       <div className={styles.faqItemHead}>
                         <span className={styles.faqGrip}><IconGrip /></span>
                         <span className={styles.faqNum}>{String(i + 1).padStart(2, '0')}</span>
-                        <span className={styles.faqQ}>{f.question}</span>
+                        <div className={styles.faqQ}>
+                          <div>{f.question}</div>
+                          <div className={styles.faqAPreview}>{f.answer || 'Sin respuesta todavía.'}</div>
+                        </div>
                         <div className={styles.faqActions}>
-                          <button title="Editar" onClick={() => handleEditarFaq(f.id, f.question)}><IconEditSm /></button>
+                          <button title="Editar" onClick={() => abrirFaqModal(f)}><IconEditSm /></button>
                           <button className={styles.del} title="Eliminar" onClick={() => handleEliminarFaq(f.id)}><IconTrashSm /></button>
                         </div>
                       </div>
@@ -529,6 +540,35 @@ export default function EmpresaPaginaPublica() {
           </div>
         </div>
       </main>
+
+      {faqModalAbierto && (
+        <div className={styles.scrim} onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarFaqModal(); }}>
+          <div className={styles.fmodal}>
+            <div className={styles.fmodalHead}>
+              <div className={styles.fmodalIcon}><IconHelp /></div>
+              <div>
+                <div className={styles.fmodalTitleTxt}>{faqEditandoId != null ? 'Editar pregunta' : 'Agregar pregunta'}</div>
+                <div className={styles.fmodalSub}>Se mostrará en la sección FAQ de la landing</div>
+              </div>
+              <button className={styles.fmodalClose} onClick={cerrarFaqModal}><IconClose size={13} /></button>
+            </div>
+            <div className={styles.fmodalBody}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Pregunta</label>
+                <input className={styles.inp} placeholder="¿Cuánto tarda el trámite de...?" value={faqDraftQuestion} onChange={(e) => setFaqDraftQuestion(e.target.value)} />
+              </div>
+              <div className={styles.field} style={{ marginBottom: 0 }}>
+                <label className={styles.fieldLabel}>Respuesta</label>
+                <textarea className={styles.inp} rows={5} placeholder="Escribe la respuesta que verán tus clientes..." value={faqDraftAnswer} onChange={(e) => setFaqDraftAnswer(e.target.value)} />
+              </div>
+            </div>
+            <div className={styles.fmodalFoot}>
+              <button className={`${styles.btn} ${styles.btnGhost}`} onClick={cerrarFaqModal}>Cancelar</button>
+              <button className={`${styles.btn} ${styles.btnAccent}`} onClick={guardarFaq}><IconCheckFaq /> Guardar pregunta</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
