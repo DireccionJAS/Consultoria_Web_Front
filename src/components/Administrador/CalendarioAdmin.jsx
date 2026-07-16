@@ -39,14 +39,6 @@ const EXT_HORAS = [
   { hora: '19:00' },
 ];
 
-// "Cambiar cita": no existe backend de disponibilidad de horarios (mismo
-// caso que "Cita externa"), así que se muestran todos los horarios del
-// mockup ("Cambiar Cita (standalone).html") sin marcar ninguno como
-// ocupado. El caso "menos de 24h" (comisión de $99 MXN) es solo visual:
-// no hay forma de etiquetar en Payment que un cobro es por reagendo.
-const CC_HORAS_LEJOS = ['09:00', '10:00', '11:00', '12:00', '16:00', '17:00', '18:00', '19:00'];
-const CC_HORAS_CERCA = ['09:00', '10:00', '12:00', '16:00'];
-
 function IconChevronLeft() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"></path></svg>;
 }
@@ -64,6 +56,9 @@ function IconClose({ size = 13 }) {
 }
 function IconCalendar() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ color: 'var(--c2)' }}><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
+}
+function IconCalendarPlus() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"></path></svg>;
 }
 function IconPin() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
@@ -88,12 +83,6 @@ function IconEncargado() {
 }
 function IconExternal() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10"></path></svg>;
-}
-function IconWarning() {
-  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path></svg>;
-}
-function IconCard({ size = 14 }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>;
 }
 function IconNcHead() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>;
@@ -178,14 +167,6 @@ export default function CalendarioAdmin() {
   const [extDia, setExtDia] = useState(0);
   const [extHora, setExtHora] = useState('10:00');
   const [extAtencion, setExtAtencion] = useState('zoom');
-
-  const [ccAbierta, setCcAbierta] = useState(false);
-  const [ccContext, setCcContext] = useState(null);
-  const [ccFecha, setCcFecha] = useState('');
-  const [ccHora, setCcHora] = useState('');
-  const [ccPayMode, setCcPayMode] = useState('online');
-  const [ccPayMethod, setCcPayMethod] = useState('stripe');
-  const [ccGuardando, setCcGuardando] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -300,54 +281,6 @@ export default function CalendarioAdmin() {
       icon: 'info',
       title: 'Cita externa no conectada',
       text: 'Esta función aún no tiene un backend real donde guardar la cita (no existe entidad ni sistema de disponibilidad para "Atención al cliente").',
-    });
-  };
-
-  const abrirCambiarCita = () => {
-    if (!eventoDetalle) return;
-    setCcContext({ tipo: eventoDetalle.tipo, item: eventoDetalle.item, fecha: eventoDetalle.fecha, hora: eventoDetalle.hora });
-    setCcFecha(eventoDetalle.fecha || '');
-    setCcHora('');
-    setCcPayMode('online');
-    setCcPayMethod('stripe');
-    setEventoDetalle(null);
-    setCcAbierta(true);
-  };
-
-  const ccEsUrgente = ccContext?.fecha && ccContext?.hora
-    ? (new Date(`${ccContext.fecha}T${ccContext.hora}:00`) - new Date()) < 24 * 60 * 60 * 1000
-    : false;
-
-  const handleConfirmarCambioLejos = async () => {
-    if (!ccContext || !ccFecha || !ccHora) return;
-    setCcGuardando(true);
-    const fechaHora = `${ccFecha} ${ccHora}:00`;
-    const payload = { ...ccContext.item };
-    if (ccContext.tipo === 'cas') payload.dateCas = fechaHora;
-    if (ccContext.tipo === 'con') payload.dateCon = fechaHora;
-    if (ccContext.tipo === 'sim') payload.dateSimulation = fechaHora;
-    try {
-      const res = await actualizarTC(ccContext.item.idTransactProgress, payload);
-      if (!res?.success) throw new Error(res?.message || 'No se pudo cambiar la cita');
-      await fetchServices();
-      setCcAbierta(false);
-      Swal.fire({ icon: 'success', title: 'Cita reagendada', text: 'La nueva fecha y hora se guardaron correctamente.' });
-    } catch (error) {
-      Swal.fire({ icon: 'error', title: 'No se pudo cambiar la cita', text: error.message || 'Ocurrió un error al reagendar la cita.' });
-    } finally {
-      setCcGuardando(false);
-    }
-  };
-
-  const handleConfirmarCambioCerca = () => {
-    if (ccPayMode === 'wa') {
-      window.open('https://wa.me/527771008412', '_blank');
-      return;
-    }
-    Swal.fire({
-      icon: 'info',
-      title: 'Cobro de comisión no conectado',
-      text: 'El cobro de $99 MXN por cambio con menos de 24 horas aún no está conectado a un pago real (no existe forma de etiquetar en Payment que un cobro es por reagendo).',
     });
   };
 
@@ -560,93 +493,9 @@ export default function CalendarioAdmin() {
                 <div className="ev-detail-icon"><IconEncargado /></div>
                 <div><div className="ev-detail-lbl">Encargado asignado</div><div className="ev-detail-val">{eventoDetalle.item.encargado?.name || 'Sin asignar'}</div></div>
               </div>
-              <button className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={abrirCambiarCita}>
-                <IconCalSmall /> Cambiar cita
-              </button>
-              <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center', marginTop: 8 }} onClick={() => navigate('/TramitesAdmin')}>
+              <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={() => navigate('/TramitesAdmin')}>
                 Ver trámite completo <IconExternal />
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CAMBIAR CITA MODAL - extraído 1:1 de "Cambiar Cita (standalone).html" */}
-      {ccAbierta && ccContext && (
-        <div className="ev-popup" onClick={(e) => { if (e.target === e.currentTarget) setCcAbierta(false); }}>
-          <div className="cc-modal">
-            <div className="cc-head">
-              <div className="cc-eyebrow">Reagendar</div>
-              <div className="cc-title">Cambiar cita</div>
-              <button className="cc-close" onClick={() => setCcAbierta(false)}><IconClose /></button>
-            </div>
-            <div className="cc-body">
-              <div className="cc-sec-label">Cita actual</div>
-              <div className="cc-current">
-                <div className="cc-cur-date">
-                  <div className="cc-cur-day">{ccContext.fecha ? ccContext.fecha.slice(8, 10) : '--'}</div>
-                  <div className="cc-cur-mon">{ccContext.fecha ? MESES_CORTOS[Number(ccContext.fecha.slice(5, 7)) - 1] : ''}</div>
-                </div>
-                <div className="cc-cur-info">
-                  <div className="cc-cur-type">{ccContext.item.transact?.name || 'Trámite'}</div>
-                  <div className="cc-cur-time"><IconClockOutline /> {formatFechaHora(ccContext.fecha, ccContext.hora)}</div>
-                </div>
-                {ccEsUrgente && <div className="cc-cur-badge">EN &lt;24H</div>}
-              </div>
-
-              <div className="cc-sec-label">Nueva cita</div>
-              <div className="cc-field">
-                <label className="cc-field-label">Nuevo día <span className="cc-req">*</span></label>
-                <div className="cc-inp-wrap">
-                  <span className="cc-inp-icon"><IconCalSmall /></span>
-                  <input className="cc-inp" type="date" value={ccFecha} onChange={(e) => setCcFecha(e.target.value)} />
-                </div>
-              </div>
-              <div className="cc-field">
-                <label className="cc-field-label">Nueva hora <span className="cc-req">*</span></label>
-                <div className="cc-time-pills">
-                  {(ccEsUrgente ? CC_HORAS_CERCA : CC_HORAS_LEJOS).map((h) => (
-                    <div key={h} className={`cc-time-pill ${ccHora === h ? 'sel' : ''}`} onClick={() => setCcHora(h)}>{h}</div>
-                  ))}
-                </div>
-              </div>
-
-              {ccEsUrgente && (
-                <div className="cc-warn">
-                  <div className="cc-warn-top">
-                    <IconWarning />
-                    <div className="cc-warn-text">Este cambio genera una comisión de <strong>$99 MXN</strong> por realizarse con menos de 24 horas de anticipación.</div>
-                  </div>
-                  <div className="cc-pay-q">¿Cómo deseas resolver el pago?</div>
-                  <div className="cc-pay-toggle">
-                    <div className={`cc-pay-toggle-opt ${ccPayMode === 'online' ? 'active' : ''}`} onClick={() => setCcPayMode('online')}>Pagar en línea</div>
-                    <div className={`cc-pay-toggle-opt ${ccPayMode === 'wa' ? 'active' : ''}`} onClick={() => setCcPayMode('wa')}>Contactar a la empresa</div>
-                  </div>
-                  {ccPayMode === 'online' ? (
-                    <div className="cc-pay-methods">
-                      <div className={`cc-pay-method ${ccPayMethod === 'stripe' ? 'sel' : ''}`} onClick={() => setCcPayMethod('stripe')}>
-                        <div className="cc-pm-logo" style={{ background: '#635bff' }}>Stripe</div><div className="cc-pm-name">Tarjeta</div>
-                      </div>
-                      <div className={`cc-pay-method ${ccPayMethod === 'paypal' ? 'sel' : ''}`} onClick={() => setCcPayMethod('paypal')}>
-                        <div className="cc-pm-logo" style={{ background: '#003087', color: '#ffc439' }}>PayPal</div><div className="cc-pm-name">PayPal</div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="cc-pres-note"><IconChat /> Te conectaremos por WhatsApp con Consultoría JAS para coordinar el pago y confirmar tu cambio de cita.</div>
-                  )}
-                </div>
-              )}
-            </div>
-            <div className="cc-foot">
-              {ccEsUrgente ? (
-                <button className="cc-btn cc-btn-primary" onClick={handleConfirmarCambioCerca}>
-                  {ccPayMode === 'online' ? (<><IconCard /> Pagar $99 y confirmar cambio</>) : (<><IconChat /> Abrir WhatsApp de Consultoría JAS</>)}
-                </button>
-              ) : (
-                <button className="cc-btn cc-btn-primary" disabled={!ccFecha || !ccHora || ccGuardando} onClick={handleConfirmarCambioLejos}>
-                  <IconCheck /> {ccGuardando ? 'Guardando…' : 'Confirmar cambio'}
-                </button>
-              )}
             </div>
           </div>
         </div>
