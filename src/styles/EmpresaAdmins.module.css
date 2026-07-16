@@ -82,7 +82,7 @@
 .rowActions { display: inline-flex; gap: 4px; }
 .rowActions button { width: 30px; height: 30px; border-radius: 8px; background: transparent !important; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .rowActions button:hover { background: rgba(45, 108, 223, 0.12) !important; color: var(--c2); }
-.rowActions button.archive:hover { background: var(--amber-soft) !important; color: var(--amber); }
+.rowActions button.del:hover { background: var(--rose-soft) !important; color: var(--rose); }
 
 /* pagination */
 .pagination { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px; }
