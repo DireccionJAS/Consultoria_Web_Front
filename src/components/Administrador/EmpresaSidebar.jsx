@@ -66,6 +66,7 @@ export default function EmpresaSidebar({
     if (key === 'servicios') navigate('/EmpresaServicios');
     if (key === 'admins') navigate('/EmpresaAdmins');
     if (key === 'practicas') navigate('/EmpresaPracticas');
+    if (key === 'recursos') navigate('/EmpresaRecursos');
   };
 
   const goPaginaPublica = (key) => {
