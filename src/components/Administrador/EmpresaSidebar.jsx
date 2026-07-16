@@ -47,7 +47,7 @@ export default function EmpresaSidebar({
   onNavigate,
 }) {
   const navigate = useNavigate();
-  const [paginaPublicaOpen, setPaginaPublicaOpen] = useState(active === 'pagina-publica');
+  const [paginaPublicaOpen, setPaginaPublicaOpen] = useState(active === 'pagina-publica' || active.startsWith('pagina-publica:'));
   const activeSubItem = active.startsWith('pagina-publica:') ? active.split(':')[1] : null;
 
   const initials = (name) => {
@@ -65,6 +65,11 @@ export default function EmpresaSidebar({
     if (key === 'horarios') navigate('/EmpresaHorarios');
     if (key === 'servicios') navigate('/EmpresaServicios');
     if (key === 'admins') navigate('/EmpresaAdmins');
+  };
+
+  const goPaginaPublica = (key) => {
+    if (onNavigate) onNavigate(`pagina-publica:${key}`);
+    navigate(`/EmpresaPaginaPublica?tab=${key}`);
   };
 
   const handleLogout = () => {
@@ -119,7 +124,7 @@ export default function EmpresaSidebar({
           <div
             key={item.key}
             className={`${styles.navSubitem} ${activeSubItem === item.key ? styles.active : ''}`}
-            onClick={() => onNavigate && onNavigate(`pagina-publica:${item.key}`)}
+            onClick={() => goPaginaPublica(item.key)}
           >
             {item.label}
           </div>
