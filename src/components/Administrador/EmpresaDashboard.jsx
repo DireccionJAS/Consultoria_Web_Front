@@ -15,30 +15,34 @@ function PagosIcon({ size = 22 }) { return <svg width={size} height={size} viewB
 function CalendarioIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>; }
 function DocsIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>; }
 
+// Sin badges/conteos: no existe todavía un sistema de notificaciones ni de
+// estadísticas agregadas en el backend para Trámites/Clientes/Servicios/
+// Pagos/Calendario/Documentos — mostrar números aquí sería inventar datos.
+// Las tarjetas quedan como accesos de navegación reales.
 const NAV_CARDS = [
   {
     key: 'tramites', name: 'Trámites', desc: 'Gestiona todos los trámites en curso, su estado y avance.',
-    icon: TramitesIcon, badge: '5 pendientes', badgeStyle: null, count: '87', countLabel: 'activos', featured: true,
+    icon: TramitesIcon, featured: true,
   },
   {
     key: 'clientes', name: 'Clientes', desc: 'Registro, edición y estado de cuentas de clientes.',
-    icon: ClientesIcon, badge: '+24 nuevos', badgeStyle: { background: 'var(--green-soft)', color: 'var(--green)' }, count: '214', countLabel: 'registrados',
+    icon: ClientesIcon,
   },
   {
     key: 'servicios', name: 'Servicios', desc: 'Catálogo de visas, pasaportes y formularios.',
-    icon: ServiciosIcon, badge: '13 activos', badgeStyle: { background: 'rgba(45, 108, 223, 0.12)', color: 'var(--c2)' }, count: '13', countLabel: 'en catálogo',
+    icon: ServiciosIcon,
   },
   {
     key: 'pagos', name: 'Pagos', desc: 'Cobros, abonos y movimientos vía Stripe/PayPal.',
-    icon: PagosIcon, badge: '2 por confirmar', badgeStyle: null, count: '$284k', countLabel: 'este mes',
+    icon: PagosIcon,
   },
   {
     key: 'calendario', name: 'Calendario', desc: 'Citas CAS, CON y simulaciones diferenciadas por color.',
-    icon: CalendarioIcon, badge: '4 hoy', badgeStyle: { background: 'var(--amber-soft)', color: 'var(--amber)' }, count: '38', countLabel: 'próximas 7d',
+    icon: CalendarioIcon,
   },
   {
     key: 'documentos', name: 'Documentos', desc: 'Términos, Privacidad y otros documentos legales.',
-    icon: DocsIcon, badge: '2 PDFs', badgeStyle: { background: 'rgba(0, 0, 42, 0.06)', color: 'var(--muted)' }, count: '2', countLabel: 'actualizados',
+    icon: DocsIcon,
   },
 ];
 
@@ -82,7 +86,6 @@ export default function EmpresaDashboard() {
           <div className={styles.topActions}>
             <button className={styles.iconBtn} aria-label="Notificaciones">
               <BellIcon />
-              <span className={styles.badgeNum}>8</span>
             </button>
             <button className={styles.btnAccent}>
               <PlusIcon />
@@ -99,28 +102,12 @@ export default function EmpresaDashboard() {
             </div>
           </div>
 
-          <div className={styles.notifBanner}>
-            <div className={styles.notifIcon}>
-              <div className={styles.ring}></div>
-              <BellIcon />
-            </div>
-            <div className={styles.notifBody}>
-              <div className={styles.notifTitle}>Tienes <span className={styles.notifCount}>8</span> notificaciones pendientes</div>
-              <div className={styles.notifDesc}>5 trámites por revisar · 2 mensajes nuevos de clientes · 1 pago confirmado</div>
-            </div>
-            <button className={styles.notifCta}>
-              Revisar todo
-              <span style={{ marginLeft: 4 }}>→</span>
-            </button>
-          </div>
-
           <div className={styles.gridSection}>
             <div className={styles.sectionHeadRow}>
               <div>
                 <div className={styles.sectionEyebrow}>— Módulos del sistema</div>
                 <div className={styles.sectionTitle}>Accesos directos</div>
               </div>
-              <button className={styles.btnOutline}>Personalizar</button>
             </div>
 
             <div className={styles.navGrid}>
@@ -137,14 +124,12 @@ export default function EmpresaDashboard() {
                   >
                     <div className={styles.navCardTop}>
                       <div className={styles.navCardIcon}><Icon /></div>
-                      <span className={styles.navCardBadge} style={card.badgeStyle || undefined}>{card.badge}</span>
                     </div>
                     <div className={styles.navCardBody}>
                       <div className={styles.navCardName}>{card.name}</div>
                       <div className={styles.navCardDesc}>{card.desc}</div>
                     </div>
-                    <div className={styles.navCardFoot}>
-                      <div className={styles.navCardCount}>{card.count} <small>{card.countLabel}</small></div>
+                    <div className={styles.navCardFoot} style={{ justifyContent: 'flex-end' }}>
                       <div className={styles.navArrow}><ArrowIcon /></div>
                     </div>
                   </div>
