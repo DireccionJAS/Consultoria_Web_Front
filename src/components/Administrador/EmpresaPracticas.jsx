@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import styles from './../../styles/EmpresaPracticas.module.css';
 
-// Extraído 1:1 de "17-Practicas (standalone).html". El backend no tiene
+// Extraído 1:1 de "17-Practicas (standalone).html" y del modal "Nueva
+// institución" agregado en "17-Practicas (standalone) (1).html". El
+// backend no tiene
 // ninguna entidad de "solicitudes de prácticas" ni "instituciones", y el
 // formulario público de Prácticas (PracticasSection.jsx en la landing)
 // ni siquiera envía los datos a ningún lado (su handleSubmit solo hace
@@ -58,6 +59,9 @@ export default function EmpresaPracticas() {
   const [detalleAbierto, setDetalleAbierto] = useState(null);
   const [eliminando, setEliminando] = useState(null);
   const [instituciones, setInstituciones] = useState(INSTITUCIONES_INICIALES);
+  const [agregarAbierto, setAgregarAbierto] = useState(false);
+  const [nuevoNombreCorto, setNuevoNombreCorto] = useState('');
+  const [nuevoNombreCompleto, setNuevoNombreCompleto] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -89,24 +93,22 @@ export default function EmpresaPracticas() {
 
   const handleEliminarInstitucion = (id) => setInstituciones((prev) => prev.filter((i) => i.id !== id));
 
-  const handleAgregarInstitucion = async () => {
-    const { value } = await Swal.fire({
-      title: 'Nueva institución',
-      html: '<input id="swal-nombre" class="swal2-input" placeholder="Nombre corto (ej. UTEZ)">'
-        + '<input id="swal-sub" class="swal2-input" placeholder="Nombre completo de la institución">',
-      focusConfirm: false,
-      showCancelButton: true, confirmButtonText: 'Agregar', cancelButtonText: 'Cancelar',
-      preConfirm: () => {
-        const name = document.getElementById('swal-nombre').value.trim();
-        const sub = document.getElementById('swal-sub').value.trim();
-        if (!name) { Swal.showValidationMessage('El nombre es obligatorio'); return false; }
-        return { name, sub };
-      },
-    });
-    if (!value) return;
+  const abrirAgregarInstitucion = () => {
+    setNuevoNombreCorto('');
+    setNuevoNombreCompleto('');
+    setAgregarAbierto(true);
+  };
+
+  const cerrarAgregarInstitucion = () => setAgregarAbierto(false);
+
+  const handleConfirmarAgregarInstitucion = () => {
+    const name = nuevoNombreCorto.trim();
+    const sub = nuevoNombreCompleto.trim();
+    if (!name) return;
     const colores = ['#1B6B3A', '#7A1F2B', '#2D6CDF', '#C68714', '#6b3e8c', '#c25a2e'];
     const color = colores[instituciones.length % colores.length];
-    setInstituciones((prev) => [...prev, { id: Date.now(), mark: value.name[0]?.toUpperCase() ?? '?', color, name: value.name, sub: value.sub }]);
+    setInstituciones((prev) => [...prev, { id: Date.now(), mark: name[0].toUpperCase(), color, name, sub }]);
+    setAgregarAbierto(false);
   };
 
   return (
@@ -222,7 +224,7 @@ export default function EmpresaPracticas() {
                       </div>
                     </div>
                   ))}
-                  <button className={styles.logoAdd} onClick={handleAgregarInstitucion}>
+                  <button className={styles.logoAdd} onClick={abrirAgregarInstitucion}>
                     <div className={styles.logoAddIcon}><IconPlus size={22} /></div>
                     <div className={styles.logoAddText}>Agregar logo</div>
                   </button>
@@ -288,6 +290,52 @@ export default function EmpresaPracticas() {
             <div className={styles.modalFoot} style={{ justifyContent: 'flex-end' }}>
               <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setEliminando(null)}>Cancelar</button>
               <button className={styles.btn} style={{ background: 'var(--rose)', color: '#fff' }} onClick={handleEliminarSolicitud}>Sí, eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {agregarAbierto && (
+        <div className={styles.scrim} onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarAgregarInstitucion(); }}>
+          <div className={styles.modal} style={{ maxWidth: 420 }}>
+            <div className={styles.modalHead}>
+              <div className={styles.mhEyebrow}>Logos de instituciones</div>
+              <div className={styles.mhTitle}>Nueva institución</div>
+              <button className={styles.mhClose} onClick={cerrarAgregarInstitucion}><IconClose /></button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.instField}>
+                <label className={styles.instLabel}>Nombre corto</label>
+                <input
+                  type="text"
+                  className={styles.instInput}
+                  placeholder="ej. UTEZ"
+                  value={nuevoNombreCorto}
+                  onChange={(e) => setNuevoNombreCorto(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <div className={styles.instField}>
+                <label className={styles.instLabel}>Nombre completo</label>
+                <input
+                  type="text"
+                  className={styles.instInput}
+                  placeholder="Nombre completo de la institución"
+                  value={nuevoNombreCompleto}
+                  onChange={(e) => setNuevoNombreCompleto(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className={styles.modalFoot} style={{ justifyContent: 'flex-end' }}>
+              <button className={`${styles.btn} ${styles.btnGhost}`} onClick={cerrarAgregarInstitucion}>Cancelar</button>
+              <button
+                className={styles.btn}
+                style={{ background: 'var(--c2)', color: '#fff' }}
+                onClick={handleConfirmarAgregarInstitucion}
+                disabled={!nuevoNombreCorto.trim()}
+              >
+                Agregar
+              </button>
             </div>
           </div>
         </div>
