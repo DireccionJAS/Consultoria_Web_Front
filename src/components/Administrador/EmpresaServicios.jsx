@@ -147,7 +147,7 @@ export default function EmpresaServicios() {
       <main className={styles.main}>
         <header className={styles.topbar}>
           <div>
-            <div className={styles.crumb}><span>Empresa</span> <span className={styles.crumbSep}>/</span> <span className={styles.accent}>Servicios</span></div>
+            <div className={styles.crumb}><span className={styles.crumbLink} onClick={() => navigate('/HomeEmpresa')}>Empresa</span> <span className={styles.crumbSep}>/</span> <span className={styles.accent}>Servicios</span></div>
             <div className={styles.pageTitle}>Gestión de servicios</div>
           </div>
           <div className={styles.topActions}>

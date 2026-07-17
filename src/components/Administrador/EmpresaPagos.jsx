@@ -238,7 +238,6 @@ export default function EmpresaPagos() {
           <div className={styles.topActions}>
             <button className={styles.iconBtn} aria-label="Notificaciones">
               <IconBell />
-              <span className={styles.badgeNum}>2</span>
             </button>
             <button className={styles.btnAccent} onClick={() => { setPagoContextoEfectivo(null); setModalEfectivoAbierto(true); }}>
               <IconPlus /> Agregar pago

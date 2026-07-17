@@ -234,7 +234,6 @@ export default function EmpresaTramites() {
           <div className={styles.topActions}>
             <button className={styles.iconBtn} aria-label="Notificaciones">
               <BellIcon />
-              <span className={styles.badgeNum}>8</span>
             </button>
             <button className={styles.btnAccent} onClick={() => setShowCrearTramite(true)}>
               <PlusIcon />

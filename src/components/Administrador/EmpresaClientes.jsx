@@ -249,7 +249,6 @@ export default function EmpresaClientes() {
           <div className={styles.topActions}>
             <button className={styles.iconBtn} aria-label="Notificaciones">
               <IconBell />
-              <span className={styles.badgeNum}>8</span>
             </button>
             <button className={styles.btnAccent} onClick={() => { setClienteSeleccionado(null); setShowClienteModal(true); }}>
               <IconPlus /> Agregar cliente
