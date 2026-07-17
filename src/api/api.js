@@ -25,6 +25,26 @@ export const Login = async (email, password) => {
   }
 };
 
+export const loginWithGoogle = async (accessToken) => {
+  try {
+    const response = await axios.post(`${API_URL}/auth/google`, { accessToken });
+    return response.data;
+  } catch (error) {
+    console.error('Error during Google login:', error);
+    throw error;
+  }
+};
+
+export const completeGoogleSignup = async (accessToken, phone) => {
+  try {
+    const response = await axios.post(`${API_URL}/auth/google/complete`, { accessToken, phone });
+    return response.data;
+  } catch (error) {
+    console.error('Error completing Google signup:', error);
+    throw error;
+  }
+};
+
 export const FindByID = async (id, token) => {
   try {
     const response = await axios.get(`${API_URL}/users/${id}`, {

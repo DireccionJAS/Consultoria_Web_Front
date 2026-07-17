@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../../img/logo_letras_negras.png';
-import { Login } from './../../api/api.js';
+import { Login, loginWithGoogle, completeGoogleSignup } from './../../api/api.js';
 import styles from './../../styles/Home.module.css';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useGoogleLogin } from '@react-oauth/google';
 import Swal from 'sweetalert2';
+import GoogleAuthModal from './GoogleAuthModal.jsx';
 
 function ArrowIcon() {
   return (
@@ -61,6 +63,16 @@ function UserIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="7" r="4" /><path d="M3 21v-1a7 7 0 0 1 14 0v1" /></svg>
   );
 }
+function GoogleGIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09z"></path>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"></path>
+      <path fill="#FBBC05" d="M5.84 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.18a11 11 0 0 0 0 9.86l3.66-2.84z"></path>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"></path>
+    </svg>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
@@ -84,6 +96,32 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const [googleModalOpen, setGoogleModalOpen] = useState(false);
+  const [googleStep, setGoogleStep] = useState('choice');
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
+  const [googlePending, setGooglePending] = useState(null); // { accessToken, email, name }
+  const [googlePhone, setGooglePhone] = useState('');
+
+  const completeSession = (token) => {
+    localStorage.setItem('token', token);
+    const decoded = jwtDecode(token);
+
+    if (decoded.role === 'ADMIN') {
+      Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Bienvenido ', showConfirmButton: true });
+      navigate('/HomeAdmin');
+    } else if (decoded.role === 'EMPRESA') {
+      Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Bienvenido ', showConfirmButton: true });
+      navigate('/HomeEmpresa');
+    } else if (decoded.role === 'USER') {
+      const selectedServiceData = sessionStorage.getItem('selectedService');
+      Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Bienvenido ', showConfirmButton: true }).then(() => {
+        navigate(selectedServiceData ? '/ClienteServicios' : '/ClienteHome');
+      });
+    } else {
+      console.warn('Rol no reconocido:', decoded.role);
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -98,43 +136,7 @@ export default function Home() {
         return;
       }
 
-      localStorage.setItem('token', data.token);
-      const decoded = jwtDecode(data.token);
-
-      if (decoded.role === 'ADMIN') {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: 'Bienvenido ',
-          showConfirmButton: true,
-        });
-        navigate('/HomeAdmin');
-      } else if (decoded.role === 'EMPRESA') {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: 'Bienvenido ',
-          showConfirmButton: true,
-        });
-        navigate('/HomeEmpresa');
-      } else if (decoded.role === 'USER') {
-        const selectedServiceData = sessionStorage.getItem('selectedService');
-
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: 'Bienvenido ',
-          showConfirmButton: true,
-        }).then(() => {
-          if (selectedServiceData) {
-            navigate('/ClienteServicios');
-          } else {
-            navigate('/ClienteHome');
-          }
-        });
-      } else {
-        console.warn('Rol no reconocido:', decoded.role);
-      }
+      completeSession(data.token);
     } catch (error) {
       setErrorMsg(error?.response?.data?.message || 'Ocurrió un error al iniciar sesión.');
     } finally {
@@ -145,6 +147,63 @@ export default function Home() {
   const handleForgotPassword = () => navigate('/olvidar-contra');
   const volver = () => navigate('/');
   const singint = () => navigate('/Signin');
+
+  const runGoogleLogin = useGoogleLogin({
+    flow: 'implicit',
+    scope: 'openid email profile',
+    onSuccess: async (tokenResponse) => {
+      setErrorMsg('');
+      setGoogleSubmitting(true);
+      try {
+        const response = await loginWithGoogle(tokenResponse.access_token);
+        const data = response.response;
+
+        if (data?.needsPhone) {
+          setGooglePending({ accessToken: tokenResponse.access_token, email: data.email, name: data.name });
+          setGooglePhone('');
+          setGoogleStep('phone');
+          setGoogleModalOpen(true);
+          return;
+        }
+        if (!data?.token) {
+          setErrorMsg(response.message || 'No se pudo iniciar sesión con Google.');
+          return;
+        }
+        setGoogleModalOpen(false);
+        completeSession(data.token);
+      } catch {
+        setErrorMsg('Ocurrió un error al iniciar sesión con Google.');
+      } finally {
+        setGoogleSubmitting(false);
+      }
+    },
+    onError: () => setErrorMsg('No se pudo conectar con tu cuenta de Google.'),
+  });
+
+  const handleOpenGoogleModal = () => { setGoogleStep('choice'); setGoogleModalOpen(true); };
+  const handleGoogleModalClose = () => setGoogleModalOpen(false);
+  const handleGoogleChooseNo = () => setGoogleStep('alts');
+  const handleGoogleBack = () => setGoogleStep('choice');
+
+  const handleSubmitGooglePhone = async () => {
+    if (!googlePending || googlePhone.length !== 10) return;
+    setGoogleSubmitting(true);
+    try {
+      const response = await completeGoogleSignup(googlePending.accessToken, googlePhone);
+      const data = response.response;
+      if (!data?.token) {
+        setErrorMsg(response.message || 'No se pudo completar tu registro con Google.');
+        return;
+      }
+      setGoogleModalOpen(false);
+      setGooglePending(null);
+      completeSession(data.token);
+    } catch {
+      setErrorMsg('Ocurrió un error al completar tu registro con Google.');
+    } finally {
+      setGoogleSubmitting(false);
+    }
+  };
 
   return (
     <div className={styles.loginPage}>
@@ -318,6 +377,12 @@ export default function Home() {
 
           <div className={styles.orDivider}>o</div>
 
+          <button type="button" className={styles.gsign} onClick={handleOpenGoogleModal} disabled={googleSubmitting}>
+            <GoogleGIcon />
+            {googleSubmitting ? 'Conectando…' : 'Iniciar sesión con Google'}
+          </button>
+          <button type="button" className={styles.nolink} onClick={handleOpenGoogleModal}>¿No tienes cuenta de Google?</button>
+
           <div className={styles.signupCta}>
             ¿Es tu primera vez en JAS? <a href="#" onClick={(e) => { e.preventDefault(); singint(); }}>Crea tu cuenta gratis →</a>
           </div>
@@ -332,6 +397,21 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <GoogleAuthModal
+        show={googleModalOpen}
+        step={googleStep}
+        onClose={handleGoogleModalClose}
+        onChooseYes={() => runGoogleLogin()}
+        onChooseNo={handleGoogleChooseNo}
+        onBack={handleGoogleBack}
+        submitting={googleSubmitting}
+        pendingName={googlePending?.name}
+        pendingEmail={googlePending?.email}
+        phone={googlePhone}
+        onPhoneChange={setGooglePhone}
+        onSubmitPhone={handleSubmitGooglePhone}
+      />
     </div>
   );
 }

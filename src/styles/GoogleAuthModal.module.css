@@ -1,0 +1,72 @@
+/*
+  GoogleAuthModal.module.css
+  Extraído 1:1 de "Modal Google (standalone).html". El mockup solo tiene
+  dos pasos (elegir Sí/No, y las alternativas si es No) — el paso de
+  "completa tu teléfono" (cuando el correo de Google es nuevo) no existe
+  en el diseño porque el mockup no contempla el registro real; se agregó
+  reutilizando el mismo lenguaje visual (inputWrap tipo Home.module.css).
+*/
+
+.scrim {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --primary: #1FA0D1; --hover: #205C81; --light: #C4E7F5; --c5: #E4F4FB; --white: #FFFFFF;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA;
+  --line: rgba(15,26,48,0.10); --line-2: rgba(15,26,48,0.18); --muted: rgba(15,26,48,0.55); --muted-2: rgba(15,26,48,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif; --sans: "Inter", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  -webkit-font-smoothing: antialiased;
+
+  position: fixed; inset: 0; background: rgba(15,26,48,0.5); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 1050;
+}
+.scrim button { cursor: pointer; border: 0; background: none; color: inherit; font-family: inherit; }
+
+.modal { width: 100%; max-width: 420px; background: var(--white); border-radius: 24px; overflow: hidden; box-shadow: 0 40px 100px -20px rgba(15,26,48,0.5); animation: mIn 0.3s cubic-bezier(0.2,0.8,0.3,1); }
+@keyframes mIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modalTop { padding: 28px 26px 22px; text-align: center; position: relative; }
+.gicon { width: 64px; height: 64px; border-radius: 18px; background: var(--light); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+.modalTitle { font-family: var(--display); font-weight: 600; font-size: 23px; letter-spacing: -0.02em; line-height: 1.1; }
+.modalSub { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin-top: 10px; }
+.modalClose { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 50%; background: #F4F8FB; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.modalClose:hover { background: var(--light); color: var(--hover); }
+.modalBody { padding: 0 26px 26px; }
+
+.optBtn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 15px 18px; border-radius: 13px; font-size: 14px; font-weight: 600; transition: all 0.2s; margin-bottom: 10px; }
+.optBtn:last-child { margin-bottom: 0; }
+.optBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.optYes { background: var(--primary); color: #fff; justify-content: center; }
+.optYes:hover:not(:disabled) { background: var(--hover); transform: translateY(-1px); }
+.optNo { background: var(--white); color: var(--c1); border: 1.5px solid var(--line-2); justify-content: center; }
+.optNo:hover:not(:disabled) { border-color: var(--rose); color: var(--rose); }
+.optIcon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* alternativas (paso "no tengo cuenta") */
+.altsIntro { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--amber-soft); border-radius: 12px; margin-bottom: 16px; }
+.altsIntro svg { color: var(--amber); flex-shrink: 0; }
+.altsIntroText { font-size: 12px; color: #8a6410; line-height: 1.45; }
+.altCard { display: flex; align-items: center; gap: 13px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 13px; margin-bottom: 10px; transition: all 0.2s; cursor: pointer; width: 100%; text-align: left; }
+.altCard:hover { border-color: var(--primary); background: #F8FCFE; transform: translateY(-1px); }
+.altCard:last-of-type { margin-bottom: 0; }
+.altIc { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.altIc.pdf { background: var(--rose-soft); color: var(--rose); }
+.altIc.wa { background: #DFF5E5; color: #1f9d52; }
+.altIc.call { background: var(--light); color: var(--hover); }
+.altName { font-size: 13.5px; font-weight: 600; }
+.altSub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.altArrow { margin-left: auto; color: var(--muted-2); }
+.backLink { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 14px; }
+.backLink:hover { color: var(--c1); }
+
+/* paso teléfono (fuera del mockup, mismo lenguaje visual) */
+.phoneIntro { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--light); border-radius: 12px; margin-bottom: 16px; }
+.phoneIntro svg { color: var(--hover); flex-shrink: 0; }
+.phoneIntroText { font-size: 12px; color: var(--c1); line-height: 1.45; }
+.field { margin-bottom: 16px; }
+.fieldLabel { display: block; font-size: 12px; font-weight: 600; color: var(--c1); margin-bottom: 7px; }
+.fieldLabel .req { color: var(--primary); }
+.inputWrap { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--line-2); border-radius: 11px; padding: 0 14px; transition: all 0.2s; }
+.inputWrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(31,160,209,0.10); }
+.inputIcon { color: var(--muted); display: flex; }
+.fieldInput { flex: 1; border: 0; outline: 0; background: transparent; padding: 12px 0; font-size: 14px; font-family: inherit; color: var(--c1); min-width: 0; }
