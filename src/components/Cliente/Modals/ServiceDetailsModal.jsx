@@ -87,6 +87,17 @@ const ServiceDetailsModal = ({
           onClick={onToggleZoom}
           className={styles.imageZoomOverlay}
         >
+          <div className={styles.imageZoomHeader}>
+            <span className={styles.imageZoomTitle}>Información de costos</span>
+            <button
+              type="button"
+              className={styles.imageZoomClose}
+              onClick={(e) => { e.stopPropagation(); onToggleZoom(); }}
+              aria-label="Cerrar"
+            >
+              &times;
+            </button>
+          </div>
           <img
             src={service.imageDetail}
             alt="Ampliado"

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import Swal from 'sweetalert2';
 import useReveal from "../../hooks/useReveal";
+import { enviarCorreoConDatos } from "../../api/api.js";
 import styles from '../../styles/landing/AgendaSection.module.css';
+
+const DESTINO_AGENDA = 'consultoriacomercializacionjas@gmail.com';
 
 function ArrowIcon() {
   return (
@@ -14,6 +18,62 @@ export default function AgendaSection() {
   const [cardRef, cardIn] = useReveal();
   const [type, setType] = useState('zoom');
   const [hora, setHora] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [fecha, setFecha] = useState('');
+  const [enviando, setEnviando] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!nombre || !apellido || !telefono || !fecha || !hora) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan datos',
+        text: 'Completa nombre, apellido, WhatsApp, fecha y hora para agendar tu cita.',
+      });
+      return;
+    }
+    setEnviando(true);
+    const tipoLabel = type === 'zoom' ? 'Zoom' : 'Presencial';
+    const asunto = `Nueva solicitud de asesoría gratuita — ${nombre} ${apellido}`;
+    const mensaje = `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+        <h2 style="color: #2fbad6;">Nueva solicitud de asesoría gratuita</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr><td style="padding: 4px; font-weight: bold;">Nombre:</td><td style="padding: 4px;">${nombre} ${apellido}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">WhatsApp / Teléfono:</td><td style="padding: 4px;">${telefono}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">Fecha solicitada:</td><td style="padding: 4px;">${fecha}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">Hora solicitada:</td><td style="padding: 4px;">${hora}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">Tipo de atención:</td><td style="padding: 4px;">${tipoLabel}</td></tr>
+        </table>
+        <p style="font-size: 12px; color: #777; margin-top: 20px;">Solicitud generada desde el formulario de agenda de la landing.</p>
+      </div>`;
+
+    try {
+      await enviarCorreoConDatos(DESTINO_AGENDA, asunto, mensaje);
+      Swal.fire({
+        icon: 'success',
+        title: '¡Solicitud enviada!',
+        text: 'Nos pondremos en contacto contigo pronto para confirmar tu cita.',
+      });
+      setNombre('');
+      setApellido('');
+      setTelefono('');
+      setFecha('');
+      setHora('');
+      setType('zoom');
+    } catch (error) {
+      console.error('Error al enviar solicitud de agenda:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudo enviar tu solicitud',
+        text: 'Ocurrió un error al enviar tu solicitud. Intenta de nuevo o contáctanos por WhatsApp.',
+      });
+    } finally {
+      setEnviando(false);
+    }
+  };
 
   return (
     <section className={styles.agenda} id="agenda">
@@ -32,15 +92,15 @@ export default function AgendaSection() {
             </div>
           </div>
 
-          <div className={styles.agendaForm}>
+          <form className={styles.agendaForm} onSubmit={handleSubmit}>
             <div className={styles.agGrid2}>
               <div className={styles.agField}>
                 <label className={styles.agLabel}>Nombre <span className={styles.req}>*</span></label>
-                <div className={styles.agInpWrap}><input className={styles.agInp} style={{ paddingLeft: '13px' }} placeholder="Tu nombre" /></div>
+                <div className={styles.agInpWrap}><input className={styles.agInp} style={{ paddingLeft: '13px' }} placeholder="Tu nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required /></div>
               </div>
               <div className={styles.agField}>
                 <label className={styles.agLabel}>Apellido <span className={styles.req}>*</span></label>
-                <div className={styles.agInpWrap}><input className={styles.agInp} style={{ paddingLeft: '13px' }} placeholder="Tu apellido" /></div>
+                <div className={styles.agInpWrap}><input className={styles.agInp} style={{ paddingLeft: '13px' }} placeholder="Tu apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} required /></div>
               </div>
             </div>
 
@@ -50,7 +110,7 @@ export default function AgendaSection() {
                 <span className={styles.agInpIcon}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z" /></svg>
                 </span>
-                <input className={styles.agInp} placeholder="777 123 4567" />
+                <input className={styles.agInp} placeholder="777 123 4567" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
               </div>
             </div>
 
@@ -58,7 +118,7 @@ export default function AgendaSection() {
               <div className={styles.agField}>
                 <label className={styles.agLabel}>Fecha <span className={styles.req}>*</span></label>
                 <div className={styles.agInpWrap}>
-                  <input className={`${styles.agInp} ${styles.agInpNoLeadIcon}`} type="date" />
+                  <input className={`${styles.agInp} ${styles.agInpNoLeadIcon}`} type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
                 </div>
               </div>
               <div className={styles.agField}>
@@ -101,11 +161,11 @@ export default function AgendaSection() {
               </div>
             </div>
 
-            <a href="#" className={`jas-btn jas-btn-primary ${styles.agSubmit}`}>
-              Agendar cita
+            <button type="submit" className={`jas-btn jas-btn-primary ${styles.agSubmit}`} disabled={enviando}>
+              {enviando ? 'Enviando...' : 'Agendar cita'}
               <div className="jas-arrow-rev"><ArrowIcon /></div>
-            </a>
-          </div>
+            </button>
+          </form>
         </div>
       </div>
     </section>

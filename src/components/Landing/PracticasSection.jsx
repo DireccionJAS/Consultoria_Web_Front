@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import Swal from 'sweetalert2';
 import useReveal from "../../hooks/useReveal";
+import { enviarCorreoConDatos } from "../../api/api.js";
 import styles from '../../styles/landing/PracticasSection.module.css';
+
+const DESTINO_PRACTICAS = 'consultoriacomercializacionjas@gmail.com';
 
 const INSTITUTIONS = [
   { mark: 'U', color: '#1B6B3A', name: 'UTEZ', sub: 'Univ. Tecnológica Emiliano Zapata' },
@@ -30,10 +34,43 @@ export default function PracticasSection() {
   const [instRef, instIn] = useReveal();
   const [formRef, formIn] = useReveal();
   const [submitted, setSubmitted] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [institucion, setInstitucion] = useState('');
+  const [correoInstitucion, setCorreoInstitucion] = useState('');
+  const [telefonoInstitucion, setTelefonoInstitucion] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setEnviando(true);
+    const asunto = `Nueva solicitud de prácticas profesionales — ${nombre}`;
+    const mensaje = `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+        <h2 style="color: #2fbad6;">Nueva solicitud de prácticas profesionales</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr><td style="padding: 4px; font-weight: bold;">Nombre completo:</td><td style="padding: 4px;">${nombre}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">WhatsApp:</td><td style="padding: 4px;">${whatsapp}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">Institución educativa:</td><td style="padding: 4px;">${institucion}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">Correo de la institución:</td><td style="padding: 4px;">${correoInstitucion}</td></tr>
+          <tr><td style="padding: 4px; font-weight: bold;">Teléfono de la institución:</td><td style="padding: 4px;">${telefonoInstitucion}</td></tr>
+        </table>
+        <p style="font-size: 12px; color: #777; margin-top: 20px;">Solicitud generada desde el formulario de prácticas profesionales de la landing.</p>
+      </div>`;
+
+    try {
+      await enviarCorreoConDatos(DESTINO_PRACTICAS, asunto, mensaje);
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error al enviar solicitud de prácticas:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudo enviar tu solicitud',
+        text: 'Ocurrió un error al enviar tu solicitud. Intenta de nuevo o contáctanos por WhatsApp.',
+      });
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
@@ -82,14 +119,14 @@ export default function PracticasSection() {
                   <label className={styles.pracFlabel}>Nombre completo</label>
                   <div className={styles.pracInputWrap}>
                     <span className={styles.pracInputIcon}><PersonIcon /></span>
-                    <input className={styles.pracInput} type="text" placeholder="Tu nombre completo" required />
+                    <input className={styles.pracInput} type="text" placeholder="Tu nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                   </div>
                 </div>
                 <div className={styles.pracField}>
                   <label className={styles.pracFlabel}>WhatsApp</label>
                   <div className={styles.pracInputWrap}>
                     <span className={styles.pracInputIcon}><WhatsIcon /></span>
-                    <input className={styles.pracInput} type="tel" placeholder="777 123 4567" required />
+                    <input className={styles.pracInput} type="tel" placeholder="777 123 4567" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} required />
                   </div>
                 </div>
 
@@ -99,27 +136,27 @@ export default function PracticasSection() {
                   <label className={styles.pracFlabel}>Nombre de la institución educativa</label>
                   <div className={styles.pracInputWrap}>
                     <span className={styles.pracInputIcon}><SchoolIcon /></span>
-                    <input className={styles.pracInput} type="text" placeholder="Universidad / Instituto" required />
+                    <input className={styles.pracInput} type="text" placeholder="Universidad / Instituto" value={institucion} onChange={(e) => setInstitucion(e.target.value)} required />
                   </div>
                 </div>
                 <div className={styles.pracField}>
                   <label className={styles.pracFlabel}>Correo de la institución</label>
                   <div className={styles.pracInputWrap}>
                     <span className={styles.pracInputIcon}><MailIcon /></span>
-                    <input className={styles.pracInput} type="email" placeholder="vinculacion@institucion.edu.mx" required />
+                    <input className={styles.pracInput} type="email" placeholder="vinculacion@institucion.edu.mx" value={correoInstitucion} onChange={(e) => setCorreoInstitucion(e.target.value)} required />
                   </div>
                 </div>
                 <div className={styles.pracField}>
                   <label className={styles.pracFlabel}>Teléfono de la institución</label>
                   <div className={styles.pracInputWrap}>
                     <span className={styles.pracInputIcon}><PhoneIcon /></span>
-                    <input className={styles.pracInput} type="tel" placeholder="777 100 0000" required />
+                    <input className={styles.pracInput} type="tel" placeholder="777 100 0000" value={telefonoInstitucion} onChange={(e) => setTelefonoInstitucion(e.target.value)} required />
                   </div>
                 </div>
               </div>
 
-              <button type="submit" className={styles.pracSubmit}>
-                Enviar solicitud
+              <button type="submit" className={styles.pracSubmit} disabled={enviando}>
+                {enviando ? 'Enviando...' : 'Enviar solicitud'}
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </button>
               <p className={styles.pracNote}>

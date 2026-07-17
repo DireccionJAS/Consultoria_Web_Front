@@ -122,17 +122,68 @@
   border-color: var(--accent);
   transform: scale(1.1);
 }
-.videoDuration {
+.testimonialZoomOverlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10060;
+  cursor: zoom-out;
+  padding: 20px;
+  box-sizing: border-box;
+  backdrop-filter: blur(2px);
+}
+
+.testimonialZoomHeader {
   position: absolute;
-  top: 20px; left: 20px;
-  z-index: 2;
-  padding: 4px 10px;
-  background: rgba(0,0,42,0.6);
-  backdrop-filter: blur(10px);
-  color: var(--c5);
-  border-radius: 4px;
-  font-family: var(--mono);
-  font-size: 11px;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 26px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent);
+  cursor: default;
+  z-index: 1;
+}
+
+.testimonialZoomTitle {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.testimonialZoomClose {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.testimonialZoomClose:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.testimonialZoomImage {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 991.98px) {

@@ -386,6 +386,46 @@
   transition: transform 0.2s ease;
 }
 
+.imageZoomHeader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 26px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent);
+  cursor: default;
+  z-index: 1;
+}
+
+.imageZoomTitle {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.imageZoomClose {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.imageZoomClose:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .zoomedImage:hover {
   transform: scale(1.02);
 }
