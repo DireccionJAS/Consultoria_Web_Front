@@ -66,6 +66,15 @@ function IconSearch() {
   );
 }
 
+function IconCalendar() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+      <path d="M16 2v4M8 2v4M3 10h18"></path>
+    </svg>
+  );
+}
+
 function IconChevronDown() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -245,8 +254,6 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
                   ) : (
                     <div className={styles.moneyWrap} style={{ height: 38 }}>
                       <select
-                        className={styles.inp}
-                        style={{ border: 0, background: 'transparent' }}
                         value={idTramiteSeleccionado}
                         onChange={(e) => setIdTramiteSeleccionado(e.target.value)}
                       >
@@ -300,7 +307,10 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
             </div>
             <div className={styles.field} style={{ marginBottom: 0 }}>
               <label className={styles.fieldLabel}>Fecha del pago <span className={styles.req}>*</span></label>
-              <input className={styles.inp} type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} style={{ height: 38 }} />
+              <div className={`${styles.moneyWrap} ${styles.dateWrap}`} style={{ height: 38 }}>
+                <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+                <span className={styles.dateSuffix}><IconCalendar /></span>
+              </div>
             </div>
           </div>
 
