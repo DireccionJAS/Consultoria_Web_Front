@@ -81,6 +81,7 @@
   content: "";
   position: absolute; top: -60px; right: -60px; width: 200px; height: 200px;
   border-radius: 50%; background: radial-gradient(circle, rgba(31,160,209,0.22) 0%, transparent 70%);
+  pointer-events: none;
 }
 .modalHeadIcon {
   width: 44px; height: 44px; border-radius: 12px; background: rgba(228, 236, 240, 0.15);

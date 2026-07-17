@@ -22,8 +22,8 @@ const DIAS = [
 const DOW_CORTO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
-const HORAS_SIM = ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
-const HORAS_REMOTA = ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
+const HORAS_SIM = ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
+const HORAS_REMOTA = ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
 
 function diasIniciales(activos) {
   const obj = {};
@@ -59,9 +59,6 @@ function IconClockOutline({ size = 20 }) {
 }
 function IconPin({ size = 18 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
-}
-function IconPhone({ size = 13 }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
 }
 function IconVideo({ size = 18 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 10l4.55-2.27A1 1 0 0 1 21 8.6v6.8a1 1 0 0 1-1.45.87L15 14M3 6h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"></path></svg>;
@@ -234,11 +231,11 @@ export default function EmpresaHorarios() {
               <div className={styles.card}>
                 <div className={styles.cardHead}>
                   <div className={styles.cardIcon}><IconVideo /></div>
-                  <div><div className={styles.cardTitle}>Atención remota</div><div className={styles.cardSub}>Configura el canal de llamada</div></div>
+                  <div><div className={styles.cardTitle}>Atención remota</div><div className={styles.cardSub}>Configura el canal de videollamada</div></div>
                 </div>
                 <div className={styles.cardBody}>
                   <div className={styles.subTabs}>
-                    <button className={`${styles.subTab} ${styles.active}`}><IconPhone /> Llamada</button>
+                    <button className={`${styles.subTab} ${styles.active}`}><IconVideo size={13} /> Videollamada</button>
                   </div>
 
                   <div className={styles.subPane}>

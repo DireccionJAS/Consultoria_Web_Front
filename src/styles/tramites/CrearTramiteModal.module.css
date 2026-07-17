@@ -66,6 +66,7 @@
   content: "";
   position: absolute; top: -60px; right: -60px; width: 200px; height: 200px;
   border-radius: 50%; background: radial-gradient(circle, rgba(111, 174, 219, 0.30) 0%, transparent 70%);
+  pointer-events: none;
 }
 .modalHeadRow { display: flex; align-items: center; gap: 14px; position: relative; }
 .modalHeadIcon {

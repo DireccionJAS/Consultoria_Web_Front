@@ -31,6 +31,54 @@ const STATUS_META = {
   8: { label: 'Rechazado', cls: 'stRechazado', color: 'var(--rose-dark)' },
 };
 
+// UI-only: no existe todavía una entidad Empresa en el backend, así que la
+// asignación aquí no se persiste (se pierde al recargar). Mismas 2 empresas
+// que ya usa el selector decorativo de CalendarioAdmin.jsx.
+const EMPRESAS = [
+  { code: 'JAS', label: 'C.JAS', name: 'Consultoría JAS' },
+  { code: 'CMG', label: 'COR.M', name: 'Corporativo Migratorio Gutiérrez' },
+];
+
+function EmpresaDropdown({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const empresa = EMPRESAS.find((e) => e.code === value) || null;
+
+  useEffect(() => {
+    const handleOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  return (
+    <div className={styles.statusDd} ref={ref}>
+      <div className={styles.empresaCell} style={{ cursor: 'pointer' }} onClick={() => setOpen((o) => !o)}>
+        <span className={styles.empresaAvatar}>{empresa ? empresa.code.slice(0, 3) : '—'}</span>
+        <span className={styles.empresaCode}>{empresa ? empresa.label : 'Sin asignar'}</span>
+        <ChevronDownIcon />
+      </div>
+      {open && (
+        <div className={styles.statusMenu}>
+          <div className={`${styles.statusOpt} ${!value ? styles.sel : ''}`} onClick={() => { onChange(null); setOpen(false); }}>
+            Sin asignar
+            {!value && <span className={styles.check}><CheckIcon /></span>}
+          </div>
+          {EMPRESAS.map((e) => (
+            <div
+              key={e.code}
+              className={`${styles.statusOpt} ${value === e.code ? styles.sel : ''}`}
+              onClick={() => { onChange(e.code); setOpen(false); }}
+            >
+              {e.name} ({e.label})
+              {value === e.code && <span className={styles.check}><CheckIcon /></span>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const CHIP_FILTERS = [
   { value: '', label: 'Todos', dot: null },
   { value: '1', label: 'En proceso', dot: 'var(--c2)' },
@@ -92,6 +140,7 @@ export default function EmpresaTramites() {
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
   const [estadoSeleccionado, setEstadoSeleccionado] = useState('');
+  const [empresaAsignada, setEmpresaAsignada] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -278,10 +327,10 @@ export default function EmpresaTramites() {
                         </td>
                         <td><div className={styles.encargadoCell}>— Sin asignar</div></td>
                         <td>
-                          <div className={styles.empresaCell}>
-                            <span className={styles.empresaAvatar}>JAS</span>
-                            <span className={styles.empresaCode}>C.JAS</span>
-                          </div>
+                          <EmpresaDropdown
+                            value={empresaAsignada[cliente.idTransactProgress] || null}
+                            onChange={(code) => setEmpresaAsignada((prev) => ({ ...prev, [cliente.idTransactProgress]: code }))}
+                          />
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <div className={styles.rowActions}>

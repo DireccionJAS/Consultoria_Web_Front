@@ -29,7 +29,7 @@
 .modalBody { padding: 22px 24px; overflow-y: auto; }
 
 .modalHead { padding: 20px 24px; background: linear-gradient(135deg, var(--c1), var(--hover)); color: var(--white); position: relative; overflow: hidden; flex-shrink: 0; }
-.modalHead::after { content: ""; position: absolute; top: -55px; right: -45px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(31,160,209,0.22) 0%, transparent 70%); }
+.modalHead::after { content: ""; position: absolute; top: -55px; right: -45px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(31,160,209,0.22) 0%, transparent 70%); pointer-events: none; }
 .mhRow { display: flex; align-items: center; gap: 13px; position: relative; }
 .mhIcon { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .mhEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,244,251,0.65); margin-bottom: 4px; }
