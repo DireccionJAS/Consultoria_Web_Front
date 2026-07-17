@@ -118,18 +118,18 @@ export default function ServicesSection({ services, handleOpenDetailsModal, hand
 
           <div className={`${styles.bentoCard} ${styles.bentoCtaCard}`}>
             <span className={styles.bentoNum} style={{ color: 'var(--c3)' }}>
-              {String(services.length + 1).padStart(2, '0')} / CUSTOM
+              {String(services.length + 1).padStart(2, '0')} / {services.length} servicios más...
             </span>
             <div>
-              <h3>¿Necesitas algo<br />diferente?</h3>
+              <h3>Ver mas<br />Servicios</h3>
               <p className={styles.bentoDesc}>
-                Atendemos casos urgentes, emergencias migratorias y procesos especiales. Habla con un consultor.
+                Más de {services.length} servicios migratorios diseñados para cubrir cada etapa de tu trámite.
               </p>
             </div>
             <div className={styles.bentoFoot}>
               <div></div>
-              <a href="tel:7773956677" className={styles.bentoCta}>
-                Habla con asesor
+              <a href="/Servicios" className={styles.bentoCta}>
+                Ver más servicios
                 <CtaArrow />
               </a>
             </div>

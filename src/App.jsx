@@ -41,6 +41,7 @@ import MiPerfil from "./components/Cliente/MiPerfil.jsx";
 import RegistrarPasos from "./components/Administrador/RegistrarPasos.jsx";
 import CombinedStepManager from "./components/Administrador/ActualizarPasos.jsx";
 import Page0 from "./components/Page0.jsx";
+import ServiciosPage from "./components/Landing/ServiciosPage.jsx";
 import Signin from "./components/Singin.jsx";
 import UploadPfd from "./components/Administrador/UploadPdf.jsx";
 import Practicas from "../Practicas.jsx";
@@ -72,6 +73,7 @@ function App() {
 
         <Route path="/Login" element={<Home />} />
         <Route path="/" element={<Page0 />} />
+        <Route path="/Servicios" element={<ServiciosPage />} />
         <Route path="/test" element={<PruebaPago />} />
         <Route path="/Signin" element={<Signin />} />
         <Route path="/practicas" element={<Practicas />} />
