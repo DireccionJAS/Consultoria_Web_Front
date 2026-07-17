@@ -28,8 +28,9 @@ export default function AdministradorServicios() {
   const [serviceId, setServiceId] = useState(null);
   const [shouldNavigateToAddSteps, setShouldNavigateToAddSteps] = useState(false);
 
-  // Modal de agregar servicio
+  // Modal de agregar/editar servicio
   const [modalServicioAbierto, setModalServicioAbierto] = useState(false);
+  const [servicioEditando, setServicioEditando] = useState(null);
 
   // Función para mostrar los pasos del trámite (cuando das clic en "Ver pasos")
   const handleViewSteps = async (id) => {
@@ -155,7 +156,8 @@ export default function AdministradorServicios() {
   };
 
   const handleEditClick = (service) => {
-    navigate(`/ActualizarServicio`, { state: { service } });
+    setServicioEditando(service);
+    setModalServicioAbierto(true);
   };
 
   // Format the price to show only 2 decimals
@@ -187,7 +189,7 @@ export default function AdministradorServicios() {
       <div>
         <button
           className={styles.bottonAggregate}
-          onClick={() => setModalServicioAbierto(true)}
+          onClick={() => { setServicioEditando(null); setModalServicioAbierto(true); }}
         >
           Agregar Servicio
         </button>
@@ -232,7 +234,7 @@ export default function AdministradorServicios() {
       <ModalServicio
         show={modalServicioAbierto}
         onHide={() => setModalServicioAbierto(false)}
-        servicio={null}
+        servicio={servicioEditando}
         onGuardado={fetchServices}
       />
     </div>

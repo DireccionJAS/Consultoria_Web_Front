@@ -20,8 +20,6 @@ import EmpresaPerfil from "./components/Administrador/EmpresaPerfil.jsx";
 import AdministradorServicios from "./components/Administrador/AdministradorServicios";
 import AdministradorCliente from "./components/Administrador/AdministradorClientes";
 import AdministradorTramites from "./components/Administrador/AdministradorTramites";
-import RegistrarServicio from "./components/Administrador/RegistraServicio";
-import ActualizarServicio from "./components/Administrador/ActualizarServicio";
 import RegistrarTramite from "./components/Administrador/RegistrarTramite";
 import RegistrarCliente from './components/Administrador/RegistrarCliente'
 import AdministradorPerfil from "./components/Administrador/AdministradorPerfil.jsx";
@@ -182,16 +180,6 @@ function App() {
         <Route path="/TramitesAdmin" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <AdministradorTramites />
-          </ProtectedRoute>
-        } />
-        <Route path="/RegistrarServicio" element={
-          <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <RegistrarServicio />
-          </ProtectedRoute>
-        } />
-        <Route path="/ActualizarServicio" element={
-          <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <ActualizarServicio />
           </ProtectedRoute>
         } />
         <Route path="/RegistrarTramite" element={
