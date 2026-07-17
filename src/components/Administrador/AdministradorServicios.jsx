@@ -6,6 +6,7 @@ import { getAllProcess, getStepById } from './../../api/api.js';
 import Navbar from '../NavbarAdmin.jsx';
 import ServicePreviewModal from './ServicePreviewModal.jsx';
 import StepsModal from './StepsModal.jsx';
+import ModalServicio from './ModalServicio.jsx';
 import AdminServiceCard from './AdminServiceCard.jsx';
 import modalUtils from '../../utils/modalUtils.js';
 import ModalErrorBoundary from '../common/ModalErrorBoundary.jsx';
@@ -26,6 +27,9 @@ export default function AdministradorServicios() {
   const [stepsModalIsOpen, setStepsModalIsOpen] = useState(false);
   const [serviceId, setServiceId] = useState(null);
   const [shouldNavigateToAddSteps, setShouldNavigateToAddSteps] = useState(false);
+
+  // Modal de agregar servicio
+  const [modalServicioAbierto, setModalServicioAbierto] = useState(false);
 
   // Función para mostrar los pasos del trámite (cuando das clic en "Ver pasos")
   const handleViewSteps = async (id) => {
@@ -183,7 +187,7 @@ export default function AdministradorServicios() {
       <div>
         <button
           className={styles.bottonAggregate}
-          onClick={() => navigate("/RegistrarServicio")}
+          onClick={() => setModalServicioAbierto(true)}
         >
           Agregar Servicio
         </button>
@@ -224,6 +228,13 @@ export default function AdministradorServicios() {
         />
 
       </ModalErrorBoundary>
+
+      <ModalServicio
+        show={modalServicioAbierto}
+        onHide={() => setModalServicioAbierto(false)}
+        servicio={null}
+        onGuardado={fetchServices}
+      />
     </div>
   );
 }

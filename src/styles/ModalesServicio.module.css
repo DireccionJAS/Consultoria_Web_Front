@@ -1,14 +1,15 @@
 /*
   ModalesServicio.module.css
-  Extraído 1:1 de "15-ModalesServicio (standalone).html". Comparten este
-  archivo ModalServicio.jsx (crear/editar) y ModalPasos.jsx (ver/editar
-  pasos), igual que PagoModals.module.css agrupa los modales de pago.
+  Extraído 1:1 de "15-ModalesServicio (standalone) (1).html". Comparten
+  este archivo ModalServicio.jsx (crear/editar) y ModalPasos.jsx (ver/
+  editar pasos), igual que PagoModals.module.css agrupa los modales de
+  pago.
 
-  El mockup del formulario de servicio incluye Categoría, Ícono (separado
-  de "Imagen principal"), Duración y Tasa de éxito — ninguno existe en
-  Transact, así que no están en el JSX. El slot de "Ícono" del mockup se
-  reutiliza aquí como "Imagen de detalle" (el segundo campo de imagen que
-  sí existe: imageDetail).
+  Categoría, Duración y Tasa de éxito no existen en Transact — se
+  muestran como UI-only (no se envían al guardar) a pedido del usuario.
+  El slot "Ícono" del mockup era un upload; ahora es un combobox de
+  íconos fijos por tipo de trámite (ver ModalServicio.jsx), cuyo SVG
+  elegido se guarda en imageDetail (el campo de imagen secundaria real).
 */
 
 .scrim {
@@ -70,7 +71,7 @@ textarea.inp { resize: vertical; min-height: 80px; line-height: 1.55; }
 .moneySuffix { padding: 0 13px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
 /* upload */
-.uploadsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.uploadsGrid { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
 .uploadZone { border: 1.5px dashed var(--line-2); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 9px; cursor: pointer; transition: all 0.2s; text-align: center; background: #FCFCFD; min-height: 130px; justify-content: center; }
 .uploadZone:hover { border-color: var(--c2); background: rgba(45,108,223,0.03); }
 .uploadIcon { width: 38px; height: 38px; border-radius: 11px; background: rgba(45,108,223,0.10); color: var(--c2); display: flex; align-items: center; justify-content: center; }
@@ -78,10 +79,26 @@ textarea.inp { resize: vertical; min-height: 80px; line-height: 1.55; }
 .uploadSub { font-size: 10.5px; color: var(--muted); }
 .preview { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); cursor: default; }
 .preview .phImg { background-size: cover; background-position: center; width: 100%; height: 100%; min-height: 130px; }
+.preview.icon { cursor: pointer; }
+.preview.icon .phImg { background: var(--c5); display: flex; align-items: center; justify-content: center; color: var(--c1); min-height: 130px; }
 .previewOverlay { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+.previewBadge { position: absolute; bottom: 8px; left: 8px; padding: 3px 9px; background: rgba(15,26,48,0.7); backdrop-filter: blur(8px); color: var(--white); font-size: 9px; font-family: var(--mono); border-radius: 999px; }
 .pvBtn { width: 30px; height: 30px; border-radius: 8px; background: rgba(15,26,48,0.7) !important; backdrop-filter: blur(8px); color: var(--white) !important; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .pvBtn:hover { background: var(--c1) !important; }
 .pvBtn.del:hover { background: var(--rose) !important; }
+
+/* combobox de ícono */
+.iconSelect { position: relative; }
+.iconMenu { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--white); border: 1px solid var(--line-2); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,42,0.18); padding: 6px; z-index: 20; display: flex; flex-direction: column; gap: 2px; }
+.iconOption { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 500; color: var(--c1); cursor: pointer; transition: background 0.15s; }
+.iconOption:hover { background: #F4F6F8; }
+.iconOption.active { background: rgba(45,108,223,0.08); color: var(--c2); font-weight: 600; }
+
+/* precio/duración con sufijo (semanas, %) */
+.pctWrap { display: flex; align-items: center; background: var(--white); border: 1px solid var(--line-2); border-radius: 10px; transition: all 0.2s; }
+.pctWrap:focus-within { border-color: var(--c2); box-shadow: 0 0 0 4px rgba(45,108,223,0.08); }
+.pctWrap input { flex: 1; border: 0; outline: 0; background: transparent; padding: 11px 8px 11px 13px; font-size: 14px; font-weight: 600; font-family: var(--display); color: var(--c1); min-width: 0; }
+.pctSuffix { padding: 0 13px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
 /* toggle rows */
 .tgRow { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); }

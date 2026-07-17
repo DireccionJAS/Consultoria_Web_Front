@@ -1,13 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { createService, updateService } from './../../api/api.js';
 import styles from './../../styles/ModalesServicio.module.css';
 
-// Extraído 1:1 de "15-ModalesServicio (standalone).html" (modal crear/editar).
-// El mockup incluye Categoría, un campo "Ícono" separado de "Imagen
-// principal", Duración y Tasa de éxito — ninguno existe en Transact, así
-// que no están aquí. El slot de "Ícono" del mockup se reutiliza como
-// "Imagen de detalle" (imageDetail, el segundo campo de imagen real).
+// Extraído 1:1 de "15-ModalesServicio (standalone) (1).html". "Categoría",
+// "Duración" y "Tasa de éxito" no existen en Transact — el usuario pidió
+// (2026-07-17) mantenerlos como campos UI-only (se ven pero no se envían
+// al guardar), en vez de omitirlos. El slot "Ícono" del mockup era un
+// upload; a pedido del usuario se reemplazó por un combobox con un ícono
+// fijo por tipo de trámite (visa/pasaporte/formulario/entrevista/citas/
+// asesoría). El ícono elegido se guarda como SVG (data URI) en
+// imageDetail — el único campo de imagen secundaria que existe en
+// Transact — así que no requiere cambios de backend.
+
+const CATEGORIAS = ['Visa de no inmigrante', 'Visa de turista', 'Pasaporte', 'Formulario', 'Asesoría'];
+
+const ICONOS = [
+  { id: 'visa', label: 'Visa', svg: '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>' },
+  { id: 'pasaporte', label: 'Pasaporte', svg: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
+  { id: 'formulario', label: 'Formulario', svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>' },
+  { id: 'entrevista', label: 'Entrevista', svg: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>' },
+  { id: 'citas', label: 'Citas', svg: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
+  { id: 'asesoria', label: 'Asesoría', svg: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/>' },
+];
+
+function iconSvgMarkup(svgInner) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1B2A4A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg>`;
+}
+function iconDataUri(svgInner) {
+  return `data:image/svg+xml,${encodeURIComponent(iconSvgMarkup(svgInner))}`;
+}
+
+function IconGlyph({ svg, size }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: svg }} />
+  );
+}
 
 function IconServiceHead() {
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>;
@@ -37,15 +66,79 @@ function toBase64(file) {
   });
 }
 
+function getImageDimensions(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function dataUriBytes(dataUri) {
+  const idx = dataUri.indexOf(',');
+  if (idx === -1 || !dataUri.startsWith('data:')) return null;
+  const base64 = dataUri.slice(idx + 1);
+  const padding = (base64.match(/=+$/) || [''])[0].length;
+  return Math.floor((base64.length * 3) / 4) - padding;
+}
+
+function formatBytes(bytes) {
+  if (bytes == null) return null;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
 const CAMPOS_INICIALES = {
   name: '', description: '', cost: '', cashAdvance: '', nameOption: '', optionCost: '',
 };
 
-function UploadField({ label, preview, onPick, onClear }) {
+function IconoSelect({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const seleccionado = ICONOS.find((ic) => ic.id === value) || null;
+
+  useEffect(() => {
+    function onDocClick(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, []);
+
+  return (
+    <div className={styles.iconSelect} ref={ref}>
+      <label className={styles.fieldLabel}>Ícono <span className={styles.req}>*</span></label>
+      <div className={`${styles.preview} ${styles.icon}`} onClick={() => setOpen((v) => !v)}>
+        <div className={styles.phImg}>
+          {seleccionado ? <IconGlyph svg={seleccionado.svg} size={40} /> : <IconServiceHead />}
+        </div>
+        <div className={styles.previewOverlay}>
+          <button type="button" className={styles.pvBtn} onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}><IconSwap /></button>
+        </div>
+      </div>
+      {open && (
+        <div className={styles.iconMenu}>
+          {ICONOS.map((ic) => (
+            <div
+              key={ic.id}
+              className={`${styles.iconOption} ${value === ic.id ? styles.active : ''}`}
+              onClick={() => { onChange(ic.id); setOpen(false); }}
+            >
+              <IconGlyph svg={ic.svg} size={18} />
+              <span>{ic.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UploadField({ label, preview, meta, onPick, onClear }) {
   const inputId = `upload-${label.replace(/\s/g, '')}`;
   return (
     <div>
-      <label className={styles.fieldLabel}>{label}</label>
+      <label className={styles.fieldLabel}>{label} <span className={styles.req}>*</span></label>
       <input id={inputId} type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && onPick(e.target.files[0])} />
       {preview ? (
         <div className={styles.preview}>
@@ -54,6 +147,11 @@ function UploadField({ label, preview, onPick, onClear }) {
             <button type="button" className={styles.pvBtn} onClick={() => document.getElementById(inputId).click()}><IconSwap /></button>
             <button type="button" className={`${styles.pvBtn} ${styles.del}`} onClick={onClear}><IconTrash /></button>
           </div>
+          {meta && (
+            <span className={styles.previewBadge}>
+              {meta.width}×{meta.height}{meta.bytes != null ? ` · ${formatBytes(meta.bytes)}` : ''}
+            </span>
+          )}
         </div>
       ) : (
         <label htmlFor={inputId} className={styles.uploadZone}>
@@ -69,10 +167,13 @@ function UploadField({ label, preview, onPick, onClear }) {
 export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
   const esEdicion = !!servicio;
   const [campos, setCampos] = useState(CAMPOS_INICIALES);
+  const [categoria, setCategoria] = useState(CATEGORIAS[0]);
+  const [duracion, setDuracion] = useState('');
+  const [tasaExito, setTasaExito] = useState('');
+  const [iconoId, setIconoId] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [imageDetailPreview, setImageDetailPreview] = useState(null);
-  const [imageDetailFile, setImageDetailFile] = useState(null);
+  const [imageMeta, setImageMeta] = useState(null);
   const [tieneAnticipo, setTieneAnticipo] = useState(false);
   const [tieneOtroCosto, setTieneOtroCosto] = useState(false);
   const [isDateService, setIsDateService] = useState(false);
@@ -84,16 +185,26 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
 
   useEffect(() => {
     if (!show) return;
+    setCategoria(CATEGORIAS[0]);
+    setDuracion('');
+    setTasaExito('');
     if (servicio) {
       setCampos({
         name: servicio.name || '', description: servicio.description || '',
         cost: servicio.cost ?? '', cashAdvance: servicio.cashAdvance ?? '',
         nameOption: servicio.nameOption || '', optionCost: servicio.optionCost ?? '',
       });
+      const iconoActual = ICONOS.find((ic) => servicio.imageDetail === iconDataUri(ic.svg));
+      setIconoId(iconoActual ? iconoActual.id : null);
       setImagePreview(servicio.image || null);
       setImageFile(null);
-      setImageDetailPreview(servicio.imageDetail || null);
-      setImageDetailFile(null);
+      setImageMeta(null);
+      if (servicio.image) {
+        getImageDimensions(servicio.image).then((dim) => {
+          if (!dim) return;
+          setImageMeta({ ...dim, bytes: dataUriBytes(servicio.image) });
+        });
+      }
       setTieneAnticipo(servicio.cashAdvance != null && Number(servicio.cashAdvance) !== Number(servicio.cost));
       setTieneOtroCosto(!!servicio.nameOption);
       setIsDateService(!!servicio.isDateService);
@@ -103,10 +214,10 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
       setStatus(!!servicio.status);
     } else {
       setCampos(CAMPOS_INICIALES);
+      setIconoId(null);
       setImagePreview(null);
       setImageFile(null);
-      setImageDetailPreview(null);
-      setImageDetailFile(null);
+      setImageMeta(null);
       setTieneAnticipo(false);
       setTieneOtroCosto(false);
       setIsDateService(false);
@@ -121,12 +232,17 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
 
   const handleChange = (campo) => (e) => setCampos((prev) => ({ ...prev, [campo]: e.target.value }));
 
-  const handlePickImage = (file) => { setImageFile(file); setImagePreview(URL.createObjectURL(file)); };
-  const handlePickImageDetail = (file) => { setImageDetailFile(file); setImageDetailPreview(URL.createObjectURL(file)); };
+  const handlePickImage = (file) => {
+    setImageFile(file);
+    const url = URL.createObjectURL(file);
+    setImagePreview(url);
+    getImageDimensions(url).then((dim) => setImageMeta(dim ? { ...dim, bytes: file.size } : null));
+  };
+  const handleClearImage = () => { setImageFile(null); setImagePreview(null); setImageMeta(null); };
 
   const handleGuardar = async () => {
-    if (!campos.name || !campos.description || campos.cost === '' || (!esEdicion && (!imageFile || !imageDetailFile))) {
-      Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Completa los campos obligatorios: nombre, descripción, precio e imágenes.' });
+    if (!campos.name || !campos.description || campos.cost === '' || (!esEdicion && (!imageFile || !iconoId))) {
+      Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Completa los campos obligatorios: nombre, descripción, ícono, precio e imagen principal.' });
       return;
     }
 
@@ -138,7 +254,8 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
       const optionCost = tieneOtroCosto && campos.optionCost !== '' ? parseFloat(campos.optionCost) : null;
 
       const image = imageFile ? await toBase64(imageFile) : servicio?.image;
-      const imageDetail = imageDetailFile ? await toBase64(imageDetailFile) : servicio?.imageDetail;
+      const iconoSeleccionado = ICONOS.find((ic) => ic.id === iconoId);
+      const imageDetail = iconoSeleccionado ? iconDataUri(iconoSeleccionado.svg) : servicio?.imageDetail;
 
       const payload = {
         name: campos.name,
@@ -201,21 +318,37 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
               <label className={styles.fieldLabel}>Descripción <span className={styles.req}>*</span></label>
               <textarea className={styles.inp} value={campos.description} onChange={handleChange('description')}></textarea>
             </div>
+            <div className={`${styles.field} ${styles.full}`}>
+              <label className={styles.fieldLabel}>Categoría <span className={styles.req}>*</span></label>
+              <select className={styles.inp} value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+                {CATEGORIAS.map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </div>
           </div>
 
           <div className={styles.fsec}>
             <div className={styles.fsecTitle}>Imágenes</div>
             <div className={styles.uploadsGrid}>
-              <UploadField label="Imagen de detalle" preview={imageDetailPreview} onPick={handlePickImageDetail} onClear={() => { setImageDetailFile(null); setImageDetailPreview(null); }} />
-              <UploadField label="Imagen principal" preview={imagePreview} onPick={handlePickImage} onClear={() => { setImageFile(null); setImagePreview(null); }} />
+              <IconoSelect value={iconoId} onChange={setIconoId} />
+              <UploadField label="Imagen principal" preview={imagePreview} meta={imageMeta} onPick={handlePickImage} onClear={handleClearImage} />
             </div>
           </div>
 
           <div className={styles.fsec}>
-            <div className={styles.fsecTitle}>Precios</div>
-            <div className={styles.field}>
-              <label className={styles.fieldLabel}>Precio total <span className={styles.req}>*</span></label>
-              <div className={styles.moneyWrap}><span className={styles.moneyPrefix}>$</span><input value={campos.cost} onChange={handleChange('cost')} /><span className={styles.moneySuffix}>MXN</span></div>
+            <div className={styles.fsecTitle}>Precios y duración</div>
+            <div className={styles.grid3}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Precio total <span className={styles.req}>*</span></label>
+                <div className={styles.moneyWrap}><span className={styles.moneyPrefix}>$</span><input value={campos.cost} onChange={handleChange('cost')} /><span className={styles.moneySuffix}>MXN</span></div>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Duración</label>
+                <div className={styles.pctWrap}><input placeholder="Ej. 8-14" value={duracion} onChange={(e) => setDuracion(e.target.value)} /><span className={styles.pctSuffix}>semanas</span></div>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Tasa de éxito</label>
+                <div className={styles.pctWrap}><input placeholder="Ej. 96" value={tasaExito} onChange={(e) => setTasaExito(e.target.value)} /><span className={styles.pctSuffix}>%</span></div>
+              </div>
             </div>
             <div className={styles.tgRow}>
               <div><div className={styles.tgLabel}>¿Requiere anticipo diferente?</div><div className={styles.tgSub}>Si el anticipo no es el total del servicio</div></div>
