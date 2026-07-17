@@ -8,15 +8,19 @@ import LandingNavbar from './LandingNavbar.jsx';
 import FooterSection from './FooterSection.jsx';
 import styles from './../../styles/landing/ServiciosPage.module.css';
 
-// Extraído 1:1 de "Servicios (standalone).html" (catálogo público). Campos
-// del mockup sin dato real (bandera de país, etiqueta "Más popular"/"Nuevo",
-// duración estimada, % de aprobación, stats "Destinos"/"Aprobación" del
-// header) se omitieron — ver el comentario del CSS module para el detalle.
-// El footer no estaba en este export standalone (solo mostraba la pantalla
-// suelta); se agregó FooterSection porque toda página real del sitio lo
-// tiene. El ícono por tarjeta y la categoría de los filtros/pills SÍ son
-// reales: se derivan del ícono elegido en el modal de servicio (ver
-// utils/serviceIcons.js) — Transact no tiene un campo de categoría.
+// Extraído 1:1 de "Servicios (standalone).html" (catálogo público). El ícono
+// por tarjeta y la categoría de los filtros/pills SÍ son reales: se derivan
+// del ícono elegido en el modal de servicio (ver utils/serviceIcons.js) —
+// Transact no tiene un campo de categoría. Duración ("4-8 semanas"),
+// "Destacado" (solo la 1a tarjeta) y los stats 8 Destinos / 96% Aprobación
+// del header son texto fijo igual que en el mockup (2026-07-17, el usuario
+// pidió mantener la densidad visual del diseño en vez de omitirlos) — no
+// son datos reales por servicio, Transact no los tiene. La bandera de país
+// por servicio SÍ se omitió: a diferencia de duración/aprobación, no hay un
+// valor genérico razonable (mostrar 🇺🇸 en un trámite que es de Canadá sería
+// activamente incorrecto). El footer no estaba en este export standalone
+// (solo mostraba la pantalla suelta); se agregó FooterSection porque toda
+// página real del sitio lo tiene.
 
 const NAV_SECTIONS = [
   { id: 'inicio', label: 'Inicio', href: '/' },
@@ -57,6 +61,9 @@ function GridViewIcon() {
 }
 function ListViewIcon() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
+}
+function ClockIcon() {
+  return <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>;
 }
 function StepsIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13"></path><circle cx="3.5" cy="6" r="1.2"></circle><circle cx="3.5" cy="12" r="1.2"></circle><circle cx="3.5" cy="18" r="1.2"></circle></svg>;
@@ -227,6 +234,14 @@ export default function ServiciosPage() {
                 <div className={styles.num}>{services.length}</div>
                 <div className={styles.lab}>Servicios</div>
               </div>
+              <div className={styles.headStat}>
+                <div className={styles.num}>8</div>
+                <div className={styles.lab}>Destinos</div>
+              </div>
+              <div className={styles.headStat}>
+                <div className={styles.num}>96<em>%</em></div>
+                <div className={styles.lab}>Aprobación</div>
+              </div>
             </div>
           </div>
         </div>
@@ -281,7 +296,9 @@ export default function ServiciosPage() {
                 const pasos = pasosCount[service.idTransact];
                 return (
                   <div key={service.idTransact} className={styles.svcCard}>
-                    <div className={styles.svcImg} style={service.image ? { backgroundImage: `url("${service.image}")` } : undefined}></div>
+                    <div className={styles.svcImg} style={service.image ? { backgroundImage: `url("${service.image}")` } : undefined}>
+                      {index === 0 && <span className={styles.svcTag}>Destacado</span>}
+                    </div>
                     <div className={styles.svcBody}>
                       <div className={styles.svcIconRow}>
                         <div className={styles.svcIcon}>
@@ -292,6 +309,10 @@ export default function ServiciosPage() {
                       <h3 className={styles.svcName}>{service.name}</h3>
                       <p className={styles.svcDesc}>{cleanDescription(service.description)}</p>
                       <div className={styles.svcMeta}>
+                        <span className={styles.svcMetaItem}>
+                          <ClockIcon />
+                          4-8 semanas
+                        </span>
                         <span className={styles.svcMetaItem}>
                           <StepsIcon />
                           {pasos ?? '—'} {pasos === 1 ? 'paso' : 'pasos'}
@@ -330,22 +351,22 @@ export default function ServiciosPage() {
             <button type="button" className={styles.catCard} onClick={() => handleCatCardClick('visa')}>
               <div className={styles.catIcon}><IconGlyph size={22} svg='<rect x="6" y="4" width="20" height="28" rx="2"/><circle cx="16" cy="14" r="3.5"/><path d="M10 22h12M10 26h8"/>' /></div>
               <div className={styles.catName}>Visas</div>
-              <div className={styles.catCount}>{categoryCounts.visa || 0} servicios</div>
+              <div className={styles.catCount}>{categoryCounts.visa || 0} servicios · USA, CA, EU</div>
             </button>
             <button type="button" className={styles.catCard} onClick={() => handleCatCardClick('pasaporte')}>
               <div className={styles.catIcon}><IconGlyph size={22} svg='<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' /></div>
               <div className={styles.catName}>Pasaportes</div>
-              <div className={styles.catCount}>{categoryCounts.pasaporte || 0} servicios</div>
+              <div className={styles.catCount}>{categoryCounts.pasaporte || 0} servicios · México</div>
             </button>
             <button type="button" className={styles.catCard} onClick={() => handleCatCardClick('formulario')}>
               <div className={styles.catIcon}><IconGlyph size={22} svg='<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' /></div>
               <div className={styles.catName}>Formularios</div>
-              <div className={styles.catCount}>{categoryCounts.formulario || 0} servicios</div>
+              <div className={styles.catCount}>{categoryCounts.formulario || 0} servicios · DS-160 y más</div>
             </button>
             <div className={styles.catCard} style={{ cursor: 'default' }}>
               <div className={styles.catIcon}><IconGlyph size={22} svg='<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' /></div>
               <div className={styles.catName}>Citas y Asesoría</div>
-              <div className={styles.catCount}>{(categoryCounts.citas || 0) + (categoryCounts.asesoria || 0)} servicios</div>
+              <div className={styles.catCount}>{(categoryCounts.citas || 0) + (categoryCounts.asesoria || 0)} servicios · CAS y simulación</div>
             </div>
           </div>
         </div>

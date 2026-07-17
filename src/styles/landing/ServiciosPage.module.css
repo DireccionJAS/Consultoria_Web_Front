@@ -52,9 +52,9 @@
 .headTitle { font-size: clamp(48px, 7vw, 96px); margin-bottom: 12px; }
 .headTitle em { color: var(--c4); }
 .headSub { font-size: 17px; color: rgba(228, 236, 240, 0.72); max-width: 560px; line-height: 1.6; }
-.headStats { display: flex; justify-content: flex-end; }
+.headStats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .headStat {
-  padding: 18px 28px;
+  padding: 18px;
   background: rgba(228, 236, 240, 0.06);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(228, 236, 240, 0.12);
@@ -129,6 +129,21 @@
   transition: opacity 0.3s;
 }
 .svcCard:hover .svcImg::after { opacity: 0.4; }
+.svcTag {
+  position: absolute;
+  top: 14px; left: 14px;
+  padding: 5px 12px;
+  background: rgba(228, 236, 240, 0.92);
+  backdrop-filter: blur(12px);
+  color: var(--c1);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  font-weight: 600;
+  z-index: 1;
+}
 .svcBody { padding: 22px 22px 0; flex: 1; display: flex; flex-direction: column; }
 .svcIconRow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .svcIcon { width: 40px; height: 40px; border-radius: 12px; background: var(--c5); color: var(--c1); display: flex; align-items: center; justify-content: center; }
