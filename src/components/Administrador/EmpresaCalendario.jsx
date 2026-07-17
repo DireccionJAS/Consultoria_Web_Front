@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
@@ -120,6 +120,45 @@ function IconVideoCam() {
 }
 function IconClientGroup() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>;
+}
+
+// Reemplaza los <select> nativos (arrastraban el estilo del sistema
+// anterior: menú del navegador, sin control del diseño) por un dropdown
+// propio consistente con el resto de la app. Se usa 3 veces en este
+// archivo (filtro de trámites, Trámite asociado, Admin encargado).
+function RichSelect({ value, onChange, options, placeholder = 'Seleccionar', className, menuClassName }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const seleccionado = options.find((o) => o.value === value) || null;
+
+  useEffect(() => {
+    const handleOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  return (
+    <div className={`${styles.rsWrap} ${className || ''}`} ref={ref}>
+      <div className={styles.rsTrigger} onClick={() => setOpen((o) => !o)}>
+        <span className={seleccionado ? '' : styles.rsPlaceholder}>{seleccionado ? seleccionado.label : placeholder}</span>
+        <IconChevDown />
+      </div>
+      {open && (
+        <div className={`${styles.rsMenu} ${menuClassName || ''}`}>
+          {options.length === 0 && <div className={styles.rsEmpty}>Sin opciones</div>}
+          {options.map((o) => (
+            <div
+              key={o.value}
+              className={`${styles.rsOpt} ${value === o.value ? styles.sel : ''}`}
+              onClick={() => { onChange(o.value); setOpen(false); }}
+            >
+              {o.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function pad2(n) { return String(n).padStart(2, '0'); }
@@ -406,10 +445,13 @@ export default function EmpresaCalendario() {
           <div className={styles.topActions}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--mono)', textTransform: 'uppercase' }}>Filtrar:</span>
-              <select className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`} style={{ paddingRight: 30 }} value={filtroTramite} onChange={(e) => setFiltroTramite(e.target.value)}>
-                <option value="">Todos los trámites</option>
-                {tramitesUnicos.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <RichSelect
+                className={styles.inline}
+                value={filtroTramite}
+                onChange={setFiltroTramite}
+                placeholder="Todos los trámites"
+                options={[{ value: '', label: 'Todos los trámites' }, ...tramitesUnicos.map((t) => ({ value: t, label: t }))]}
+              />
             </div>
             <button className={`${styles.btn} ${styles.btnAccent}`} onClick={abrirNuevaCita}><IconPlus /> Nueva cita</button>
           </div>
@@ -677,17 +719,16 @@ export default function EmpresaCalendario() {
 
                 <div className={styles.ncField}>
                   <div className={styles.ncFieldLabel}>Trámite asociado <span className={styles.req}>*</span></div>
-                  <div className={styles.ncSelectWrap}>
-                    <select value={ncTramite} onChange={(e) => seleccionarTramiteNc(e.target.value)}>
-                      <option value="">Selecciona un trámite</option>
-                      {datos.map((d) => (
-                        <option key={d.idTransactProgress} value={d.idTransactProgress}>
-                          {d.transact?.name} · {d.user?.name} · #{d.idTransactProgress}
-                        </option>
-                      ))}
-                    </select>
-                    <IconChevDown />
-                  </div>
+                  <RichSelect
+                    className={styles.block}
+                    value={ncTramite}
+                    onChange={seleccionarTramiteNc}
+                    placeholder="Selecciona un trámite"
+                    options={datos.map((d) => ({
+                      value: String(d.idTransactProgress),
+                      label: `${d.transact?.name} · ${d.user?.name} · #${d.idTransactProgress}`,
+                    }))}
+                  />
                 </div>
 
                 <div className={styles.ncRow2}>
@@ -732,13 +773,13 @@ export default function EmpresaCalendario() {
                     </div>
                     <div className={styles.ncField} style={{ marginBottom: 0 }}>
                       <div className={styles.ncFieldLabel}>Admin encargado <span className={styles.req}>*</span></div>
-                      <div className={styles.ncSelectWrap}>
-                        <select value={ncEncargado} onChange={(e) => setNcEncargado(e.target.value)}>
-                          <option value="">Sin asignar</option>
-                          {encargados.map((enc) => <option key={enc.idUser} value={enc.idUser}>{enc.name}</option>)}
-                        </select>
-                        <IconChevDown />
-                      </div>
+                      <RichSelect
+                        className={styles.block}
+                        value={ncEncargado}
+                        onChange={setNcEncargado}
+                        placeholder="Sin asignar"
+                        options={encargados.map((enc) => ({ value: String(enc.idUser), label: enc.name }))}
+                      />
                     </div>
                   </>
                 )}
