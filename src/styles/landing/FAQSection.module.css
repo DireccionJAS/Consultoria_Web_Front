@@ -64,8 +64,10 @@
   font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.01em;
+  text-align: left;
   transition: color 0.2s;
 }
+.faqQ span { text-align: left; }
 .faqToggle {
   width: 40px; height: 40px;
   border-radius: 50%;
