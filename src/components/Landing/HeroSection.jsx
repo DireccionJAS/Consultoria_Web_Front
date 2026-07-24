@@ -1,20 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import useReveal from "../../hooks/useReveal";
-import destNyc from "../../img/landing/dest-nyc.jpg";
-import destParis from "../../img/landing/dest-paris.jpg";
-import destToronto from "../../img/landing/dest-toronto.jpg";
-import destLondon from "../../img/landing/dest-london.jpg";
-import destRome from "../../img/landing/dest-rome.jpg";
-import destTokyo from "../../img/landing/dest-tokyo.jpg";
 import styles from '../../styles/landing/HeroSection.module.css';
 
 const DESTINATIONS = [
-  { img: destNyc, badge: "Visa Americana", name: "Nueva York", country: "Estados Unidos 🇺🇸" },
-  { img: destParis, badge: "Visa Schengen", name: "París", country: "Francia 🇫🇷" },
-  { img: destToronto, badge: "eTA Canadá", name: "Toronto", country: "Canadá 🇨🇦" },
-  { img: destLondon, badge: "Visa UK", name: "Londres", country: "Reino Unido 🇬🇧" },
-  { img: destRome, badge: "Visa Schengen", name: "Roma", country: "Italia 🇮🇹" },
-  { img: destTokyo, badge: "Pasaporte", name: "Tokio", country: "Japón 🇯🇵" },
+  { img: "https://images.unsplash.com/photo-1754766621748-2a96cbf56a1f?auto=format&fit=crop&w=1200&q=80", badge: "Visa Americana", name: "Nueva York", country: "Estados Unidos 🇺🇸" },
+  { img: "https://images.unsplash.com/photo-1684575571081-d6abda485519?auto=format&fit=crop&w=1200&q=80", badge: "Visa Americana", name: "Las Vegas", country: "Estados Unidos 🇺🇸" },
+  { img: "https://images.unsplash.com/photo-1741628421460-21978555d8dc?auto=format&fit=crop&w=1200&q=80", badge: "Visa Americana", name: "Los Ángeles", country: "Estados Unidos 🇺🇸" },
+  { img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80", badge: "Visa India", name: "Taj Mahal", country: "India 🇮🇳" },
+  { img: "https://images.unsplash.com/photo-1762526217288-a783242270dc?auto=format&fit=crop&w=1200&q=80", badge: "Visa India", name: "Nueva Delhi", country: "India 🇮🇳" },
+  { img: "https://images.unsplash.com/photo-1710069441986-82759c8a200c?auto=format&fit=crop&w=1200&q=80", badge: "Visa Egipto", name: "Pirámides de Giza", country: "Egipto 🇪🇬" },
+  { img: "https://images.unsplash.com/photo-1640956641338-5a07e5811ca6?auto=format&fit=crop&w=1200&q=80", badge: "Visa Egipto", name: "El Cairo", country: "Egipto 🇪🇬" },
+  { img: "https://images.unsplash.com/photo-1749098140326-3dc9cc3b7d97?auto=format&fit=crop&w=1200&q=80", badge: "eTA Canadá", name: "Toronto", country: "Canadá 🇨🇦" },
+  { img: "https://images.unsplash.com/photo-1757266562608-2bbf67f92e71?auto=format&fit=crop&w=1200&q=80", badge: "eTA Canadá", name: "Vancouver", country: "Canadá 🇨🇦" },
 ];
 
 function getPerView() {
@@ -145,7 +142,7 @@ export default function HeroSection() {
           onMouseLeave={startTimer}
         >
           <div className={styles.destinosHead}>
-            <div>
+            <div className={styles.destinosTitleBlock}>
               <h2 className="jas-display jas-light" style={{ fontSize: 'clamp(30px,3.5vw,48px)' }}>
                 ¿A dónde quieres <em>viajar?</em>
               </h2>

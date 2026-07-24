@@ -140,8 +140,19 @@
   position: absolute; top: 32px; right: 64px;
   display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--muted);
 }
-.loginLink { color: var(--c2); font-weight: 600; }
-.loginLink:hover { text-decoration: underline; }
+.loginLink {
+  color: var(--c1);
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.loginLink:hover { background: var(--c1); color: var(--c5); border-color: var(--c1); transform: translateY(-1px); }
 
 .formCard { max-width: 480px; width: 100%; margin: 0 auto; }
 

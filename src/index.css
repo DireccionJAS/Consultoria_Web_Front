@@ -649,7 +649,7 @@ button { font-family: inherit; cursor: pointer; border: 0; background: none; col
 
 /* ============ CONTAINER ============ */
 .jas-container {
-  max-width: 1440px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 48px;
 }

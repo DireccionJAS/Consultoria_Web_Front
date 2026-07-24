@@ -7,9 +7,8 @@ const ITEMS = [
   { text: "India", highlight: true },
   { text: "China" },
   { text: "Egipto", highlight: true },
-  { text: "Australia" },
   { text: "eTA Canadá", highlight: true },
-  { text: "ESTA", suffix: " USA" },
+  { text: "eTA", suffix: " USA" },
 ];
 
 export default function MarqueeSection() {
