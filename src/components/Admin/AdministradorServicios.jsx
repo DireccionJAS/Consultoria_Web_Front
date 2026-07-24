@@ -4,10 +4,10 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { getAllProcess, getStepById } from './../../api/api.js';
 import Navbar from '../NavbarAdmin.jsx';
-import ServicePreviewModal from './ServicePreviewModal.jsx';
-import StepsModal from './StepsModal.jsx';
-import ModalServicio from './ModalServicio.jsx';
-import AdminServiceCard from './AdminServiceCard.jsx';
+import ServicePreviewModal from '../Administrador/ServicePreviewModal.jsx';
+import StepsModal from '../Administrador/StepsModal.jsx';
+import ModalServicio from '../Administrador/ModalServicio.jsx';
+import AdminServiceCard from '../Administrador/AdminServiceCard.jsx';
 import modalUtils from '../../utils/modalUtils.js';
 import ModalErrorBoundary from '../common/ModalErrorBoundary.jsx';
 

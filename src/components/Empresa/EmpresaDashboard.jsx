@@ -97,7 +97,7 @@ export default function EmpresaDashboard() {
         <div className={styles.content}>
           <div className={styles.welcomeRow}>
             <div>
-              <div className={styles.greet}>Buen día, <em>Jasmín</em>.</div>
+              <div className={styles.greet}>Buen día, <em>JHONNY</em>.</div>
               <div className={styles.greetSub}>Hoy es miércoles 27 de mayo · tienes 4 citas y 5 trámites por revisar.</div>
             </div>
           </div>

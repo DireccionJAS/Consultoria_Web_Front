@@ -7,8 +7,8 @@ import { Table, Button, Form, Spinner } from 'react-bootstrap';
 import { FaInfo, FaPlus } from 'react-icons/fa';
 import { trasacciones, actualizarT, clientes } from './../../api/api.js';
 import './../../styles/Clientes.css'
-import ModalRegistrarTramite from './RegistrarTramite.jsx';
-import ModalActualizarTramite from './ActualizarTramite.jsx';
+import ModalRegistrarTramite from '../Administrador/RegistrarTramite.jsx';
+import ModalActualizarTramite from '../Administrador/ActualizarTramite.jsx';
 
 export default function AdministradorTramites() {
   const navigate = useNavigate();

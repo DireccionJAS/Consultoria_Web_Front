@@ -6,7 +6,7 @@ import { Spinner } from 'react-bootstrap';
 import Navbar from '../NavbarAdmin.jsx';
 import { clientes, actualizarStatusCliente, archivarCliente } from './../../api/api.js';
 import '../../styles/ClientesAdminJAS.css';
-import ClienteModal from './ClienteModal.jsx';
+import ClienteModal from '../Administrador/ClienteModal.jsx';
 
 const ITEMS_POR_PAGINA = 7;
 

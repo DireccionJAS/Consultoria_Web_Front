@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { clientes, actualizarStatusCliente, archivarCliente } from './../../api/api.js';
 import styles from './../../styles/EmpresaClientes.module.css';
-import ClienteModal from './ClienteModal.jsx';
+import ClienteModal from '../Administrador/ClienteModal.jsx';
 
 const ITEMS_POR_PAGINA = 7;
 

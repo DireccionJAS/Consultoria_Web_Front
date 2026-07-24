@@ -263,11 +263,11 @@ export default function OlvidarContra() {
               </div>
 
               <div className={styles.btnRow}>
-                <a href="/Login" className={styles.btnGhost}>
+                <a href="/Login" className={`${styles.btn} ${styles.btnGhost}`}>
                   <BackIcon />
                   Volver al login
                 </a>
-                <button type="submit" className={styles.btnPrimary} disabled={enviando}>
+                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={enviando}>
                   {enviando ? 'Enviando…' : 'Enviar código'}
                   <div className={styles.arrowRev}><ArrowIcon /></div>
                 </button>
@@ -321,11 +321,11 @@ export default function OlvidarContra() {
               </div>
 
               <div className={styles.btnRow}>
-                <button type="button" className={styles.btnGhost} onClick={() => setPaso(1)}>
+                <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setPaso(1)}>
                   <BackIcon />
                   Volver
                 </button>
-                <button type="submit" className={styles.btnPrimary}>
+                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
                   Verificar código
                   <div className={styles.arrowRev}><ArrowIcon /></div>
                 </button>
@@ -395,11 +395,11 @@ export default function OlvidarContra() {
               </div>
 
               <div className={styles.btnRow}>
-                <button type="button" className={styles.btnGhost} onClick={() => setPaso(2)}>
+                <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setPaso(2)}>
                   <BackIcon />
                   Volver
                 </button>
-                <button type="submit" className={styles.btnPrimary}>
+                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
                   Guardar contraseña
                   <div className={styles.arrowRev}><ArrowIcon /></div>
                 </button>
@@ -416,7 +416,7 @@ export default function OlvidarContra() {
                 <p className={styles.successSub}>Tu contraseña fue actualizada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.</p>
 
                 <div className={styles.btnRow} style={{ maxWidth: 300, margin: '0 auto' }}>
-                  <button type="button" className={styles.btnPrimary} onClick={() => navigate('/Login')}>
+                  <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => navigate('/Login')}>
                     Iniciar sesión
                     <div className={styles.arrowRev}><ArrowIcon /></div>
                   </button>

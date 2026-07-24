@@ -5,7 +5,6 @@ import styles from './../../styles/Home.module.css';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useGoogleLogin } from '@react-oauth/google';
-import Swal from 'sweetalert2';
 import GoogleAuthModal from './GoogleAuthModal.jsx';
 
 function ArrowIcon() {
@@ -107,16 +106,12 @@ export default function Home() {
     const decoded = jwtDecode(token);
 
     if (decoded.role === 'ADMIN') {
-      Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Bienvenido ', showConfirmButton: true });
       navigate('/HomeAdmin');
     } else if (decoded.role === 'EMPRESA') {
-      Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Bienvenido ', showConfirmButton: true });
       navigate('/HomeEmpresa');
     } else if (decoded.role === 'USER') {
       const selectedServiceData = sessionStorage.getItem('selectedService');
-      Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Bienvenido ', showConfirmButton: true }).then(() => {
-        navigate(selectedServiceData ? '/ClienteServicios' : '/ClienteHome');
-      });
+      navigate(selectedServiceData ? '/ClienteServicios' : '/ClienteHome');
     } else {
       console.warn('Rol no reconocido:', decoded.role);
     }

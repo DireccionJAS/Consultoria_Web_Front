@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import mexico from '@svg-maps/mexico';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import styles from './../../styles/EmpresaRecursos.module.css';
 
@@ -16,28 +17,12 @@ import styles from './../../styles/EmpresaRecursos.module.css';
 // mismos que trae el mockup (no hay una fuente real más granular que
 // sustituirlos, ya que el mapa/tabla del mockup no coincide 1:1 con la
 // estructura de datos ya hardcodeada en StatsSection.jsx).
+//
+// El mapa original era una cuadrícula de rectángulos placeholder (sin
+// forma real de México, sin nombres). Se reemplaza por los 32 estados
+// reales (paths SVG) del paquete @svg-maps/mexico (CC-BY 4.0).
 
-const STATES = [
-  { n: 'Baja California', x: 8, y: 16, w: 30, h: 44 },
-  { n: 'Sonora', x: 40, y: 22, w: 38, h: 40 },
-  { n: 'Chihuahua', x: 80, y: 26, w: 46, h: 42 },
-  { n: 'Coahuila', x: 128, y: 44, w: 38, h: 34 },
-  { n: 'Nuevo León', x: 150, y: 60, w: 30, h: 30 },
-  { n: 'Sinaloa', x: 62, y: 64, w: 30, h: 42 },
-  { n: 'Durango', x: 94, y: 72, w: 34, h: 32 },
-  { n: 'Tamaulipas', x: 168, y: 78, w: 34, h: 38 },
-  { n: 'Jalisco', x: 88, y: 106, w: 40, h: 36 },
-  { n: 'Guanajuato', x: 130, y: 102, w: 28, h: 26 },
-  { n: 'CDMX / Edomex', x: 150, y: 116, w: 34, h: 30 },
-  { n: 'Morelos', x: 158, y: 148, w: 28, h: 24 },
-  { n: 'Puebla', x: 188, y: 126, w: 30, h: 30 },
-  { n: 'Veracruz', x: 204, y: 88, w: 30, h: 50 },
-  { n: 'Michoacán', x: 118, y: 136, w: 36, h: 28 },
-  { n: 'Guerrero', x: 128, y: 164, w: 40, h: 28 },
-  { n: 'Oaxaca', x: 188, y: 164, w: 42, h: 30 },
-  { n: 'Chiapas', x: 232, y: 168, w: 38, h: 30 },
-  { n: 'Yucatán', x: 264, y: 116, w: 38, h: 28 },
-];
+const STATES = mexico.locations;
 const DEFAULT_FILL = '#EAEBED';
 
 const PRESENCIA_SWATCHES = [
@@ -71,17 +56,17 @@ function IconInfo() { return <svg width="12" height="12" viewBox="0 0 24 24" fil
 function MexMap({ fills, onStateClick }) {
   return (
     <div className={styles.mxMap}>
-      <svg viewBox="0 0 320 210">
-        {STATES.map((s, i) => (
-          <rect
-            key={s.n}
+      <svg viewBox={mexico.viewBox}>
+        {STATES.map((s) => (
+          <path
+            key={s.id}
             className={styles.mxSt}
-            x={s.x} y={s.y} width={s.w} height={s.h} rx="6"
-            fill={fills[i] ?? DEFAULT_FILL}
-            onClick={() => onStateClick(i)}
+            d={s.path}
+            fill={fills[s.id] ?? DEFAULT_FILL}
+            onClick={() => onStateClick(s.id)}
           >
-            <title>{s.n}</title>
-          </rect>
+            <title>{s.name}</title>
+          </path>
         ))}
       </svg>
     </div>
@@ -122,14 +107,15 @@ export default function EmpresaRecursos() {
   const handleAddChartRow = () => setChartRows((prev) => [...prev, { id: Date.now(), mes: '', total: '', otraAgencia: '' }]);
   const handleDelChartRow = (id) => setChartRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== id) : prev));
 
-  const handlePresenciaClick = (idx) => {
-    setPresenciaFills((prev) => ({ ...prev, [idx]: PRESENCIA_SWATCHES[swatchSel].color }));
+  const handlePresenciaClick = (stateId) => {
+    setPresenciaFills((prev) => ({ ...prev, [stateId]: PRESENCIA_SWATCHES[swatchSel].color }));
   };
 
-  const handleZonaMapClick = (idx) => {
+  const handleZonaMapClick = (stateId) => {
     if (!zoneName.trim()) return;
-    setZonaFills((prev) => ({ ...prev, [idx]: zoneColor }));
-    setZonas((prev) => [...prev, { id: Date.now(), color: zoneColor, nombre: `${STATES[idx].n} — ${zoneName.trim()}` }]);
+    setZonaFills((prev) => ({ ...prev, [stateId]: zoneColor }));
+    const estado = STATES.find((s) => s.id === stateId);
+    setZonas((prev) => [...prev, { id: Date.now(), color: zoneColor, nombre: `${estado?.name || stateId} — ${zoneName.trim()}` }]);
   };
 
   const handleAddZonaManual = () => {

@@ -8,8 +8,8 @@ import Swal from 'sweetalert2';
 import { Spinner } from 'react-bootstrap';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { getAllProcess, getStepById, updateService } from './../../api/api.js';
-import ModalServicio from './ModalServicio.jsx';
-import ModalPasos from './ModalPasos.jsx';
+import ModalServicio from '../Administrador/ModalServicio.jsx';
+import ModalPasos from '../Administrador/ModalPasos.jsx';
 import styles from './../../styles/EmpresaServicios.module.css';
 
 // Extraído 1:1 de "14-Servicios (standalone).html". El mockup incluye

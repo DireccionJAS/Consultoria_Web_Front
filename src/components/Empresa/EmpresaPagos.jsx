@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { getAllPayments, clientePorId, getNameService, statusPayments } from './../../api/api.js';
-import ModalDetallePago from './ModalDetallePago.jsx';
-import ModalConfirmarPagoEfectivo from './ModalConfirmarPagoEfectivo.jsx';
+import ModalDetallePago from '../Administrador/ModalDetallePago.jsx';
+import ModalConfirmarPagoEfectivo from '../Administrador/ModalConfirmarPagoEfectivo.jsx';
 import styles from './../../styles/EmpresaPagos.module.css';
 
 const ITEMS_POR_PAGINA = 7;

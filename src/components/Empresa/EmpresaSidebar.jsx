@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import styles from './../../styles/EmpresaSidebar.module.css';
 import logo from './../../img/logo_letras_negras.png';
 
@@ -19,6 +18,7 @@ function RecursosIcon() { return <svg width="16" height="16" viewBox="0 0 24 24"
 function LegalidadIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6z" /></svg>; }
 function PerfilIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="7" r="4" /><path d="M3 21v-1a7 7 0 0 1 14 0v1" /></svg>; }
 function LogoutIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>; }
+function WarnIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.14A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-3l-8.18-14.14a2 2 0 0 0-3.42 0z" /></svg>; }
 
 const PAGINA_PUBLICA_SUBITEMS = [
   { key: 'inicio', label: 'Inicio' },
@@ -42,11 +42,12 @@ function NavItem({ icon, label, active, badge, onClick }) {
 export default function EmpresaSidebar({
   active = 'inicio',
   userName = 'Empresa JAS',
-  tramitesCount = 87,
-  clientesCount = 214,
+  tramitesCount = null,
+  clientesCount = null,
   onNavigate,
 }) {
   const navigate = useNavigate();
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [paginaPublicaOpen, setPaginaPublicaOpen] = useState(active === 'pagina-publica' || active.startsWith('pagina-publica:'));
   const activeSubItem = active.startsWith('pagina-publica:') ? active.split(':')[1] : null;
 
@@ -76,20 +77,10 @@ export default function EmpresaSidebar({
     navigate(`/EmpresaPaginaPublica?tab=${key}`);
   };
 
-  const handleLogout = () => {
-    Swal.fire({
-      icon: 'warning',
-      title: '¿Cerrar sesión?',
-      text: 'Tendrás que iniciar sesión de nuevo para acceder a tu panel.',
-      showCancelButton: true,
-      confirmButtonText: 'Cerrar sesión',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        localStorage.removeItem('token');
-        navigate('/Login');
-      }
-    });
+  const handleLogout = () => setLogoutConfirmOpen(true);
+  const confirmLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/Login');
   };
 
   return (
@@ -151,6 +142,20 @@ export default function EmpresaSidebar({
           <div className={styles.sbUserRole}>Empresa</div>
         </div>
       </div>
+
+      {logoutConfirmOpen && (
+        <div className={styles.scrim} onClick={(e) => { if (e.target === e.currentTarget) setLogoutConfirmOpen(false); }}>
+          <div className={styles.logoutModal}>
+            <div className={styles.logoutIcon}><WarnIcon /></div>
+            <div className={styles.logoutTitle}>¿Cerrar sesión?</div>
+            <div className={styles.logoutText}>Tendrás que iniciar sesión de nuevo para acceder a tu panel.</div>
+            <div className={styles.logoutFoot}>
+              <button className={styles.logoutBtnGhost} onClick={() => setLogoutConfirmOpen(false)}>Cancelar</button>
+              <button className={styles.logoutBtnDanger} onClick={confirmLogout}>Cerrar sesión</button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

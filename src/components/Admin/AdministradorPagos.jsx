@@ -4,8 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import { Spinner } from 'react-bootstrap';
 import Navbar from '../NavbarAdmin.jsx';
 import { getAllPayments, clientePorId, getNameService, statusPayments } from './../../api/api.js';
-import ModalDetallePago from './ModalDetallePago.jsx';
-import ModalConfirmarPagoEfectivo from './ModalConfirmarPagoEfectivo.jsx';
+import ModalDetallePago from '../Administrador/ModalDetallePago.jsx';
+import ModalConfirmarPagoEfectivo from '../Administrador/ModalConfirmarPagoEfectivo.jsx';
 import '../../styles/PagosAdminJAS.css';
 
 const ITEMS_POR_PAGINA = 7;

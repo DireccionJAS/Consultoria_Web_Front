@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { listarEncargados, actualizarStatusCliente, archivarCliente, clientes as clientesAPI } from './../../api/api.js';
-import ModalAdmin from './ModalAdmin.jsx';
+import ModalAdmin from '../Administrador/ModalAdmin.jsx';
 import modalStyles from './../../styles/ClienteModal.module.css';
 import styles from './../../styles/EmpresaAdmins.module.css';
 

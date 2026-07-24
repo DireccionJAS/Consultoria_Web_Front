@@ -42,6 +42,21 @@ const SIM_HORAS_DEFAULT = horasIniciales(HORAS_SIM, ['8:00', '9:00', '10:00', '1
 const LLAMADA_DIAS_DEFAULT = diasIniciales(['lunes', 'martes', 'miercoles', 'jueves', 'viernes']);
 const LLAMADA_HORAS_DEFAULT = horasIniciales(HORAS_REMOTA, ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']);
 
+// Sin backend de horarios todavía: se persiste en localStorage para que el
+// modal "Cita externa" del Calendario (EmpresaCalendario.jsx) pueda leer los
+// mismos días/horas configurados aquí en vez de usar un mockup fijo.
+export const HORARIOS_STORAGE_KEY = 'empresaHorariosConfig';
+
+function cargarConfigGuardada() {
+  try {
+    const raw = localStorage.getItem(HORARIOS_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 function IconMonitor() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="14" rx="2"></rect><path d="M8 22h8M12 18v4"></path></svg>;
 }
@@ -115,12 +130,17 @@ function proximasFechas(dias, cantidad = 6) {
 export default function EmpresaHorarios() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sim');
+  const guardada = useMemo(() => cargarConfigGuardada(), []);
 
-  const [simDias, setSimDias] = useState(SIM_DIAS_DEFAULT);
-  const [simHoras, setSimHoras] = useState(SIM_HORAS_DEFAULT);
+  const [simDias, setSimDias] = useState(guardada?.simDias || SIM_DIAS_DEFAULT);
+  const [simHoras, setSimHoras] = useState(guardada?.simHoras || SIM_HORAS_DEFAULT);
 
-  const [llamadaDias, setLlamadaDias] = useState(LLAMADA_DIAS_DEFAULT);
-  const [llamadaHoras, setLlamadaHoras] = useState(LLAMADA_HORAS_DEFAULT);
+  const [llamadaDias, setLlamadaDias] = useState(guardada?.llamadaDias || LLAMADA_DIAS_DEFAULT);
+  const [llamadaHoras, setLlamadaHoras] = useState(guardada?.llamadaHoras || LLAMADA_HORAS_DEFAULT);
+
+  useEffect(() => {
+    localStorage.setItem(HORARIOS_STORAGE_KEY, JSON.stringify({ simDias, simHoras, llamadaDias, llamadaHoras }));
+  }, [simDias, simHoras, llamadaDias, llamadaHoras]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -146,6 +166,7 @@ export default function EmpresaHorarios() {
 
   const toggleLlamadaDia = (key) => setLlamadaDias((prev) => ({ ...prev, [key]: !prev[key] }));
   const toggleLlamadaHora = (h) => setLlamadaHoras((prev) => ({ ...prev, [h]: !prev[h] }));
+  const llamadaFechas = useMemo(() => proximasFechas(llamadaDias), [llamadaDias]);
 
   const handleGuardar = () => {
     Swal.fire({
@@ -242,6 +263,16 @@ export default function EmpresaHorarios() {
                     <div className={styles.field}>
                       <label className={styles.fieldLabel}>Días disponibles</label>
                       <DayChips dias={llamadaDias} onToggle={toggleLlamadaDia} />
+                      <div className={styles.nextDates}>
+                        <div className={styles.ndLabel}>Próximas fechas de los días seleccionados</div>
+                        <div className={styles.ndList}>
+                          {llamadaFechas.length === 0 ? (
+                            <span style={{ fontSize: 12, color: 'var(--muted)' }}>Selecciona al menos un día</span>
+                          ) : llamadaFechas.map((f, i) => (
+                            <span key={i} className={styles.ndPill}><span className={styles.ndDot}></span>{f.getDate()} {MESES_CORTOS[f.getMonth()]} <span className={styles.ndDay}>{DOW_CORTO[f.getDay()]}</span></span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                     <div className={styles.field} style={{ marginBottom: 0 }}>
                       <label className={styles.fieldLabel}>Horas disponibles</label>

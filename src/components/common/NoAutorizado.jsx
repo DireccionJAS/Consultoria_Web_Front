@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/404.css'
+import '../../styles/404.css'
 import { Icon } from '@iconify/react';
 const NoAutorizado = () => (
     <div className='Cuatro'>

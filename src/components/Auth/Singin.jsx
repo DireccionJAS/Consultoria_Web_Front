@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
-import { RegistrarCliente, olvidarContraSin, enviarCorreoConDatos } from '../api/api.js';
-import styles from './../styles/Signin.module.css';
+import { RegistrarCliente, olvidarContraSin, enviarCorreoConDatos } from '../../api/api.js';
+import styles from './../../styles/Signin.module.css';
 import { MdClose, MdOpenInNew, MdDownload } from 'react-icons/md';
-import Logo from './../img/logo_letras_negras.png';
+import Logo from './../../img/logo_letras_negras.png';
 
 /* ============ Iconos inline (mismo set visual que el diseño) ============ */
 function BackIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>; }
@@ -704,8 +704,8 @@ export default function Signin({ onCancel }) {
               </label>
 
               <div className={styles.btnRow}>
-                <button type="button" className={styles.btnGhost} onClick={cancel}>Cancelar</button>
-                <button type="submit" className={styles.btnPrimary} disabled={isSubmitting || intentos >= MAX_INTENTOS}>
+                <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={cancel}>Cancelar</button>
+                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={isSubmitting || intentos >= MAX_INTENTOS}>
                   {isSubmitting ? 'Enviando…' : 'Enviar código'}
                   <div className={styles.arrowRev}><ArrowIcon /></div>
                 </button>
@@ -770,11 +770,11 @@ export default function Signin({ onCancel }) {
               </div>
 
               <div className={styles.btnRow}>
-                <button type="button" className={styles.btnGhost} onClick={volverAtras}>
+                <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={volverAtras}>
                   <BackIcon />
                   Volver
                 </button>
-                <button type="button" className={styles.btnPrimary} onClick={handlePaso2}>
+                <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={handlePaso2}>
                   Verificar código
                   <div className={styles.arrowRev}><ArrowIcon /></div>
                 </button>
@@ -809,8 +809,8 @@ export default function Signin({ onCancel }) {
                   </div>
 
                   <div className={styles.btnRow}>
-                    <button type="button" className={styles.btnGhost} onClick={() => navigate('/')}>Ir a la página principal</button>
-                    <button type="button" className={styles.btnPrimary} onClick={() => navigate('/Login')}>
+                    <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => navigate('/')}>Ir a la página principal</button>
+                    <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => navigate('/Login')}>
                       Iniciar sesión
                       <div className={styles.arrowRev}><ArrowIcon /></div>
                     </button>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
+import { HORARIOS_STORAGE_KEY } from './EmpresaHorarios.jsx';
 import { trasacciones, listarEncargados, actualizarTC } from './../../api/api.js';
 import styles from './../../styles/EmpresaCalendario.module.css';
 
@@ -18,16 +19,18 @@ const EV_META = {
 };
 
 // "Cita externa" (Atención al cliente) no tiene backend: ni entidad, ni
-// sistema de disponibilidad. Estos días/horarios son los mismos datos de
-// demo del mockup ("Modal Nueva Cita - Simulacion (standalone).html"); la
-// selección es solo visual y "Guardar cita" no persiste nada real.
-const EXT_DIAS = [
+// sistema de disponibilidad. Los días/horas se leen de la configuración
+// guardada en Empresa > Horarios (pestaña "Atención remota", localStorage
+// vía HORARIOS_STORAGE_KEY) para que reflejen lo que la empresa configuró
+// ahí en vez de un mockup fijo. Si todavía no se guardó nada, se cae a un
+// fallback con los mismos datos de demo de antes.
+const EXT_DIAS_FALLBACK = [
   { d: '16', m: 'JUN' },
   { d: '23', m: 'MAR' },
   { d: '25', m: 'JUN' },
   { d: '30', m: 'MAR' },
 ];
-const EXT_HORAS = [
+const EXT_HORAS_FALLBACK = [
   { hora: '09:00' },
   { hora: '10:00' },
   { hora: '12:00', disabled: true },
@@ -37,6 +40,36 @@ const EXT_HORAS = [
   { hora: '17:00' },
   { hora: '19:00' },
 ];
+const DIAS_SEMANA_EXT = [
+  { key: 'lunes', dow: 1 }, { key: 'martes', dow: 2 }, { key: 'miercoles', dow: 3 },
+  { key: 'jueves', dow: 4 }, { key: 'viernes', dow: 5 }, { key: 'sabado', dow: 6 },
+];
+
+function cargarHorariosGuardados() {
+  try {
+    const raw = localStorage.getItem(HORARIOS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function calcularExtDias(diasActivos, cantidad = 4) {
+  const dowsActivos = DIAS_SEMANA_EXT.filter((d) => diasActivos?.[d.key]).map((d) => d.dow);
+  if (dowsActivos.length === 0) return [];
+  const fechas = [];
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  let cursor = new Date(hoy); cursor.setDate(cursor.getDate() + 1);
+  let guard = 0;
+  while (fechas.length < cantidad && guard < 60) {
+    if (dowsActivos.includes(cursor.getDay())) {
+      fechas.push({ d: String(cursor.getDate()).padStart(2, '0'), m: MESES_CORTOS[cursor.getMonth()].slice(0, 3).toUpperCase() });
+    }
+    cursor.setDate(cursor.getDate() + 1);
+    guard++;
+  }
+  return fechas;
+}
 
 // "Cambiar cita": no existe backend de disponibilidad de horarios (mismo
 // caso que "Cita externa"), así que se muestran todos los horarios del
@@ -216,6 +249,18 @@ export default function EmpresaCalendario() {
   const [extDia, setExtDia] = useState(0);
   const [extHora, setExtHora] = useState('10:00');
   const [extAtencion, setExtAtencion] = useState('zoom');
+
+  const extDias = useMemo(() => {
+    const guardado = cargarHorariosGuardados();
+    const dias = calcularExtDias(guardado?.llamadaDias);
+    return dias.length > 0 ? dias : EXT_DIAS_FALLBACK;
+  }, [extAbierta]);
+  const extHoras = useMemo(() => {
+    const guardado = cargarHorariosGuardados();
+    if (!guardado?.llamadaHoras) return EXT_HORAS_FALLBACK;
+    const disponibles = Object.entries(guardado.llamadaHoras).filter(([, activa]) => activa).map(([hora]) => ({ hora }));
+    return disponibles.length > 0 ? disponibles : EXT_HORAS_FALLBACK;
+  }, [extAbierta]);
 
   const [ccAbierta, setCcAbierta] = useState(false);
   const [ccContext, setCcContext] = useState(null);
@@ -813,7 +858,7 @@ export default function EmpresaCalendario() {
 
                 <div className={styles.ncFieldLabel}>Día disponible</div>
                 <div className={styles.extDayGrid}>
-                  {EXT_DIAS.map((dia, i) => (
+                  {extDias.map((dia, i) => (
                     <div key={i} className={`${styles.extDayCard} ${extDia === i ? styles.active : ''}`} onClick={() => setExtDia(i)}>
                       <div className={styles.d}>{dia.d}</div><div className={styles.m}>{dia.m}</div>
                     </div>
@@ -822,7 +867,7 @@ export default function EmpresaCalendario() {
 
                 <div className={styles.ncFieldLabel}>Horario disponible <span className={styles.req}>*</span></div>
                 <div className={styles.extTimeGrid}>
-                  {EXT_HORAS.map((h) => (
+                  {extHoras.map((h) => (
                     <div
                       key={h.hora}
                       className={`${styles.extTimeCard} ${h.disabled ? styles.disabled : ''} ${extHora === h.hora ? styles.active : ''}`}
