@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 
 import Home from "./components/Auth/Home.jsx";
-import AdministradorHome from "./components/Admin/AdministradorHome";
+import AdminDashboard from "./components/Admin/AdminDashboard.jsx";
 import EmpresaDashboard from "./components/Empresa/EmpresaDashboard.jsx";
 import EmpresaTramites from "./components/Empresa/EmpresaTramites.jsx";
 import EmpresaClientes from "./components/Empresa/EmpresaClientes.jsx";
@@ -82,7 +82,7 @@ function App() {
         {/* ADMIN */}
         <Route path="/HomeAdmin" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <AdministradorHome />
+            <AdminDashboard />
           </ProtectedRoute>
         } />
 
