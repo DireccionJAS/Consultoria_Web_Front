@@ -4,6 +4,11 @@ import './App.css'
 
 import Home from "./components/Auth/Home.jsx";
 import AdminDashboard from "./components/Admin/AdminDashboard.jsx";
+import AdminTramites from "./components/Admin/AdminTramites.jsx";
+import AdminClientes from "./components/Admin/AdminClientes.jsx";
+import AdminPagos from "./components/Admin/AdminPagos.jsx";
+import AdminCalendario from "./components/Admin/AdminCalendario.jsx";
+import AdminPerfil from "./components/Admin/AdminPerfil.jsx";
 import EmpresaDashboard from "./components/Empresa/EmpresaDashboard.jsx";
 import EmpresaTramites from "./components/Empresa/EmpresaTramites.jsx";
 import EmpresaClientes from "./components/Empresa/EmpresaClientes.jsx";
@@ -18,23 +23,18 @@ import EmpresaRecursos from "./components/Empresa/EmpresaRecursos.jsx";
 import EmpresaLegalidad from "./components/Empresa/EmpresaLegalidad.jsx";
 import EmpresaPerfil from "./components/Empresa/EmpresaPerfil.jsx";
 import AdministradorServicios from "./components/Admin/AdministradorServicios";
-import AdministradorCliente from "./components/Admin/AdministradorClientes";
-import AdministradorTramites from "./components/Admin/AdministradorTramites";
 import RegistrarTramite from "./components/Administrador/RegistrarTramite";
 import RegistrarCliente from './components/Administrador/RegistrarCliente'
-import AdministradorPerfil from "./components/Admin/AdministradorPerfil.jsx";
 import ClienteHome from "./components/Cliente/ClienteHome";
 import ClienteServicios from "./components/Cliente/ClienteServicios";
 import MisTramites from "./components/Cliente/MisTramites";
 import MisTramitesMobile from "./components/Cliente/MisTramitesMobile";
 import Calendario from "./components/Cliente/Calendario.jsx";
-import CalendarioAdmin from "./components/Admin/CalendarioAdmin.jsx";
 import ClienteHomeMobile from "./components/Cliente/ClienteHomeMobile.jsx";
 
 import NoAutorizado from "./components/common/NoAutorizado";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import OlvidarContra from "./components/Auth/OlvidarContra.jsx";
-import AdministradorPagos from "./components/Admin/AdministradorPagos.jsx";
 import MiPerfil from "./components/Cliente/MiPerfil.jsx";
 import RegistrarPasos from "./components/Administrador/RegistrarPasos.jsx";
 import CombinedStepManager from "./components/Administrador/ActualizarPasos.jsx";
@@ -164,22 +164,32 @@ function App() {
         } />
         <Route path="/Perfil" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <AdministradorPerfil />
+            <AdminPerfil />
+          </ProtectedRoute>
+        } />
+        <Route path="/PerfilAdmin" element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminPerfil />
           </ProtectedRoute>
         } />
         <Route path="/ClientesAdmin" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <AdministradorCliente />
+            <AdminClientes />
           </ProtectedRoute>
         } />
         <Route path="/Pagos" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <AdministradorPagos />
+            <AdminPagos />
+          </ProtectedRoute>
+        } />
+        <Route path="/PagosAdmin" element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminPagos />
           </ProtectedRoute>
         } />
         <Route path="/TramitesAdmin" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <AdministradorTramites />
+            <AdminTramites />
           </ProtectedRoute>
         } />
         <Route path="/RegistrarTramite" element={
@@ -204,7 +214,12 @@ function App() {
         } />
         <Route path="/Calendar" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <CalendarioAdmin />
+            <AdminCalendario />
+          </ProtectedRoute>
+        } />
+        <Route path="/CalendarioAdmin" element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminCalendario />
           </ProtectedRoute>
         } />
 

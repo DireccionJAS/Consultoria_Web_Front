@@ -42,9 +42,9 @@ export default function AdminSidebar({
     if (key === 'dashboard') navigate('/HomeAdmin');
     if (key === 'tramites') navigate('/TramitesAdmin');
     if (key === 'clientes') navigate('/ClientesAdmin');
-    if (key === 'pagos') navigate('/Pagos');
-    if (key === 'calendario') navigate('/Calendar');
-    if (key === 'perfil') navigate('/Perfil');
+    if (key === 'pagos') navigate('/PagosAdmin');
+    if (key === 'calendario') navigate('/CalendarioAdmin');
+    if (key === 'perfil') navigate('/PerfilAdmin');
   };
 
   const handleLogout = () => setLogoutConfirmOpen(true);
