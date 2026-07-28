@@ -1,0 +1,84 @@
+/* GestionarFormularios.module.css */
+
+.empty {
+  padding: 30px 10px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--c1));
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.info { width: 130px; flex-shrink: 0; min-width: 0; }
+.name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.role { font-size: 11px; color: var(--muted); }
+
+.linkInput { flex: 1; min-width: 0; font-size: 12px !important; }
+
+.statusTag {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  transition: opacity 0.15s;
+}
+.statusTag:hover { opacity: 0.8; }
+.pending { background: var(--amber-soft); color: var(--amber); }
+.done { background: var(--green-soft); color: var(--green); }
+
+.deleteBtn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.deleteBtn:hover { background: var(--rose-soft, #F5DADA); color: var(--rose, #B73E3E); }
+
+.addRow {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.6fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .row { flex-wrap: wrap; }
+  .linkInput { width: 100%; order: 3; }
+  .addRow { grid-template-columns: 1fr; }
+}

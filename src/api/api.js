@@ -472,6 +472,50 @@ export const updateSteps = async (idTransact, stepsArray) => {
 }
 
 // =============================================================================
+// GESTIÓN DE PERSONAS / FORMULARIOS DS-160
+// =============================================================================
+
+export const getPersonasByProgress = async (idTransactProgress) => {
+  try {
+    const response = await apiClient.get(`/tramite-personas/progress/${idTransactProgress}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las personas del trámite', error);
+    throw error;
+  }
+};
+
+export const createPersona = async (data) => {
+  try {
+    const response = await apiClient.post(`/tramite-personas`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al agregar la persona', error);
+    throw error;
+  }
+};
+
+export const updatePersona = async (id, data) => {
+  try {
+    const response = await apiClient.put(`/tramite-personas/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al actualizar la persona', error);
+    throw error;
+  }
+};
+
+export const deletePersona = async (id) => {
+  try {
+    const response = await apiClient.delete(`/tramite-personas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar la persona', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE TRÁMITES/TRANSACCIONES
 // =============================================================================
 

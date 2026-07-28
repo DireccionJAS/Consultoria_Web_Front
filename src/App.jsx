@@ -36,6 +36,7 @@ import NoAutorizado from "./components/common/NoAutorizado";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import OlvidarContra from "./components/Auth/OlvidarContra.jsx";
 import MiPerfil from "./components/Cliente/MiPerfil.jsx";
+import Formularios from "./components/Cliente/Formularios.jsx";
 import RegistrarPasos from "./components/Administrador/RegistrarPasos.jsx";
 import CombinedStepManager from "./components/Administrador/ActualizarPasos.jsx";
 import Page0 from "./components/Page0.jsx";
@@ -236,6 +237,11 @@ function App() {
         <Route path="/MiPerfil" element={
           <ProtectedRoute allowedRoles={["USER"]}>
             <MiPerfil />
+          </ProtectedRoute>
+        } />
+        <Route path="/Formularios" element={
+          <ProtectedRoute allowedRoles={["USER"]}>
+            <Formularios />
           </ProtectedRoute>
         } />
         <Route path="/MisTramites" element={

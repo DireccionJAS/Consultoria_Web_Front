@@ -46,7 +46,7 @@ export default function ClienteSidebar({
   const go = (key) => {
     if (key === 'inicio') navigate('/ClienteHome');
     if (key === 'tramites') navigate('/MisTramites');
-    if (key === 'formularios') proximamente('Formularios');
+    if (key === 'formularios') navigate('/Formularios');
     if (key === 'citas') navigate('/Calendario');
     if (key === 'pagos') proximamente('Pagos');
     if (key === 'perfil') navigate('/MiPerfil');

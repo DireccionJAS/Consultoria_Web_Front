@@ -159,7 +159,8 @@ export default function ClienteHome() {
                   <div className={`${styles.cardIcon} ${styles.ciAmber}`}><FormulariosIcon /></div>
                   <div className={styles.cardLabel}>Formularios</div>
                   <div className={styles.cardValue}>DS-160</div>
-                  <div className={styles.cardMeta}>Consulta con tu asesor para tu formulario</div>
+                  <div className={styles.cardMeta}>Un link por persona</div>
+                  <button className={styles.cardLink} onClick={() => navigate('/Formularios')}>Ir a formularios <ArrowIcon /></button>
                 </div>
 
                 <div className={styles.card}>
@@ -190,9 +191,9 @@ export default function ClienteHome() {
                 <div><div className={styles.qcName}>Citas</div><div className={styles.qcSub}>Agenda tu simulación</div></div>
                 <div className={styles.qcArrow}><ArrowIcon /></div>
               </div>
-              <div className={styles.quickCard} onClick={() => navigate('/MisTramites')}>
+              <div className={styles.quickCard} onClick={() => navigate('/Formularios')}>
                 <div className={styles.qcIcon}><FormulariosIcon /></div>
-                <div><div className={styles.qcName}>Mis trámites</div><div className={styles.qcSub}>Revisa tu avance</div></div>
+                <div><div className={styles.qcName}>Formularios</div><div className={styles.qcSub}>Llena tu DS-160</div></div>
                 <div className={styles.qcArrow}><ArrowIcon /></div>
               </div>
               <div className={styles.quickCard} onClick={() => navigate('/MisTramites')}>
