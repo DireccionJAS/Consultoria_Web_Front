@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import AdminSidebar from './AdminSidebar.jsx';
@@ -132,7 +132,8 @@ const ITEMS_POR_PAGINA = 7;
 
 export default function AdminTramites() {
   const navigate = useNavigate();
-  const [busqueda, setBusqueda] = useState('');
+  const [searchParams] = useSearchParams();
+  const [busqueda, setBusqueda] = useState(searchParams.get('cliente') || '');
   const [datos, setDatos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [showCrearTramite, setShowCrearTramite] = useState(false);

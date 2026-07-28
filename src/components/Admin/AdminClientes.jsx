@@ -374,7 +374,7 @@ export default function AdminClientes() {
                               >
                                 <IconEdit />
                               </button>
-                              <button title="Ver trámites" onClick={() => navigate('/TramitesAdmin')}>
+                              <button title="Ver trámites" onClick={() => navigate(`/TramitesAdmin?cliente=${encodeURIComponent(cliente.name)}`)}>
                                 <IconEye />
                               </button>
                               <button

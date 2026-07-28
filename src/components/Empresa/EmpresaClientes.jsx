@@ -374,7 +374,7 @@ export default function EmpresaClientes() {
                               >
                                 <IconEdit />
                               </button>
-                              <button title="Ver trámites" onClick={() => navigate('/EmpresaTramites')}>
+                              <button title="Ver trámites" onClick={() => navigate(`/EmpresaTramites?cliente=${encodeURIComponent(cliente.name)}`)}>
                                 <IconEye />
                               </button>
                               <button
