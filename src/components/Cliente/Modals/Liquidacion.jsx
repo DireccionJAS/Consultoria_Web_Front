@@ -8,8 +8,7 @@ import paymentStyles from '../../../styles/servicios/client/PaymentModal.module.
 import PayPalScriptLoader from '../../PayPal/PayPalScriptLoader.jsx';
 import PayPalButton from '../../PayPal/BottonTest.jsx';
 import { actualizarTC } from '../../../api/api.js';
-import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL;
+import apiClient from '../../../api/apiClient.js';
 
 const VisaSVG = () => (
     <svg width="40" height="14" viewBox="0 0 40 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,7 +83,7 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                 idTransact: idTransact,
             };
 
-            await axios.post(`${API_URL}/payment`, paymentData);
+            await apiClient.post(`/payment`, paymentData);
 
             return true;
         } catch (error) {

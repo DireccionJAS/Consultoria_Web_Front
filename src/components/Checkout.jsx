@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL;
+import apiClient from './../api/apiClient.js';
 
 export default function Checkout({
   amount,
@@ -31,7 +30,7 @@ export default function Checkout({
 
     try {
       // Crear PaymentIntent en backend
-      const { data } = await axios.post(`${API_URL}/pay/payint`, {
+      const { data } = await apiClient.post(`/pay/payint`, {
         amount: amount * 100, // Centavos
         currency: 'mxn',
         description: description,
@@ -66,7 +65,7 @@ export default function Checkout({
         setMessage('¡Pago exitoso!');
 
         // Registrar pago en DB
-        await axios.post(`${API_URL}/payment`, {
+        await apiClient.post(`/payment`, {
           total: amount,
           status: 1,
           idUser: parseInt(customer),

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import axios from 'axios';
+import apiClient from '../api/apiClient.js';
 import Swal from 'sweetalert2';
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 export default function SimpleCheckoutForm({
   amount,
@@ -31,7 +29,7 @@ export default function SimpleCheckoutForm({
     setLoading(true);
 
     try {
-      const { data } = await axios.post(`${API_URL}/pay/payint`, {
+      const { data } = await apiClient.post(`/pay/payint`, {
         amount: amount * 100,
         currency: 'mxn',
         description,

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import axios from 'axios';
 import { createProcessWithPayment, payDS160, envioCorreo } from './../api/api.js';
-const API_URL = import.meta.env.VITE_API_URL;
+import apiClient from './../api/apiClient.js';
 
 export default function CheckoutForm({
   amount,
@@ -45,7 +44,7 @@ export default function CheckoutForm({
     }
 
     try {
-      const { data } = await axios.post(`${API_URL}/pay/payint`, {
+      const { data } = await apiClient.post(`/pay/payint`, {
         amount: (amount * 100)* quantity, 
         currency: 'mxn',
         description: serviceName ? `${serviceName} - ${description}` : description,
@@ -96,7 +95,7 @@ export default function CheckoutForm({
 
 
 
-          await axios.post(`${API_URL}/payment`, paymentData);
+          await apiClient.post(`/payment`, paymentData);
 
           // Crear los procesos
           for (let i = 0; i < paymentData.quantity; i++) {

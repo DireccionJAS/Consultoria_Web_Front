@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { createProcessWithPayment } from '../../api/api.js';
-import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL;
+import apiClient from '../../api/apiClient.js';
 import { useState } from 'react';
 
 const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalStatus, quantity =1 , costoTotal }) => {
@@ -76,7 +75,7 @@ const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalSt
               }
 
 
-              const response = await axios.post(`${API_URL}/payment`, paymentData);
+              const response = await apiClient.post(`/payment`, paymentData);
 
               for (let i = 0; i < paymentData.quantity; i++) {
                 await createProcessWithPayment(paymentData);
