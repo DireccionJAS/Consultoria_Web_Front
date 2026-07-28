@@ -74,11 +74,6 @@ export default function AdminSidebar({
       <NavItem icon={<PerfilIcon />} label="Mi Perfil" active={active === 'perfil'} onClick={() => go('perfil')} />
       <NavItem icon={<LogoutIcon />} label="Cerrar Sesión" onClick={handleLogout} />
 
-      <div className={styles.sbScope}>
-        <div className={styles.sbScopeTitle}>Tu alcance</div>
-        <div className={styles.sbScopeDesc}>Solo ves los clientes y trámites que la empresa te asignó.</div>
-      </div>
-
       <div className={styles.sbUser}>
         <div className={styles.sbAvatar}>{initials(userName)}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
