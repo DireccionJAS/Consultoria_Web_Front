@@ -708,6 +708,70 @@ export const getAllDates = async () => {
 }
 
 // =============================================================================
+// GESTIÓN DE HORARIOS / CITAS
+// =============================================================================
+
+export const getHorarios = async () => {
+  try {
+    const response = await apiClient.get(`/horarios`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener los horarios', error);
+    throw error;
+  }
+};
+
+export const guardarHorario = async (tipo, data) => {
+  try {
+    const response = await apiClient.put(`/horarios/${tipo}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al guardar el horario', error);
+    throw error;
+  }
+};
+
+export const getMisCitas = async (idUser) => {
+  try {
+    const response = await apiClient.get(`/citas/user/${idUser}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las citas', error);
+    throw error;
+  }
+};
+
+export const getHorasTomadas = async (tipo, fecha) => {
+  try {
+    const response = await apiClient.get(`/citas/disponibilidad`, { params: { tipo, fecha } });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la disponibilidad', error);
+    throw error;
+  }
+};
+
+export const crearCita = async (data) => {
+  try {
+    const response = await apiClient.post(`/citas`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al agendar la cita', error);
+    throw error;
+  }
+};
+
+export const eliminarCita = async (id) => {
+  try {
+    const response = await apiClient.delete(`/citas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al cancelar la cita', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE PAGOS
 // =============================================================================
 

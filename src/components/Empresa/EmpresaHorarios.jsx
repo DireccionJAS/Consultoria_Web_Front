@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
+import { getHorarios, guardarHorario } from './../../api/api.js';
 import styles from './../../styles/EmpresaHorarios.module.css';
 
-// Página nueva: no existe ninguna entidad ni endpoint en el backend para
-// guardar horarios/disponibilidad (ni de Simulación ni de Atención al
-// cliente). Extraída 1:1 de "20-Horarios (standalone).html". "Guardar"
-// solo muestra un aviso — no persiste nada real, igual que "Cita externa"
-// en el Calendario.
+// Extraída 1:1 de "20-Horarios (standalone).html". Simulación y Atención
+// remota se guardan en /api/horarios (tabla horario_dia/horario_hora).
+// "Atención presencial" sigue fija/no editable, como en el diseño.
+// El estado también se sigue reflejando en localStorage (HORARIOS_STORAGE_KEY)
+// porque AdminCalendario.jsx y EmpresaCalendario.jsx leen de ahí para su
+// modal de "Cita externa" — no tocamos esos archivos en este cambio.
 
 const DIAS = [
   { key: 'lunes', label: 'Lunes', dow: 1 },
@@ -34,6 +36,15 @@ function horasIniciales(lista, activas) {
   const obj = {};
   lista.forEach((h) => { obj[h] = activas.includes(h); });
   return obj;
+}
+function dowsAKeys(dows) {
+  return DIAS.filter((d) => (dows || []).includes(d.dow)).map((d) => d.key);
+}
+function diasActivosDow(diasObj) {
+  return DIAS.filter((d) => diasObj[d.key]).map((d) => d.dow);
+}
+function horasActivasArray(horasObj) {
+  return Object.keys(horasObj).filter((h) => horasObj[h]);
 }
 
 const SIM_DIAS_DEFAULT = diasIniciales(['lunes', 'miercoles', 'viernes']);
@@ -152,7 +163,25 @@ export default function EmpresaHorarios() {
       console.error('Token inválido', error);
       localStorage.removeItem('token');
       navigate('/');
+      return;
     }
+
+    getHorarios()
+      .then((response) => {
+        const horarios = response?.response?.horarios;
+        if (!horarios) return;
+        const sim = horarios.SIMULACION;
+        const aten = horarios.ATENCION_REMOTA;
+        if (sim && (sim.dias?.length || sim.horas?.length)) {
+          setSimDias(diasIniciales(dowsAKeys(sim.dias)));
+          setSimHoras(horasIniciales(HORAS_SIM, sim.horas || []));
+        }
+        if (aten && (aten.dias?.length || aten.horas?.length)) {
+          setLlamadaDias(diasIniciales(dowsAKeys(aten.dias)));
+          setLlamadaHoras(horasIniciales(HORAS_REMOTA, aten.horas || []));
+        }
+      })
+      .catch((error) => console.error('Error al obtener horarios:', error));
   }, [navigate]);
 
   const handleNavigate = (key) => {
@@ -168,12 +197,24 @@ export default function EmpresaHorarios() {
   const toggleLlamadaHora = (h) => setLlamadaHoras((prev) => ({ ...prev, [h]: !prev[h] }));
   const llamadaFechas = useMemo(() => proximasFechas(llamadaDias), [llamadaDias]);
 
-  const handleGuardar = () => {
-    Swal.fire({
-      icon: 'info',
-      title: 'Horarios no conectados',
-      text: 'Esta función aún no tiene un backend real donde guardar la disponibilidad (no existe entidad de configuración de horarios).',
-    });
+  const handleGuardarSim = async () => {
+    try {
+      await guardarHorario('SIMULACION', { dias: diasActivosDow(simDias), horas: horasActivasArray(simHoras) });
+      Swal.fire({ icon: 'success', title: 'Guardado', text: 'Horario de simulación actualizado.' });
+    } catch (error) {
+      console.error('Error al guardar horario de simulación:', error);
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar el horario.' });
+    }
+  };
+
+  const handleGuardarRemota = async () => {
+    try {
+      await guardarHorario('ATENCION_REMOTA', { dias: diasActivosDow(llamadaDias), horas: horasActivasArray(llamadaHoras) });
+      Swal.fire({ icon: 'success', title: 'Guardado', text: 'Horario de atención remota actualizado.' });
+    } catch (error) {
+      console.error('Error al guardar horario de atención remota:', error);
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar el horario.' });
+    }
   };
 
   const handleCancelarSim = () => { setSimDias(SIM_DIAS_DEFAULT); setSimHoras(SIM_HORAS_DEFAULT); };
@@ -227,7 +268,7 @@ export default function EmpresaHorarios() {
                 </div>
                 <div className={styles.secFoot}>
                   <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleCancelarSim}>Cancelar</button>
-                  <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardar}><IconCheck /> Guardar</button>
+                  <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardarSim}><IconCheck /> Guardar</button>
                 </div>
               </div>
             </div>
@@ -282,7 +323,7 @@ export default function EmpresaHorarios() {
                 </div>
                 <div className={styles.secFoot}>
                   <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleCancelarRemota}>Cancelar</button>
-                  <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardar}><IconCheck /> Guardar</button>
+                  <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardarRemota}><IconCheck /> Guardar</button>
                 </div>
               </div>
             </div>
