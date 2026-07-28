@@ -169,7 +169,7 @@ export default function ClienteHome() {
                   <div className={styles.cardValue}>${pendiente.toLocaleString('es-MX')} <small>MXN</small></div>
                   <div className={styles.cardMeta}>de ${(tramite.paidAll || 0).toLocaleString('es-MX')} total</div>
                   {pendiente > 0 && (
-                    <button className={styles.cardLink} style={{ color: 'var(--rose)' }} onClick={() => navigate('/MisTramites')}>Liquidar saldo <ArrowIcon /></button>
+                    <button className={styles.cardLink} style={{ color: 'var(--rose)' }} onClick={() => navigate('/ClientePagos')}>Liquidar saldo <ArrowIcon /></button>
                   )}
                 </div>
               </div>
@@ -196,7 +196,7 @@ export default function ClienteHome() {
                 <div><div className={styles.qcName}>Formularios</div><div className={styles.qcSub}>Llena tu DS-160</div></div>
                 <div className={styles.qcArrow}><ArrowIcon /></div>
               </div>
-              <div className={styles.quickCard} onClick={() => navigate('/MisTramites')}>
+              <div className={styles.quickCard} onClick={() => navigate('/ClientePagos')}>
                 <div className={styles.qcIcon}><PagosIcon /></div>
                 <div><div className={styles.qcName}>Pagos</div><div className={styles.qcSub}>Liquida tu saldo</div></div>
                 <div className={styles.qcArrow}><ArrowIcon /></div>

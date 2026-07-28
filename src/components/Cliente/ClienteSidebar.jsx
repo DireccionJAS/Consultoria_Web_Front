@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import styles from './../../styles/ClienteSidebar.module.css';
 import logo from './../../img/logo_letras_negras.png';
 
@@ -24,13 +23,6 @@ function NavItem({ icon, label, active, badge, onClick }) {
   );
 }
 
-// "Formularios" y "Pagos" todavía no tienen pantalla propia en el portal
-// cliente (son parte del mismo rediseño, pendientes). Mostrar un aviso en
-// vez de navegar a una ruta que no existe.
-function proximamente(label) {
-  Swal.fire({ icon: 'info', title: 'Próximamente', text: `${label} estará disponible aquí muy pronto.` });
-}
-
 export default function ClienteSidebar({
   active = 'inicio',
   userName = 'Cliente',
@@ -51,7 +43,7 @@ export default function ClienteSidebar({
     if (key === 'tramites') navigate('/MisTramites');
     if (key === 'formularios') navigate('/Formularios');
     if (key === 'citas') navigate('/Calendario');
-    if (key === 'pagos') proximamente('Pagos');
+    if (key === 'pagos') navigate('/ClientePagos');
     if (key === 'perfil') navigate('/MiPerfil');
   };
 
