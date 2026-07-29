@@ -58,6 +58,9 @@ function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
             <div className={styles.tmLbl}>Pago</div>
             <div className={styles.tmVal}>${(tramite.paid || 0).toLocaleString('es-MX')} <span style={{ color: 'var(--muted)', fontWeight: 500 }}>/ ${(tramite.paidAll || 0).toLocaleString('es-MX')}</span></div>
           </div>
+          {tramite.personName && (
+            <div><div className={styles.tmLbl}>Titular</div><div className={styles.tmVal}>{tramite.personName}</div></div>
+          )}
         </div>
 
         <div className={styles.tcardProg}>

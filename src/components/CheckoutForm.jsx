@@ -25,6 +25,27 @@ export default function CheckoutForm({
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [names, setNames] = useState(['']);
+
+  // Mantiene un campo de nombre por cada unidad de "cantidad"
+  useEffect(() => {
+    setNames((prev) => {
+      const next = [...prev];
+      while (next.length < quantity) next.push('');
+      next.length = quantity;
+      return next;
+    });
+  }, [quantity]);
+
+  const handleNameChange = (index, value) => {
+    setNames((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  };
+
+  const namesComplete = names.length === quantity && names.every((n) => n.trim().length > 0);
 
   // Determinar si es Visa Americana
   const isVisaAmericana = service?.name === 'Visa Americana' || service?.name === 'Visa Americana (4 meses)';
@@ -40,6 +61,12 @@ export default function CheckoutForm({
       console.error("Error: idProductoTransaccion no es válido:", idProductoTransaccion);
       setLoading(false);
       onError && onError({ message: 'ID de transacción de producto inválido.' });
+      return;
+    }
+
+    if (!namesComplete) {
+      setMessage(quantity > 1 ? 'Ingresa el nombre de cada persona antes de pagar.' : 'Ingresa el nombre del titular antes de pagar.');
+      setLoading(false);
       return;
     }
 
@@ -108,6 +135,7 @@ export default function CheckoutForm({
               status: 1,
               idUser: parseInt(customer),
               idTransact: parseInt(idProductoTransaccion),
+              personName: (names[i] || '').trim() || null,
             };
             await createProcessWithPayment(processPaymentData);
              await envioCorreo(userEmail,customer,serviceName);
@@ -224,6 +252,43 @@ export default function CheckoutForm({
             />
           </div>
         )}
+
+        {/* Nombre por cada persona pagada */}
+        <div style={{ marginBottom: '12px' }}>
+          <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 600, color: '#00002A' }}>
+            {quantity > 1 ? 'Nombre de cada persona' : 'Nombre del titular'}
+          </label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {names.map((name, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {quantity > 1 && (
+                  <span style={{
+                    width: 22, height: 22, borderRadius: '50%',
+                    backgroundColor: '#E4ECF0', color: '#1A3F75',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 11, fontWeight: 700, fontFamily: fontDisplay, flexShrink: 0,
+                  }}>
+                    {i + 1}
+                  </span>
+                )}
+                <input
+                  type="text"
+                  placeholder={quantity > 1 ? `Nombre de la persona ${i + 1}` : 'Nombre del titular'}
+                  value={name}
+                  onChange={(e) => handleNameChange(i, e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '10px 12px',
+                    border: '1px solid rgba(0,0,42,0.18)',
+                    borderRadius: '10px',
+                    fontSize: '13.5px',
+                    fontFamily: fontSans,
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Elemento de tarjeta de Stripe */}
@@ -256,22 +321,22 @@ export default function CheckoutForm({
       {/* Botón de pago */}
       <button
         type="submit"
-        disabled={!stripe || loading || disabled}
+        disabled={!stripe || loading || disabled || !namesComplete}
         style={{
           width: '100%',
           padding: '13px',
-          backgroundColor: disabled || loading ? 'rgba(0,0,42,0.25)' : '#00002A',
+          backgroundColor: disabled || loading || !namesComplete ? 'rgba(0,0,42,0.25)' : '#00002A',
           color: 'white',
           border: 'none',
           borderRadius: '999px',
           fontSize: '14px',
           fontWeight: '600',
           fontFamily: fontSans,
-          cursor: disabled || loading ? 'not-allowed' : 'pointer',
+          cursor: disabled || loading || !namesComplete ? 'not-allowed' : 'pointer',
           transition: 'background-color 0.3s ease'
         }}
-        onMouseEnter={(e) => { if (!disabled && !loading) e.currentTarget.style.backgroundColor = '#1A3F75'; }}
-        onMouseLeave={(e) => { if (!disabled && !loading) e.currentTarget.style.backgroundColor = '#00002A'; }}
+        onMouseEnter={(e) => { if (!disabled && !loading && namesComplete) e.currentTarget.style.backgroundColor = '#1A3F75'; }}
+        onMouseLeave={(e) => { if (!disabled && !loading && namesComplete) e.currentTarget.style.backgroundColor = '#00002A'; }}
       >
         {loading ? 'Procesando...' : `Pagar $${amount*quantity} MXN`}
       </button>
