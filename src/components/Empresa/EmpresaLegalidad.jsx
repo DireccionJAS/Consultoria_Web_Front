@@ -20,6 +20,7 @@ import styles from './../../styles/EmpresaLegalidad.module.css';
 const PDF_CARDS = [
   { tipo: 'terminos', titulo: 'Términos y Condiciones', nombreDefault: 'Terminos-y-Condiciones-2026.pdf', metaDefault: '680 KB · Actualizado 03 jun 2026' },
   { tipo: 'privacidad', titulo: 'Política de Privacidad', nombreDefault: 'Politica-de-Privacidad-2026.pdf', metaDefault: '540 KB · Actualizado 03 jun 2026' },
+  { tipo: 'formulario', titulo: 'Formulario DS-160', nombreDefault: 'Sin archivo subido', metaDefault: 'Descargable desde el Portal del Cliente' },
 ];
 
 const COOKIES_TEXTO_INICIAL = 'En Consultoría JAS utilizamos cookies propias y de terceros para mejorar tu experiencia de navegación, analizar el uso del sitio y personalizar el contenido. Al continuar navegando, aceptas el uso de cookies conforme a nuestra Política de Privacidad. Puedes configurar o rechazar su uso en cualquier momento desde la configuración de tu navegador.';
