@@ -34,7 +34,7 @@ const StripeSVG = () => (
 
 const ShieldSVG = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L20 6V12C20 17 16 21 12 22C8 21 4 17 4 12V6L12 2Z" fill="#2563eb" stroke="#2563eb" strokeWidth="1.5" />
+        <path d="M12 2L20 6V12C20 17 16 21 12 22C8 21 4 17 4 12V6L12 2Z" fill="#1A3F75" stroke="#1A3F75" strokeWidth="1.5" />
         <path d="M9 12L11 14L15 10" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 );
@@ -159,9 +159,21 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                     </div>
                 </div>
 
-                <p style={{ marginTop: '1rem' }}>
-                    Monto a liquidar: <strong>${montoRestante} MXN</strong>
-                </p>
+                <div style={{
+                    marginTop: '1rem',
+                    marginBottom: '1rem',
+                    padding: '14px 16px',
+                    background: 'linear-gradient(135deg, #E4ECF0 0%, #B4C8D8 100%)',
+                    borderRadius: 14,
+                    fontFamily: '"Inter", system-ui, sans-serif',
+                }}>
+                    <div style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(0,0,42,0.55)', marginBottom: 4 }}>
+                        Monto a liquidar
+                    </div>
+                    <div style={{ fontFamily: '"Bricolage Grotesque", system-ui, sans-serif', fontWeight: 700, fontSize: 26, color: '#00002A' }}>
+                        ${montoRestante}<small style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 12, color: 'rgba(0,0,42,0.55)', marginLeft: 6 }}>MXN</small>
+                    </div>
+                </div>
 
                 <Elements stripe={stripePromise}>
                     <CheckoutForm
