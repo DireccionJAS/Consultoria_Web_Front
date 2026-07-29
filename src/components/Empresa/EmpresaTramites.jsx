@@ -196,19 +196,20 @@ export default function EmpresaTramites() {
     }
   };
 
-  const counts = datos.reduce((acc, d) => { acc[d.status] = (acc[d.status] || 0) + 1; return acc; }, {});
-
-  const filtrados = datos.filter((d) => {
+  const porBusqueda = datos.filter((d) => {
     const busquedaStr = busqueda.toLowerCase();
-    const coincideBusqueda =
+    return (
       d.user?.name?.toLowerCase().includes(busquedaStr) ||
       d.user?.phone?.toLowerCase().includes(busquedaStr) ||
       d.emailAcces?.toLowerCase().includes(busquedaStr) ||
       d.user?.email?.toLowerCase().includes(busquedaStr) ||
-      d.transact?.name?.toLowerCase().includes(busquedaStr);
-    const coincideEstado = estadoSeleccionado === '' || d.status === parseInt(estadoSeleccionado, 10);
-    return coincideBusqueda && coincideEstado;
+      d.transact?.name?.toLowerCase().includes(busquedaStr)
+    );
   });
+
+  const counts = porBusqueda.reduce((acc, d) => { acc[d.status] = (acc[d.status] || 0) + 1; return acc; }, {});
+
+  const filtrados = porBusqueda.filter((d) => estadoSeleccionado === '' || d.status === parseInt(estadoSeleccionado, 10));
 
   const totalPaginas = Math.max(1, Math.ceil(filtrados.length / ITEMS_POR_PAGINA));
   const datosPaginados = filtrados.slice(
@@ -269,7 +270,7 @@ export default function EmpresaTramites() {
                 >
                   {f.dot && <span className={styles.chipDot} style={{ background: f.dot }}></span>}
                   {f.label}
-                  <span className={styles.cnt}>{f.value === '' ? datos.length : (counts[f.value] || 0)}</span>
+                  <span className={styles.cnt}>{f.value === '' ? porBusqueda.length : (counts[f.value] || 0)}</span>
                 </button>
               ))}
             </div>
