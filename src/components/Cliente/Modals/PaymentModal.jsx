@@ -32,7 +32,7 @@ const StripeSVG = () => (
 );
 const ShieldSVG = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2L20 6V12C20 17 16 21 12 22C8 21 4 17 4 12V6L12 2Z" fill="#2563eb" stroke="#2563eb" strokeWidth="1.5" />
+    <path d="M12 2L20 6V12C20 17 16 21 12 22C8 21 4 17 4 12V6L12 2Z" fill="#1A3F75" stroke="#1A3F75" strokeWidth="1.5" />
     <path d="M9 12L11 14L15 10" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
@@ -208,15 +208,17 @@ const PaymentModal = ({
           <div style={{
             marginTop: 20,
             padding: '20px',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '8px',
-            border: '1px solid #dee2e6'
+            backgroundColor: '#E4ECF0',
+            borderRadius: '16px',
+            border: '1px solid rgba(0,0,42,0.10)',
+            fontFamily: '"Inter", system-ui, sans-serif'
           }}>
             <h4 style={{
               marginBottom: '16px',
-              fontSize: '18px',
+              fontSize: '16px',
               fontWeight: '600',
-              color: '#495057'
+              fontFamily: '"Bricolage Grotesque", system-ui, sans-serif',
+              color: '#00002A'
             }}>
               Selecciona el plazo para liquidar tu trámite:
             </h4>
@@ -230,13 +232,14 @@ const PaymentModal = ({
                 onClick={() => setSelectedLiquidationPlan('4meses')}
                 style={{
                   padding: '12px 20px',
-                  border: selectedLiquidationPlan === '4meses' ? '2px solid #007bff' : '1px solid #ccc',
-                  borderRadius: '6px',
-                  backgroundColor: selectedLiquidationPlan === '4meses' ? '#e7f3ff' : '#fff',
-                  color: selectedLiquidationPlan === '4meses' ? '#007bff' : '#333',
+                  border: selectedLiquidationPlan === '4meses' ? '2px solid #1A3F75' : '1px solid rgba(0,0,42,0.18)',
+                  borderRadius: '999px',
+                  backgroundColor: selectedLiquidationPlan === '4meses' ? '#fff' : 'transparent',
+                  color: '#00002A',
                   cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: selectedLiquidationPlan === '4meses' ? '600' : '400',
+                  fontSize: '13px',
+                  fontFamily: '"Inter", system-ui, sans-serif',
+                  fontWeight: selectedLiquidationPlan === '4meses' ? '600' : '500',
                   transition: 'all 0.2s ease'
                 }}
               >
@@ -247,13 +250,14 @@ const PaymentModal = ({
                 onClick={() => setSelectedLiquidationPlan('8meses')}
                 style={{
                   padding: '12px 20px',
-                  border: selectedLiquidationPlan === '8meses' ? '2px solid #007bff' : '1px solid #ccc',
-                  borderRadius: '6px',
-                  backgroundColor: selectedLiquidationPlan === '8meses' ? '#e7f3ff' : '#fff',
-                  color: selectedLiquidationPlan === '8meses' ? '#007bff' : '#333',
+                  border: selectedLiquidationPlan === '8meses' ? '2px solid #1A3F75' : '1px solid rgba(0,0,42,0.18)',
+                  borderRadius: '999px',
+                  backgroundColor: selectedLiquidationPlan === '8meses' ? '#fff' : 'transparent',
+                  color: '#00002A',
                   cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: selectedLiquidationPlan === '8meses' ? '600' : '400',
+                  fontSize: '13px',
+                  fontFamily: '"Inter", system-ui, sans-serif',
+                  fontWeight: selectedLiquidationPlan === '8meses' ? '600' : '500',
                   transition: 'all 0.2s ease'
                 }}
               >
@@ -263,11 +267,13 @@ const PaymentModal = ({
 
             {/* Información del pago */}
             <div style={{
-              padding: '12px',
-              backgroundColor: '#d4edda',
-              border: '1px solid #c3e6cb',
-              borderRadius: '4px',
-              fontSize: '14px'
+              padding: '14px 16px',
+              backgroundColor: '#DFF5E5',
+              border: '1px solid rgba(40,160,82,0.25)',
+              borderRadius: '12px',
+              fontSize: '13.5px',
+              fontFamily: '"Inter", system-ui, sans-serif',
+              color: '#1F7B3D'
             }}>
               <p style={{ margin: '0 0 8px 0', fontWeight: '600' }}>
                 Resumen del pago:
@@ -278,7 +284,7 @@ const PaymentModal = ({
               <p style={{ margin: '0 0 4px 0' }}>
                 • Total del trámite: ${costoTotal() * quantity} MXN
               </p>
-              <p style={{ margin: '0', fontWeight: '600', color: '#155724' }}>
+              <p style={{ margin: '0', fontWeight: '700' }}>
                 • Pendiente por liquidar: ${pendienteLiquidar() * quantity} MXN
               </p>
             </div>
@@ -287,46 +293,48 @@ const PaymentModal = ({
 
         {/* Contenido principal */}
         {isPreviewMode ? (
-          <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <div style={{ marginTop: 20, fontFamily: '"Inter", system-ui, sans-serif' }}>
             <div style={{
-              marginBottom: 20,
-              padding: '16px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '8px',
-              border: '1px solid #dee2e6'
+              fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+              fontSize: '10px',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#4E6A9C',
+              marginBottom: 12,
             }}>
-              <h6 style={{ marginBottom: 12, fontWeight: 'bold', color: '#495057' }}>
-                Opciones de Pago
-              </h6>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {Object.entries(paymentOptions).map(([key, option], index) => (
-                  <div key={key} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    padding: '8px 0',
-                    borderBottom: index < Object.entries(paymentOptions).length - 1 ? '1px solid #e9ecef' : 'none'
-                  }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 'bold' }}>{option.description || key}</div>
-                      {option.processingTime && (
-                        <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                          {option.processingTime}
-                        </div>
-                      )}
-                    </div>
-                    <span style={{
-                      fontWeight: 'bold',
-                      color: index === 0 ? '#28a745' : '#495057',
-                      fontSize: '1.1rem'
-                    }}>
-                      ${option.amount} MXN
-                    </span>
-                  </div>
-                ))}
-              </div>
+              Opciones de pago
             </div>
-            <button className={paymentStyles.previewButton} onClick={handlePaymentAttempt}>
-              Iniciar Sesión para Pagar
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+              {Object.entries(paymentOptions).map(([key, option], index) => (
+                <div key={key} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '14px 16px',
+                  borderRadius: 14,
+                  background: index === 0 ? 'linear-gradient(135deg, #E4ECF0 0%, #B4C8D8 100%)' : '#E4ECF0',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 600, color: '#00002A', fontSize: 13.5 }}>{option.description || key}</div>
+                    {option.processingTime && (
+                      <div style={{ fontSize: 11.5, color: 'rgba(0,0,42,0.55)', marginTop: 2 }}>
+                        {option.processingTime}
+                      </div>
+                    )}
+                  </div>
+                  <span style={{
+                    fontFamily: '"Bricolage Grotesque", system-ui, sans-serif',
+                    fontWeight: 700,
+                    color: '#00002A',
+                    fontSize: '18px',
+                  }}>
+                    ${option.amount}<small style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 10, color: 'rgba(0,0,42,0.55)', marginLeft: 4 }}>MXN</small>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <button className={paymentStyles.previewButton} onClick={handlePaymentAttempt} style={{ width: '100%', padding: '13px', fontSize: 14 }}>
+              Iniciar sesión para pagar
             </button>
           </div>
         ) : (

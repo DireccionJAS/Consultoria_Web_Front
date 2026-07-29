@@ -8,49 +8,51 @@ const DS160Section = ({ userEmail,userId, onSuccess, onError, onHide, service, p
     <div>
       {/* Info Box */}
       <div style={{
-        backgroundColor: '#e8f5e8',
-        border: '1px solid #4caf50',
-        borderRadius: '8px',
-        padding: '20px',
+        backgroundColor: '#DFF5E5',
+        border: '1px solid rgba(40,160,82,0.25)',
+        borderRadius: '14px',
+        padding: '18px 20px',
         marginBottom: '20px',
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: '"Inter", system-ui, sans-serif',
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: '15px'
+          gap: 8,
+          marginBottom: '12px'
         }}>
-          <MessageIcon color="#4caf50" />
-          <strong style={{ color: '#2e7d32', fontSize: '18px' }}>
+          <MessageIcon color="#1F7B3D" />
+          <strong style={{ color: '#1F7B3D', fontSize: '16px', fontFamily: '"Bricolage Grotesque", system-ui, sans-serif', fontWeight: 600 }}>
             Formulario DS-160
           </strong>
         </div>
-        
-        <p style={{ 
-          color: '#2e7d32', 
-          margin: '0 0 15px 0',
-          fontSize: '14px',
+
+        <p style={{
+          color: '#1F7B3D',
+          margin: '0 0 12px 0',
+          fontSize: '13px',
           lineHeight: '1.5'
         }}>
-          Te enviaremos un correo personalizado a tu correo electrónico para completar 
+          Te enviaremos un correo personalizado a tu correo electrónico para completar
           el proceso del formulario DS-160 de manera segura.
 
         </p>
 
-        <p style={{ 
-          color: '#2e7d32', 
-          margin: '0 0 15px 0',
-          fontSize: '14px',
+        <p style={{
+          color: '#1F7B3D',
+          margin: '0 0 12px 0',
+          fontSize: '13px',
           lineHeight: '1.5'}}>
             Correo electrónico: <strong>{userEmail}</strong>
           </p>
 
         {quantity > 1 && (
-          <p style={{ 
-            color: '#2e7d32', 
-            margin: '0 0 15px 0',
-            fontSize: '14px',
+          <p style={{
+            color: '#1F7B3D',
+            margin: '0',
+            fontSize: '13px',
             lineHeight: '1.5',
             fontWeight: '600'
           }}>
@@ -77,9 +79,10 @@ const DS160Section = ({ userEmail,userId, onSuccess, onError, onHide, service, p
       />
 
       {/* Warning Box */}
-      <InfoBox 
-        color="#000"
-        backgroundColor="#46cef9"
+      <InfoBox
+        color="#1A3F75"
+        backgroundColor="rgba(111, 174, 219, 0.10)"
+        borderColor="rgba(111, 174, 219, 0.30)"
         title="Información importante"
         items={[
           'Formulario DS-160 para trámite de visa',

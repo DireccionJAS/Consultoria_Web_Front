@@ -4,86 +4,95 @@ const PaymentOption = ({ option, isSelected, onSelect, optionKey }) => {
   if (!option.amount || option.amount <= 0) return null;
 
   return (
-    <div 
-      style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
         marginBottom: '10px',
-        padding: '15px',
-        border: isSelected ? '2px solid #007bff' : '1px solid #ddd',
-        borderRadius: '8px',
+        padding: '14px 16px',
+        border: isSelected ? '2px solid #1A3F75' : '1px solid rgba(0,0,42,0.14)',
+        borderRadius: '14px',
         cursor: 'pointer',
-        backgroundColor: isSelected ? '#f8f9fa' : 'white',
-        transition: 'all 0.2s ease'
+        backgroundColor: isSelected ? '#E4ECF0' : 'white',
+        transition: 'all 0.2s ease',
+        fontFamily: '"Inter", system-ui, sans-serif',
       }}
       onClick={() => onSelect(optionKey)}
     >
-      <input 
-        type="radio" 
-        name="paymentType" 
+      <input
+        type="radio"
+        name="paymentType"
         value={optionKey}
         checked={isSelected}
         onChange={() => onSelect(optionKey)}
-        style={{ marginRight: '12px' }}
+        style={{ marginRight: '12px', accentColor: '#1A3F75' }}
       />
       <div style={{ flex: 1 }}>
-        <div style={{ 
-          fontWeight: 'bold', 
-          color: '#333', 
+        <div style={{
+          fontWeight: 600,
+          color: '#00002A',
           marginBottom: '4px',
-          fontSize: '15px'
+          fontSize: '13.5px'
         }}>
           {option.description}
-        </div>
-        <div style={{ 
-          fontSize: '16px', 
-          color: '#007bff', 
-          marginBottom: '6px',
-          fontWeight: 'bold'
-        }}>
-          💰 ${option.amount.toFixed(2)} MXN
           {option.isDeposit && (
-            <span style={{ 
-              color: '#28a745', 
-              fontWeight: 'normal',
-              fontSize: '14px',
-              marginLeft: '8px'
+            <span style={{
+              color: '#1F7B3D',
+              background: '#DFF5E5',
+              fontWeight: 500,
+              fontSize: '10.5px',
+              padding: '2px 8px',
+              borderRadius: 999,
+              marginLeft: '8px',
             }}>
-              (Apartado)
+              Apartado
             </span>
           )}
         </div>
-        <div style={{ 
-          fontSize: '13px', 
-          color: '#666',
-          display: 'flex',
-          alignItems: 'center'
+        <div style={{
+          fontFamily: '"Bricolage Grotesque", system-ui, sans-serif',
+          fontSize: '17px',
+          color: '#00002A',
+          marginBottom: '4px',
+          fontWeight: 700
         }}>
-          <span style={{ marginRight: '4px' }}>
-            {option.isDeposit ? '📋' : '⏱️'}
-          </span>
-          <span>{option.processingTime}</span>
+          ${option.amount.toFixed(2)}<small style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 10, color: 'rgba(0,0,42,0.55)', fontWeight: 500, marginLeft: 4 }}>MXN</small>
+        </div>
+        <div style={{
+          fontSize: '11.5px',
+          color: 'rgba(0,0,42,0.55)',
+          fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+          letterSpacing: '0.02em',
+        }}>
+          {option.processingTime}
         </div>
       </div>
     </div>
   );
 };
 
-const PaymentOptions = ({ 
-  paymentOptions, 
-  selectedPaymentType, 
-  onPaymentTypeChange, 
-  isVisaAmericana 
+const PaymentOptions = ({
+  paymentOptions,
+  selectedPaymentType,
+  onPaymentTypeChange,
+  isVisaAmericana
 }) => {
   return (
     <div style={{ marginBottom: '20px' }}>
-      <h4 style={{ marginBottom: '15px', color: '#333', fontSize: '16px' }}>
-        {isVisaAmericana 
-          ? 'Selecciona el tiempo de procesamiento:' 
-          : 'Selecciona tu opción de pago:'
+      <div style={{
+        marginBottom: '12px',
+        color: '#4E6A9C',
+        fontSize: '10px',
+        fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase',
+      }}>
+        {isVisaAmericana
+          ? 'Selecciona el tiempo de procesamiento'
+          : 'Selecciona tu opción de pago'
         }
-      </h4>
-      
+      </div>
+
       {Object.entries(paymentOptions).map(([key, option]) => (
         <PaymentOption
           key={key}
