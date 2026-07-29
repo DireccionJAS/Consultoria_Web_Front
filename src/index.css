@@ -775,3 +775,80 @@ button { font-family: inherit; cursor: pointer; border: 0; background: none; col
   0% { transform: scale(1); opacity: 0.5; }
   100% { transform: scale(1.5); opacity: 0; }
 }
+
+/* ============ SWEETALERT2 — TEMA GLOBAL ============
+   SweetAlert2 inyecta su propio <style> en <head> en tiempo de
+   ejecución (al primer Swal.fire), después de este archivo — por eso
+   estas reglas necesitan !important para ganar la cascada sin
+   importar el orden de inyección. Aplica a las alertas de Admin,
+   Empresa y Cliente por igual: es el único look compartido entre los
+   tres portales (cada uno tiene su propia paleta local para el resto
+   de la UI, pero las alertas usan la identidad de marca global). */
+.swal2-popup {
+  font-family: var(--sans) !important;
+  border-radius: 22px !important;
+  padding: 28px 24px !important;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 42, 0.45), 0 0 0 1px var(--line) !important;
+}
+.swal2-title {
+  font-family: var(--display) !important;
+  font-weight: 600 !important;
+  font-size: 22px !important;
+  letter-spacing: -0.02em !important;
+  color: var(--c1) !important;
+  padding: 0 0 4px !important;
+}
+.swal2-html-container {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--muted) !important;
+}
+.swal2-icon {
+  border-width: 2px !important;
+}
+.swal2-icon.swal2-success { border-color: var(--green) !important; color: var(--green) !important; }
+.swal2-icon.swal2-success [class^="swal2-success-line"] { background-color: var(--green) !important; }
+.swal2-icon.swal2-success .swal2-success-ring { border-color: var(--green-soft) !important; }
+.swal2-icon.swal2-error { border-color: #B73E3E !important; color: #B73E3E !important; }
+.swal2-icon.swal2-error [class^="swal2-x-mark-line"] { background-color: #B73E3E !important; }
+.swal2-icon.swal2-warning { border-color: #C68714 !important; color: #C68714 !important; }
+.swal2-icon.swal2-info { border-color: var(--c2) !important; color: var(--c2) !important; }
+.swal2-icon.swal2-question { border-color: var(--c3) !important; color: var(--c3) !important; }
+
+.swal2-actions { gap: 10px !important; margin-top: 22px !important; }
+.swal2-styled {
+  font-family: var(--sans) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 11px 22px !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+.swal2-styled:focus { box-shadow: 0 0 0 3px rgba(111, 174, 219, 0.35) !important; }
+.swal2-styled.swal2-confirm {
+  background: var(--c1) !important;
+  color: var(--c5) !important;
+}
+.swal2-styled.swal2-confirm:hover { background: var(--c2) !important; }
+.swal2-styled.swal2-cancel {
+  background: transparent !important;
+  color: var(--c1) !important;
+  border: 1px solid var(--line-2) !important;
+}
+.swal2-styled.swal2-cancel:hover { background: var(--c5) !important; }
+.swal2-styled.swal2-deny {
+  background: #B73E3E !important;
+  color: #fff !important;
+}
+.swal2-styled.swal2-deny:hover { background: #953131 !important; }
+
+.swal2-timer-progress-bar { background: var(--accent) !important; }
+
+.swal2-toast {
+  border-radius: 14px !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 42, 0.35), 0 0 0 1px var(--line) !important;
+  padding: 12px 16px !important;
+}
+.swal2-toast .swal2-title { font-size: 14px !important; padding: 0 !important; }
+.swal2-toast .swal2-timer-progress-bar { background: var(--accent) !important; }
