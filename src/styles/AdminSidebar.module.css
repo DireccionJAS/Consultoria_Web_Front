@@ -128,6 +128,8 @@
 }
 
 .scrim {
+  --c1: #1B2A4A; --white: #FFFFFF; --rose: #B73E3E;
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
   position: fixed; inset: 0; background: rgba(15, 26, 48, 0.45); backdrop-filter: blur(3px);
   display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200;
 }

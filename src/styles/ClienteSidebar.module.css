@@ -113,6 +113,8 @@
 .sbUserRole { font-size: 10px; color: rgba(228, 244, 251, 0.5); letter-spacing: 0.04em; text-transform: uppercase; font-family: var(--mono); }
 
 .scrim {
+  --c1: #1B2A4A; --c5: #E4F4FB; --white: #FFFFFF;
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
   position: fixed; inset: 0; background: rgba(15, 26, 48, 0.45); backdrop-filter: blur(3px);
   display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200;
 }
