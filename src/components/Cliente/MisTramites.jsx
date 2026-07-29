@@ -55,15 +55,8 @@ function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
         <div className={styles.tcardMeta}>
           <div><div className={styles.tmLbl}>Fecha de inicio</div><div className={styles.tmVal}>{fechaInicio}</div></div>
           <div>
-            <div className={styles.tmLbl}>Asesor</div>
-            <div className={styles.tmVal}>
-              {tramite.encargado?.name ? (
-                <span className={styles.advisor}>
-                  <span className={styles.advisorAv}>{tramite.encargado.name.trim().charAt(0).toUpperCase()}</span>
-                  {tramite.encargado.name}
-                </span>
-              ) : 'Sin asignar'}
-            </div>
+            <div className={styles.tmLbl}>Pago</div>
+            <div className={styles.tmVal}>${(tramite.paid || 0).toLocaleString('es-MX')} <span style={{ color: 'var(--muted)', fontWeight: 500 }}>/ ${(tramite.paidAll || 0).toLocaleString('es-MX')}</span></div>
           </div>
         </div>
 
