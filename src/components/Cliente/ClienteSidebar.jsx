@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import styles from './../../styles/ClienteSidebar.module.css';
 import logo from './../../img/logo_letras_negras.png';
@@ -83,7 +84,7 @@ export default function ClienteSidebar({
         </div>
       </div>
 
-      {logoutConfirmOpen && (
+      {logoutConfirmOpen && createPortal(
         <div className={styles.scrim} onClick={(e) => { if (e.target === e.currentTarget) setLogoutConfirmOpen(false); }}>
           <div className={styles.logoutModal}>
             <div className={styles.logoutIcon}><WarnIcon /></div>
@@ -94,7 +95,8 @@ export default function ClienteSidebar({
               <button className={styles.logoutBtnDanger} onClick={confirmLogout}>Cerrar sesión</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </aside>
   );
