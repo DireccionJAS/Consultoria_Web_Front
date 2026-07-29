@@ -99,6 +99,7 @@ export default function ServiciosPage() {
   const [selectedService, setSelectedService] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [stepsModalOpen, setStepsModalOpen] = useState(false);
+  const [stepsService, setStepsService] = useState(null);
   const [steps, setSteps] = useState([]);
   const [stepsLoading, setStepsLoading] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -163,10 +164,11 @@ export default function ServiciosPage() {
     setIsZoomed(false);
   };
   const handleOpenStepsModal = async (idTransact) => {
+    setStepsService(services.find((s) => s.idTransact === idTransact) || null);
     await fetchStepsById(idTransact);
     setStepsModalOpen(true);
   };
-  const handleCloseStepsModal = () => { setStepsModalOpen(false); setSteps([]); };
+  const handleCloseStepsModal = () => { setStepsModalOpen(false); setStepsService(null); setSteps([]); };
 
   const singint = (service) => {
     if (service) {
@@ -403,10 +405,19 @@ export default function ServiciosPage() {
           loading={stepsLoading}
           isZoomed={isZoomed}
           onToggleZoom={() => setIsZoomed((v) => !v)}
+          isFeatured={services[0]?.idTransact === selectedService?.idTransact}
+          onContratar={(service) => { handleCloseDetailsModal(); handleOpenPaymentModal(service); }}
         />
       )}
       {stepsModalOpen && (
-        <StepsModal show={stepsModalOpen} onHide={handleCloseStepsModal} steps={steps} loading={stepsLoading} />
+        <StepsModal
+          show={stepsModalOpen}
+          onHide={handleCloseStepsModal}
+          steps={steps}
+          loading={stepsLoading}
+          service={stepsService}
+          onContratar={(service) => { handleCloseStepsModal(); handleOpenPaymentModal(service); }}
+        />
       )}
       {paymentModalOpen && selectedServiceForPayment && (
         <PaymentModal

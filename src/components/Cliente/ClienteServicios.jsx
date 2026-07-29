@@ -29,6 +29,7 @@ export default function ClienteServicios() {
   const [isZoomed, setIsZoomed] = useState(false);
 
   const [stepsModalOpen, setStepsModalOpen] = useState(false);
+  const [stepsService, setStepsService] = useState(null);
   const [steps, setSteps] = useState([]);
   const [stepsLoading, setStepsLoading] = useState(false);
 
@@ -130,10 +131,11 @@ export default function ClienteServicios() {
   const handleToggleZoom = () => setIsZoomed((v) => !v);
 
   const handleOpenStepsModal = async (idTransact) => {
+    setStepsService(services.find((s) => s.idTransact === idTransact) || null);
     await fetchStepsById(idTransact);
     setStepsModalOpen(true);
   };
-  const handleCloseStepsModal = () => { setStepsModalOpen(false); setSteps([]); };
+  const handleCloseStepsModal = () => { setStepsModalOpen(false); setStepsService(null); setSteps([]); };
 
   const handleOpenPaymentModal = (service) => { setServiceToPay(service); setPaymentModalOpen(true); };
   const handleClosePaymentModal = () => { setServiceToPay(null); setPaymentModalOpen(false); };
@@ -200,6 +202,10 @@ export default function ClienteServicios() {
         onShowSteps={handleOpenStepsModal}
         isZoomed={isZoomed}
         onToggleZoom={handleToggleZoom}
+        steps={steps}
+        loading={stepsLoading}
+        isFeatured={services[0]?.idTransact === selectedService?.idTransact}
+        onContratar={(service) => { handleCloseDetailsModal(); handleOpenPaymentModal(service); }}
       />
       <PaymentModal
         show={paymentModalOpen}
@@ -210,7 +216,14 @@ export default function ClienteServicios() {
         onSuccess={handlePaymentSuccess}
         onError={handlePaymentError}
       />
-      <StepsModal show={stepsModalOpen} onHide={handleCloseStepsModal} steps={steps} loading={stepsLoading} />
+      <StepsModal
+        show={stepsModalOpen}
+        onHide={handleCloseStepsModal}
+        steps={steps}
+        loading={stepsLoading}
+        service={stepsService}
+        onContratar={(service) => { handleCloseStepsModal(); handleOpenPaymentModal(service); }}
+      />
     </div>
   );
 }

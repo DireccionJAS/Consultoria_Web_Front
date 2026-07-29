@@ -28,6 +28,7 @@ export default function LandingPage() {
   const [selectedService, setSelectedService] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [stepsModalOpen, setStepsModalOpen] = useState(false);
+  const [stepsService, setStepsService] = useState(null);
   const [steps, setSteps] = useState([]);
   const [stepsLoading, setStepsLoading] = useState(false);
   const [faqActiveIndex, setFaqActiveIndex] = useState(0);
@@ -123,12 +124,14 @@ export default function LandingPage() {
   };
 
   const handleOpenStepsModal = async (idTransact) => {
+    setStepsService(services.find((s) => s.idTransact === idTransact) || null);
     await fetchStepsById(idTransact);
     setStepsModalOpen(true);
   };
 
   const handleCloseStepsModal = () => {
     setStepsModalOpen(false);
+    setStepsService(null);
     setSteps([]);
   };
 
@@ -213,6 +216,8 @@ export default function LandingPage() {
         loading={stepsLoading}
         isZoomed={isZoomed}
         onToggleZoom={handleToggleZoom}
+        isFeatured={services[0]?.idTransact === selectedService?.idTransact}
+        onContratar={(service) => { handleCloseDetailsModal(); handleOpenPaymentModal(service); }}
       />
     )}
 
@@ -222,6 +227,8 @@ export default function LandingPage() {
         onHide={handleCloseStepsModal}
         steps={steps}
         loading={stepsLoading}
+        service={stepsService}
+        onContratar={(service) => { handleCloseStepsModal(); handleOpenPaymentModal(service); }}
       />
     )}
 
