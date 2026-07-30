@@ -58,7 +58,6 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                 throw new Error('Service is undefined');
             }
 
-            const nuevoPaid = service.paid + service.paidAll;
             await actualizarTC(service.idTransactProgress, {
                 ...service,
                 paid: service.paidAll,

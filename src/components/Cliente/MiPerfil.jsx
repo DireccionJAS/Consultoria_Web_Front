@@ -82,7 +82,19 @@ export default function MiPerfil() {
     setEditando(false);
   };
 
+  const validarPerfil = () => {
+    if (!form.name.trim()) return 'El nombre es obligatorio.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return 'Ingresa un correo electrónico válido.';
+    if (!form.phone.trim()) return 'El teléfono es obligatorio.';
+    return null;
+  };
+
   const guardarPerfil = async () => {
+    const errorValidacion = validarPerfil();
+    if (errorValidacion) {
+      Swal.fire({ icon: 'warning', title: 'Revisa tus datos', text: errorValidacion });
+      return;
+    }
     setGuardandoPerfil(true);
     try {
       await actualizar(userId, { name: form.name, email: form.email, phone: form.phone, status: datos.status });
