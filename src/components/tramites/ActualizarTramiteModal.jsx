@@ -597,9 +597,11 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
           <button type="button" className={`${styles.btn} ${styles.btnDanger}`} onClick={handleDelete} disabled={deleting || submitting}>
             {deleting ? 'Eliminando...' : 'Eliminar'}
           </button>
-          <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setShowFormularios(true)}>
-            Formularios
-          </button>
+          {(citaCas || citaCon) && (
+            <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setShowFormularios(true)}>
+              Formularios
+            </button>
+          )}
           <div className={styles.footSpacer}>
             <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={onHide} disabled={submitting}>Cancelar</button>
             <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleSubmit} disabled={submitting}>

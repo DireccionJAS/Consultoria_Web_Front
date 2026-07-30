@@ -30,12 +30,6 @@ const StripePaymentSection = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [extraFee, setExtraFee] = useState(0);
-  const isDS160 = service?.name && [
-    'ds-160',
-    'ds160',
-    'creación y generación de ds160',
-    'creacion y generacion de ds160'
-  ].some(name => service.name.trim().toLowerCase() === name);
   const showSinglePayment = service?.cashAdvance !== undefined && service?.cost !== undefined && Number(service.cashAdvance) === Number(service.cost);
 
   // Detectar si es adelanto de cita visa americana
@@ -120,8 +114,6 @@ const StripePaymentSection = ({
               service={service}
               idTransactProgress={service?.idTransactProgress}
               liquidationPlan={selectedLiquidationPlan}
-          
-              
             />
           </Elements>
         </div>

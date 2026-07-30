@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { getPersonasByProgress, createPersona, updatePersona, deletePersona } from '../../api/api.js';
+import { buildDs160Link } from '../../utils/ds160.js';
 import styles from '../../styles/tramites/ActualizarTramiteModal.module.css';
 import rowStyles from '../../styles/tramites/GestionarFormularios.module.css';
 
@@ -17,7 +18,7 @@ export default function GestionarFormulariosModal({ show, onHide, idTransactProg
   const [personas, setPersonas] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [nuevo, setNuevo] = useState({ name: '', role: ROLES[0], ds160Link: '' });
+  const [nuevo, setNuevo] = useState({ name: '', role: ROLES[0] });
 
   useEffect(() => {
     if (show && idTransactProgress) fetchPersonas();
@@ -44,8 +45,8 @@ export default function GestionarFormulariosModal({ show, onHide, idTransactProg
     }
     setGuardando(true);
     try {
-      await createPersona({ ...nuevo, idTransactProgress });
-      setNuevo({ name: '', role: ROLES[0], ds160Link: '' });
+      await createPersona({ ...nuevo, ds160Link: buildDs160Link(nuevo.name), idTransactProgress });
+      setNuevo({ name: '', role: ROLES[0] });
       fetchPersonas();
     } catch (error) {
       console.error('Error al agregar la persona:', error);
@@ -99,7 +100,7 @@ export default function GestionarFormulariosModal({ show, onHide, idTransactProg
           <div className={styles.modalHeadInfo}>
             <div className={styles.modalEyebrow}>Folio #{String(idTransactProgress || '').padStart(6, '0')}</div>
             <div className={styles.modalTitle}>Formularios y personas</div>
-            <div className={styles.modalSub}>Agrega a cada persona su link de DS-160 y marca cuando ya lo haya llenado</div>
+            <div className={styles.modalSub}>Agrega a cada persona y su link de DS-160 se genera solo con su nombre. Marca cuando ya lo haya llenado.</div>
           </div>
           <button className={styles.modalClose} onClick={onHide} aria-label="Cerrar">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 6l12 12M6 18L18 6" /></svg>
@@ -147,7 +148,6 @@ export default function GestionarFormulariosModal({ show, onHide, idTransactProg
             <select className={styles.inp} value={nuevo.role} onChange={(e) => setNuevo((v) => ({ ...v, role: e.target.value }))}>
               {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
-            <input className={styles.inp} type="text" placeholder="Link del DS-160 (opcional)" value={nuevo.ds160Link} onChange={(e) => setNuevo((v) => ({ ...v, ds160Link: e.target.value }))} />
             <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleAgregar} disabled={guardando}>
               {guardando ? 'Agregando...' : 'Agregar'}
             </button>

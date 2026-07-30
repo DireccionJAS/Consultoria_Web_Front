@@ -67,7 +67,8 @@ export default function Formularios() {
         setTramite(actual || null);
         if (!actual) return;
         const pendiente = (actual.paidAll || 0) - (actual.paid || 0);
-        if (pendiente <= 0) {
+        const aplica = actual.transact?.cas || actual.transact?.con;
+        if (pendiente <= 0 && aplica) {
           const personasResponse = await getPersonasByProgress(actual.idTransactProgress);
           setPersonas(personasResponse?.response?.personas || []);
         }
@@ -77,6 +78,7 @@ export default function Formularios() {
   }, [navigate]);
 
   const pendiente = tramite ? Math.max((tramite.paidAll || 0) - (tramite.paid || 0), 0) : 0;
+  const aplica = !!(tramite?.transact?.cas || tramite?.transact?.con);
   const bloqueado = !tramite || pendiente > 0;
 
   const copiarLink = (persona) => {
@@ -111,6 +113,12 @@ export default function Formularios() {
               {tramite && (
                 <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => navigate('/MisTramites')}>Ir a pagos <ArrowIcon /></button>
               )}
+            </div>
+          ) : !aplica ? (
+            <div className={styles.locked}>
+              <div className={styles.lockedIcon}><InfoIcon /></div>
+              <div className={styles.lockedTitle}>Este trámite no requiere formularios</div>
+              <div className={styles.lockedSub}>Tu trámite actual no incluye cita CAS ni cita consular, así que no necesitas llenar ningún formulario aquí.</div>
             </div>
           ) : (
             <>
