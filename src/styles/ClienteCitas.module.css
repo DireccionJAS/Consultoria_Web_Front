@@ -75,6 +75,8 @@
 .apptBtn { flex: 1; justify-content: center; display: inline-flex; align-items: center; gap: 5px; padding: 7px; border-radius: 8px; font-size: 11px; font-weight: 600; transition: all 0.2s; }
 .apptBtn.change { background: #F4F8FB; color: var(--c1); border: 1px solid var(--line); }
 .apptBtn.change:hover { background: var(--light); }
+.apptBtn.cancel { background: var(--rose-soft); color: var(--rose); border: 1px solid var(--rose-soft); }
+.apptBtn.cancel:hover { background: #EFC7C7; }
 .warnNote { display: flex; gap: 9px; padding: 12px 14px; background: var(--amber-soft); border-radius: 11px; margin-top: 4px; }
 .warnNote svg { color: var(--amber); flex-shrink: 0; margin-top: 1px; }
 .warnText { font-size: 11px; color: #8a6410; line-height: 1.45; }

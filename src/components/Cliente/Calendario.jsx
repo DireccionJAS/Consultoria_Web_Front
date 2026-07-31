@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { useEffect, useMemo, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
-import { clientePorId, getHorarios, getMisCitas, getHorasTomadas, crearCita, eliminarCita } from './../../api/api.js';
+import { clientePorId, getHorarios, getMisCitas, getHorasTomadas, crearCita, eliminarCita, getCambiosCita } from './../../api/api.js';
 import styles from './../../styles/ClienteCitas.module.css';
 
 function ChevronLeft() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>; }
@@ -47,6 +47,7 @@ export default function Calendario() {
   const [horaSel, setHoraSel] = useState(null);
   const [horasTomadas, setHorasTomadas] = useState([]);
   const [guardando, setGuardando] = useState(false);
+  const [cambiosInfo, setCambiosInfo] = useState({ cambiosUsados: 0, cambiosGratisRestantes: 2, comision: 99 });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -74,6 +75,7 @@ export default function Calendario() {
 
     cargarHorarios();
     cargarCitas(idUser);
+    cargarCambiosInfo(idUser);
   }, [navigate]);
 
   const cargarHorarios = () => {
@@ -86,6 +88,12 @@ export default function Calendario() {
     getMisCitas(idUser)
       .then((response) => { if (response.success) setCitas(response.response?.citas || []); })
       .catch((error) => console.error('Error al obtener citas:', error));
+  };
+
+  const cargarCambiosInfo = (idUser) => {
+    getCambiosCita(idUser)
+      .then((response) => { if (response.success && response.response) setCambiosInfo(response.response); })
+      .catch((error) => console.error('Error al obtener los cambios de cita:', error));
   };
 
   // --- calendario ---
@@ -190,20 +198,49 @@ export default function Calendario() {
     }
   };
 
+  const avisoComision = cambiosInfo.cambiosGratisRestantes <= 0
+    ? `Ya usaste tus 2 cambios/cancelaciones gratuitos de este trámite. Esta acción generará un cargo de $${cambiosInfo.comision} MXN.`
+    : `Te ${cambiosInfo.cambiosGratisRestantes === 1 ? 'queda' : 'quedan'} ${cambiosInfo.cambiosGratisRestantes} cambio${cambiosInfo.cambiosGratisRestantes === 1 ? '' : 's'}/cancelación${cambiosInfo.cambiosGratisRestantes === 1 ? '' : 'es'} gratis en este trámite.`;
+
+  const avisarComisionSiAplica = (data) => {
+    if (data?.comisionGenerada) {
+      Swal.fire({ icon: 'info', title: 'Se generó un cargo', text: `Este cambio generó una comisión de $${cambiosInfo.comision} MXN, la verás reflejada en Pagos.` });
+    }
+  };
+
   const cambiarCita = async (cita) => {
     const confirm = await Swal.fire({
-      icon: 'warning', title: '¿Cambiar esta cita?', text: 'Se cancelará para que elijas un nuevo horario.',
+      icon: 'warning', title: '¿Cambiar esta cita?', text: `Se cancelará para que elijas un nuevo horario. ${avisoComision}`,
       showCancelButton: true, confirmButtonText: 'Sí, cambiar', cancelButtonText: 'No',
     });
     if (!confirm.isConfirmed) return;
     try {
-      await eliminarCita(cita.idCita);
+      const response = await eliminarCita(cita.idCita);
       cargarCitas(userId);
+      cargarCambiosInfo(userId);
+      avisarComisionSiAplica(response?.response);
       setTipoSel(cita.tipo);
       setDiaSel(null);
       setHoraSel(null);
       setHorasTomadas([]);
       setModalOpen(true);
+    } catch (error) {
+      console.error('Error al cancelar la cita:', error);
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cancelar la cita.' });
+    }
+  };
+
+  const cancelarCita = async (cita) => {
+    const confirm = await Swal.fire({
+      icon: 'warning', title: '¿Cancelar esta cita?', text: avisoComision,
+      showCancelButton: true, confirmButtonText: 'Sí, cancelar', cancelButtonText: 'No',
+    });
+    if (!confirm.isConfirmed) return;
+    try {
+      const response = await eliminarCita(cita.idCita);
+      cargarCitas(userId);
+      cargarCambiosInfo(userId);
+      avisarComisionSiAplica(response?.response);
     } catch (error) {
       console.error('Error al cancelar la cita:', error);
       Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cancelar la cita.' });
@@ -291,6 +328,7 @@ export default function Calendario() {
                       <div className={styles.apptTime}><ClockIcon /> {cita.hora} hrs · {info.ubicacion}</div>
                       <div className={styles.apptActions}>
                         <button className={`${styles.apptBtn} ${styles.change}`} onClick={() => cambiarCita(cita)}>Cambiar</button>
+                        <button className={`${styles.apptBtn} ${styles.cancel}`} onClick={() => cancelarCita(cita)}>Cancelar</button>
                       </div>
                     </div>
                   </div>
@@ -298,7 +336,11 @@ export default function Calendario() {
               })}
               <div className={styles.warnNote}>
                 <WarnIcon />
-                <div className={styles.warnText}>Los cambios o cancelaciones con <strong>menos de 24 horas</strong> de anticipación generan una comisión de $99 MXN.</div>
+                <div className={styles.warnText}>
+                  {cambiosInfo.cambiosGratisRestantes <= 0
+                    ? <>Ya usaste tus <strong>2 cambios/cancelaciones gratuitos</strong> de este trámite. El siguiente genera un cargo de <strong>${cambiosInfo.comision} MXN</strong>.</>
+                    : <>Tienes <strong>{cambiosInfo.cambiosGratisRestantes} de 2</strong> cambios/cancelaciones gratis en este trámite. A partir del 3ro se cobra una comisión de <strong>${cambiosInfo.comision} MXN</strong>.</>}
+                </div>
               </div>
             </div>
           </div>

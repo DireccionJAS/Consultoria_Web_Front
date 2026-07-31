@@ -771,6 +771,16 @@ export const eliminarCita = async (id) => {
   }
 };
 
+export const getCambiosCita = async (idUser) => {
+  try {
+    const response = await apiClient.get(`/citas/cambios/${idUser}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener los cambios de cita', error);
+    throw error;
+  }
+};
+
 // =============================================================================
 // GESTIÓN DE PAGOS
 // =============================================================================
