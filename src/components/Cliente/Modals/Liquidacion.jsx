@@ -45,9 +45,7 @@ const stripePromise = loadStripe(stripeKey);
 export default function Liquidacion({ show, onHide, service, userEmail, userId, onSuccess, onError, COMPLETED }) {
     const [paypalStatus, setPaypalStatus] = useState(null);
 
-    if (!show || !service) return null;
-
-    const montoRestante = service.paidAll - service.paid;
+    const montoRestante = service ? service.paidAll - service.paid : 0;
 
     const executePaymentRequests = async () => {
         try {
@@ -122,6 +120,8 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
             handlePayPalSuccess();
         }
     }, [COMPLETED]);
+
+    if (!show || !service) return null;
 
     return (
         <Modal
