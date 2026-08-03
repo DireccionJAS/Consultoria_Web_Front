@@ -10,6 +10,7 @@ function ClientesIcon() { return <svg width="16" height="16" viewBox="0 0 24 24"
 function PagosIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M3 10h18M7 14h4" /></svg>; }
 function CalendarioIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>; }
 function PerfilIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="7" r="4" /><path d="M3 21v-1a7 7 0 0 1 14 0v1" /></svg>; }
+function NotificacionesIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>; }
 function LogoutIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>; }
 function WarnIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.14A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-3l-8.18-14.14a2 2 0 0 0-3.42 0z" /></svg>; }
 
@@ -28,6 +29,7 @@ export default function AdminSidebar({
   userName = 'Admin',
   tramitesCount = null,
   clientesCount = null,
+  notificacionesCount = null,
   onNavigate,
 }) {
   const navigate = useNavigate();
@@ -46,6 +48,7 @@ export default function AdminSidebar({
     if (key === 'pagos') navigate('/PagosAdmin');
     if (key === 'calendario') navigate('/CalendarioAdmin');
     if (key === 'perfil') navigate('/PerfilAdmin');
+    if (key === 'notificaciones') navigate('/AdminNotificaciones');
   };
 
   const handleLogout = () => setLogoutConfirmOpen(true);
@@ -72,6 +75,7 @@ export default function AdminSidebar({
       <NavItem icon={<CalendarioIcon />} label="Calendario" active={active === 'calendario'} onClick={() => go('calendario')} />
 
       <div className={styles.sbSection}>Sistema</div>
+      <NavItem icon={<NotificacionesIcon />} label="Notificaciones" badge={notificacionesCount} active={active === 'notificaciones'} onClick={() => go('notificaciones')} />
       <NavItem icon={<PerfilIcon />} label="Mi Perfil" active={active === 'perfil'} onClick={() => go('perfil')} />
       <NavItem icon={<LogoutIcon />} label="Cerrar Sesión" onClick={handleLogout} />
 

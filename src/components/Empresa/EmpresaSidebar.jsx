@@ -18,6 +18,7 @@ function PracticasIcon() { return <svg width="16" height="16" viewBox="0 0 24 24
 function RecursosIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>; }
 function LegalidadIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6z" /></svg>; }
 function PerfilIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="7" r="4" /><path d="M3 21v-1a7 7 0 0 1 14 0v1" /></svg>; }
+function NotificacionesIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>; }
 function LogoutIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>; }
 function WarnIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.14A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-3l-8.18-14.14a2 2 0 0 0-3.42 0z" /></svg>; }
 
@@ -45,6 +46,7 @@ export default function EmpresaSidebar({
   userName = 'Empresa JAS',
   tramitesCount = null,
   clientesCount = null,
+  notificacionesCount = null,
   onNavigate,
 }) {
   const navigate = useNavigate();
@@ -71,6 +73,7 @@ export default function EmpresaSidebar({
     if (key === 'recursos') navigate('/EmpresaRecursos');
     if (key === 'legalidad') navigate('/EmpresaLegalidad');
     if (key === 'perfil') navigate('/EmpresaPerfil');
+    if (key === 'notificaciones') navigate('/EmpresaNotificaciones');
   };
 
   const goPaginaPublica = (key) => {
@@ -133,6 +136,7 @@ export default function EmpresaSidebar({
       <NavItem icon={<LegalidadIcon />} label="Legalidad" active={active === 'legalidad'} onClick={() => go('legalidad')} />
 
       <div className={styles.sbSection}>Sistema</div>
+      <NavItem icon={<NotificacionesIcon />} label="Notificaciones" badge={notificacionesCount} active={active === 'notificaciones'} onClick={() => go('notificaciones')} />
       <NavItem icon={<PerfilIcon />} label="Mi Perfil" active={active === 'perfil'} onClick={() => go('perfil')} />
       <NavItem icon={<LogoutIcon />} label="Cerrar Sesión" onClick={handleLogout} />
 
