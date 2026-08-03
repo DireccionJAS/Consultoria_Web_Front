@@ -47,7 +47,7 @@ export default function Calendario() {
   const [horaSel, setHoraSel] = useState(null);
   const [horasTomadas, setHorasTomadas] = useState([]);
   const [guardando, setGuardando] = useState(false);
-  const [cambiosInfo, setCambiosInfo] = useState({ cambiosUsados: 0, cambiosGratisRestantes: 2, comision: 99 });
+  const [cambiosInfo, setCambiosInfo] = useState({ cambiosUsados: 0, cambiosGratisRestantes: 2, comision: 99, advance: false });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -178,7 +178,13 @@ export default function Calendario() {
       .catch((error) => console.error('Error al obtener disponibilidad:', error));
   }, [modalOpen, diaSel, tipoSel]);
 
+  const simulacionBloqueada = !cambiosInfo.advance;
+
   const confirmarCita = async () => {
+    if (tipoSel === 'SIMULACION' && simulacionBloqueada) {
+      Swal.fire({ icon: 'warning', title: 'Anticipo pendiente', text: 'Debes pagar el anticipo de tu trámite antes de agendar una cita de simulación.' });
+      return;
+    }
     if (!diaSel || !horaSel) {
       Swal.fire({ icon: 'warning', title: 'Falta información', text: 'Elige un día y un horario.' });
       return;
@@ -361,14 +367,27 @@ export default function Calendario() {
               <div className={styles.mField}>
                 <label className={styles.mLabel}>Tipo de cita</label>
                 <div className={styles.typeOpts}>
-                  {TIPOS.map((t) => (
-                    <div key={t.key} className={`${styles.typeOpt} ${t.cls ? styles[t.cls] : ''} ${tipoSel === t.key ? styles.sel : ''}`} onClick={() => setTipoSel(t.key)}>
-                      <div className={styles.typeOptIcon}><t.icon /></div>
-                      <div className={styles.typeOptName}>{t.label}</div>
-                      <div className={styles.typeOptSub}>{t.sub}</div>
-                    </div>
-                  ))}
+                  {TIPOS.map((t) => {
+                    const locked = t.key === 'SIMULACION' && simulacionBloqueada;
+                    return (
+                      <div
+                        key={t.key}
+                        className={`${styles.typeOpt} ${t.cls ? styles[t.cls] : ''} ${tipoSel === t.key ? styles.sel : ''} ${locked ? styles.locked : ''}`}
+                        onClick={locked ? undefined : () => setTipoSel(t.key)}
+                      >
+                        <div className={styles.typeOptIcon}><t.icon /></div>
+                        <div className={styles.typeOptName}>{t.label}</div>
+                        <div className={styles.typeOptSub}>{t.sub}</div>
+                      </div>
+                    );
+                  })}
                 </div>
+                {tipoSel === 'SIMULACION' && simulacionBloqueada && (
+                  <div className={styles.lockNote}>
+                    <WarnIcon />
+                    <div className={styles.lockNoteText}>Debes pagar el anticipo de tu trámite para poder agendar una cita de Simulación.</div>
+                  </div>
+                )}
               </div>
 
               <div className={styles.mField}>
@@ -407,7 +426,7 @@ export default function Calendario() {
             </div>
             <div className={styles.modalFoot}>
               <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setModalOpen(false)}>Cancelar</button>
-              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={confirmarCita} disabled={guardando}>
+              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={confirmarCita} disabled={guardando || (tipoSel === 'SIMULACION' && simulacionBloqueada)}>
                 <CheckIcon /> {guardando ? 'Agendando...' : 'Confirmar cita'}
               </button>
             </div>
