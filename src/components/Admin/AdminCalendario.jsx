@@ -13,7 +13,7 @@ const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 's
 
 const EV_META = {
   cas: { headClass: 'cas', type: 'Cita CAS · Centro de Atención al Solicitante', badge: 'CAS' },
-  con: { headClass: 'con', type: 'Cita Consular · Entrevista en el Consulado', badge: 'Consulado' },
+  con: { headClass: 'con', type: 'Cita Consular · Entrevista en el Consulado', badge: 'CON' },
   sim: { headClass: 'sim', type: 'Simulación · Práctica de entrevista 1:1', badge: 'Simulación' },
   aten: { headClass: 'aten', type: 'Atención a cliente · Vía Zoom', badge: 'Atención a cliente' },
 };
@@ -398,6 +398,33 @@ export default function AdminCalendario() {
     ? (new Date(`${ccContext.fecha}T${ccContext.hora}:00`) - new Date()) < 24 * 60 * 60 * 1000
     : false;
 
+  const handleCancelarCita = async () => {
+    if (!eventoDetalle) return;
+    const { tipo, item } = eventoDetalle;
+    const confirm = await Swal.fire({
+      icon: 'warning',
+      title: '¿Cancelar esta cita?',
+      text: 'Se eliminará la cita agendada. El cliente podrá agendar una nueva.',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+    });
+    if (!confirm.isConfirmed) return;
+    const payload = { ...item };
+    if (tipo === 'cas') payload.dateCas = null;
+    if (tipo === 'con') payload.dateCon = null;
+    if (tipo === 'sim') payload.dateSimulation = null;
+    try {
+      const res = await actualizarTC(item.idTransactProgress, payload);
+      if (!res?.success) throw new Error(res?.message || 'No se pudo cancelar la cita');
+      await fetchServices();
+      setEventoDetalle(null);
+      Swal.fire({ icon: 'success', title: 'Cita cancelada', text: 'La cita fue eliminada correctamente.' });
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: 'No se pudo cancelar', text: error.message || 'Ocurrió un error al cancelar la cita.' });
+    }
+  };
+
   const handleConfirmarCambioLejos = async () => {
     if (!ccContext || !ccFecha || !ccHora) return;
     setCcGuardando(true);
@@ -558,7 +585,7 @@ export default function AdminCalendario() {
                                 onClick={() => abrirEvento(ev.tipo, ev.item, ev.fecha, ev.hora)}
                               >
                                 <span className={styles.evdot}></span>
-                                {ev.tipo === 'cas' ? 'CAS' : ev.tipo === 'con' ? 'CON' : 'Sim'} · {(ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')}
+                                {ev.tipo === 'cas' ? 'CAS' : ev.tipo === 'con' ? 'CON' : 'Simulación'} · {(ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')}
                               </div>
                             ))}
                             {resto > 0 && <div className={styles.calMore}>+{resto} más</div>}
@@ -641,6 +668,9 @@ export default function AdminCalendario() {
                 </div>
                 <button className={`${styles.btn} ${styles.btnGhost}`} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={abrirCambiarCita}>
                   <IconCalSmall /> Cambiar cita
+                </button>
+                <button className={`${styles.btn} ${styles.btnDanger}`} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }} onClick={handleCancelarCita}>
+                  <IconClose size={13} /> Cancelar cita
                 </button>
                 <button className={`${styles.btn} ${styles.btnAccent}`} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }} onClick={() => navigate('/TramitesAdmin')}>
                   Ver trámite completo <IconExternal />

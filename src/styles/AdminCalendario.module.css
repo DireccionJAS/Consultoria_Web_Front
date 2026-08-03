@@ -40,6 +40,8 @@
 .btnAccent:hover { background: #1f5dcc !important; transform: translateY(-1px); }
 .btnGhost { background: transparent !important; color: var(--c1); border: 1px solid var(--line-2); }
 .btnGhost:hover { background: #F4F6F8 !important; }
+.btnDanger { background: var(--rose-soft) !important; color: var(--rose); border: 1px solid var(--rose-soft); }
+.btnDanger:hover { background: #EFC7C7 !important; }
 .btnSm { padding: 8px 13px; font-size: 12px; }
 
 .content { padding: 24px 32px 60px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
