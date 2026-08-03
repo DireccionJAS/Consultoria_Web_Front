@@ -182,7 +182,7 @@ export default function Calendario() {
 
   const confirmarCita = async () => {
     if (tipoSel === 'SIMULACION' && simulacionBloqueada) {
-      Swal.fire({ icon: 'warning', title: 'Anticipo pendiente', text: 'Debes pagar el anticipo de tu trámite antes de agendar una cita de simulación.' });
+      Swal.fire({ icon: 'warning', title: 'Anticipo pendiente', text: 'Debes pagar el anticipo de tu trámite antes de agendar una cita de Simulación.' });
       return;
     }
     if (!diaSel || !horaSel) {

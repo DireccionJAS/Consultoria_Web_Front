@@ -481,11 +481,11 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
               <div className={styles.secBody}>
                 <div className={styles.grid3}>
                   <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Fecha simulación</label>
+                    <label className={styles.fieldLabel}>Fecha Simulación</label>
                     <input className={styles.inp} type="date" value={form.dateSimulation} onChange={(e) => set({ dateSimulation: e.target.value })} />
                   </div>
                   <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Hora simulación</label>
+                    <label className={styles.fieldLabel}>Hora Simulación</label>
                     <input className={styles.inp} type="time" value={form.timeSimulation} onChange={(e) => set({ timeSimulation: e.target.value })} />
                   </div>
                   <div className={styles.field}>

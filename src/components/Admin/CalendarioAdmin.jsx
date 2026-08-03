@@ -410,7 +410,7 @@ export default function CalendarioAdmin() {
                               onClick={() => abrirEvento(ev.tipo, ev.item, ev.fecha, ev.hora)}
                             >
                               <span className="evdot"></span>
-                              {ev.tipo === 'cas' ? 'CAS' : ev.tipo === 'con' ? 'CON' : 'Sim'} · {(ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')}
+                              {ev.tipo === 'cas' ? 'CAS' : ev.tipo === 'con' ? 'CON' : 'Simulación'} · {(ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')}
                             </div>
                           ))}
                           {resto > 0 && <div className="cal-more">+{resto} más</div>}
