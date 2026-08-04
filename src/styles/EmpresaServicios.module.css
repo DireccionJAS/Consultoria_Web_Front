@@ -1,0 +1,102 @@
+/*
+  EmpresaServicios.module.css
+  Extraída 1:1 de "14-Servicios (standalone).html", adaptada al layout de
+  CSS Modules que ya usan las páginas de Empresa (EmpresaCalendario.module.css
+  / EmpresaSidebar con position:sticky, sin el hack de offset que necesita
+  NavbarAdmin).
+
+  El mockup trae chips de categoría, un "flag" promocional y métricas de
+  duración/% de éxito por tarjeta que no existen en el backend (Transact no
+  tiene esos campos) — se quitaron esas piezas del JSX, pero el CSS de base
+  (.svcCard, .svcImg, .tg, .btn, etc.) sigue siendo 1:1 del mockup. .svcStats
+  se ajustó a una sola columna porque solo queda el dato real de "pasos".
+
+  Nota: por ahora NO filtra servicios por compañía (igual que
+  EmpresaClientes.module.css/EmpresaTramites.module.css hoy).
+*/
+
+.page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --c2: #2D6CDF; --c3: #4E6A9C;
+  --c4: #B4C8D8; --c5: #E4ECF0; --white: #FFFFFF; --accent: #6FAEDB;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(0,0,42,0.10); --line-2: rgba(0,0,42,0.18); --muted: rgba(0,0,42,0.55); --muted-2: rgba(0,0,42,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F6F8;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+}
+.page button, .page input { font-family: inherit; }
+.page button { cursor: pointer; border: 0; background: none; color: inherit; }
+.page a { color: inherit; text-decoration: none; }
+
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.crumbSep { color: var(--muted-2); }
+.crumbLink { cursor: pointer; color: var(--c2); text-decoration: underline; text-underline-offset: 2px; transition: opacity 0.15s; }
+.crumbLink:hover { opacity: 0.75; }
+.accent { color: var(--c2); }
+.pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
+.topActions { display: flex; align-items: center; gap: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.btnAccent { background: var(--c2) !important; color: var(--white); }
+.btnAccent:hover { background: #1f5dcc !important; transform: translateY(-1px); }
+.btnGhost { background: transparent !important; color: var(--c1); border: 1px solid var(--line-2); }
+.btnGhost:hover { background: #F4F6F8 !important; }
+.btnSm { padding: 8px 13px; font-size: 12px; }
+
+.content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 20px; }
+
+/* filter chips */
+.filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chip { padding: 8px 14px; border-radius: 999px; background: var(--white); border: 1px solid var(--line); font-size: 12.5px; font-weight: 600; color: var(--muted); transition: all 0.2s; }
+.chip:hover { border-color: var(--c3); }
+.chip.active { background: var(--c1) !important; color: var(--c5); border-color: var(--c1); }
+.chip .cnt { font-family: var(--mono); font-size: 10px; opacity: 0.7; margin-left: 4px; }
+
+/* grid */
+.svcGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.svcCard { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; transition: all 0.3s; display: flex; flex-direction: column; }
+.svcCard:hover { transform: translateY(-4px); box-shadow: 0 16px 40px -20px rgba(0,0,42,0.2); border-color: var(--c4); }
+.svcCard.inactive { opacity: 0.62; }
+.svcImg { aspect-ratio: 16/9; background-size: cover; background-position: center; background-color: var(--c5); position: relative; }
+.svcImg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,42,0.35), transparent 55%); }
+.svcIconBadge { position: absolute; bottom: -18px; left: 18px; width: 48px; height: 48px; border-radius: 13px; background: var(--white); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--c1); box-shadow: 0 6px 16px -6px rgba(0,0,42,0.25); z-index: 2; }
+.svcToggleWrap { position: absolute; top: 12px; right: 12px; z-index: 2; }
+.tg { display: inline-block; width: 42px; height: 24px; background: rgba(0,0,42,0.25); border-radius: 999px; position: relative; cursor: pointer; transition: background 0.25s; backdrop-filter: blur(8px); }
+.tg::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--white); top: 3px; left: 3px; transition: left 0.25s; box-shadow: 0 1px 3px rgba(0,0,42,0.3); }
+.tg.on { background: var(--c2) !important; }
+.tg.on::after { left: 21px; }
+.svcBody { padding: 28px 20px 18px; flex: 1; display: flex; flex-direction: column; }
+.svcName { font-family: var(--display); font-weight: 600; font-size: 19px; letter-spacing: -0.015em; line-height: 1.1; margin-bottom: 4px; }
+.svcStats { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 16px 0; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.svcStat { text-align: center; }
+.svcStatVal { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
+.svcStatLab { font-size: 9px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 3px; }
+.svcPrice { font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -0.02em; margin-bottom: 14px; }
+.svcPrice small { font-family: var(--mono); font-size: 11px; color: var(--muted); font-weight: 500; margin-left: 3px; }
+.svcActions { display: flex; gap: 8px; margin-top: auto; }
+.svcActions .btn { flex: 1; justify-content: center; }
+
+/* empty state */
+.empty { display: none; flex-direction: column; align-items: center; padding: 80px 20px; text-align: center; }
+.empty.show { display: flex; }
+.emptyIcon { width: 72px; height: 72px; border-radius: 20px; background: var(--white); border: 1px solid var(--line); color: var(--muted-2); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.emptyTitle { font-family: var(--display); font-weight: 600; font-size: 20px; margin-bottom: 6px; }
+.emptySub { font-size: 13px; color: var(--muted); max-width: 320px; }
+
+@media (max-width: 1100px) {
+  .svcGrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .svcGrid { grid-template-columns: 1fr; }
+}

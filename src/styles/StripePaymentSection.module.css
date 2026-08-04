@@ -8,39 +8,42 @@
 
 .agendarCitaBox {
   margin: 24px 0;
-  padding: 32px 24px 24px 24px;
-  background: #f8fafc;
+  padding: 28px 24px 24px 24px;
+  background: #E4ECF0;
   border-radius: 16px;
-  box-shadow: 0 2px 12px #0001;
   display: flex;
   flex-direction: column;
   align-items: center;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  font-family: "Inter", system-ui, sans-serif;
 }
 
 .agendarCitaTitle {
   margin-bottom: 20px;
-  font-weight: 700;
-  font-size: 22px;
-  color: #1976d2;
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  color: #00002A;
   text-align: center;
   width: 100%;
 }
 
 .alerta {
-  color: red;
+  color: #B73E3E;
   margin-top: 10px;
   font-weight: 500;
+  font-size: 13px;
   width: 100%;
   text-align: center;
 }
 
 .extraFee {
-  color: #d35400;
+  color: #C68714;
   margin-top: 10px;
   font-weight: 500;
+  font-size: 13px;
   width: 100%;
   text-align: center;
 }

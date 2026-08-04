@@ -8,8 +8,7 @@ import paymentStyles from '../../../styles/servicios/client/PaymentModal.module.
 import PayPalScriptLoader from '../../PayPal/PayPalScriptLoader.jsx';
 import PayPalButton from '../../PayPal/BottonTest.jsx';
 import { actualizarTC } from '../../../api/api.js';
-import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL;
+import apiClient from '../../../api/apiClient.js';
 
 const VisaSVG = () => (
     <svg width="40" height="14" viewBox="0 0 40 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +34,7 @@ const StripeSVG = () => (
 
 const ShieldSVG = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L20 6V12C20 17 16 21 12 22C8 21 4 17 4 12V6L12 2Z" fill="#2563eb" stroke="#2563eb" strokeWidth="1.5" />
+        <path d="M12 2L20 6V12C20 17 16 21 12 22C8 21 4 17 4 12V6L12 2Z" fill="#1A3F75" stroke="#1A3F75" strokeWidth="1.5" />
         <path d="M9 12L11 14L15 10" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 );
@@ -46,9 +45,7 @@ const stripePromise = loadStripe(stripeKey);
 export default function Liquidacion({ show, onHide, service, userEmail, userId, onSuccess, onError, COMPLETED }) {
     const [paypalStatus, setPaypalStatus] = useState(null);
 
-    if (!show || !service) return null;
-
-    const montoRestante = service.paidAll - service.paid;
+    const montoRestante = service ? service.paidAll - service.paid : 0;
 
     const executePaymentRequests = async () => {
         try {
@@ -59,7 +56,6 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                 throw new Error('Service is undefined');
             }
 
-            const nuevoPaid = service.paid + service.paidAll;
             await actualizarTC(service.idTransactProgress, {
                 ...service,
                 paid: service.paidAll,
@@ -84,7 +80,7 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                 idTransact: idTransact,
             };
 
-            await axios.post(`${API_URL}/payment`, paymentData);
+            await apiClient.post(`/payment`, paymentData);
 
             return true;
         } catch (error) {
@@ -125,6 +121,8 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
         }
     }, [COMPLETED]);
 
+    if (!show || !service) return null;
+
     return (
         <Modal
             show={show}
@@ -160,9 +158,21 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                     </div>
                 </div>
 
-                <p style={{ marginTop: '1rem' }}>
-                    Monto a liquidar: <strong>${montoRestante} MXN</strong>
-                </p>
+                <div style={{
+                    marginTop: '1rem',
+                    marginBottom: '1rem',
+                    padding: '14px 16px',
+                    background: 'linear-gradient(135deg, #E4ECF0 0%, #B4C8D8 100%)',
+                    borderRadius: 14,
+                    fontFamily: '"Inter", system-ui, sans-serif',
+                }}>
+                    <div style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(0,0,42,0.55)', marginBottom: 4 }}>
+                        Monto a liquidar
+                    </div>
+                    <div style={{ fontFamily: '"Bricolage Grotesque", system-ui, sans-serif', fontWeight: 700, fontSize: 26, color: '#00002A' }}>
+                        ${montoRestante}<small style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 12, color: 'rgba(0,0,42,0.55)', marginLeft: 6 }}>MXN</small>
+                    </div>
+                </div>
 
                 <Elements stripe={stripePromise}>
                     <CheckoutForm

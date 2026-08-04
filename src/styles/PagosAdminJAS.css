@@ -1,0 +1,138 @@
+/*
+  Estilos extraídos 1:1 de 10-Pagos-standalone.html.
+  Se mantienen los mismos valores (colores, tipografías, spacing) del diseño
+  original; lo único que cambia respecto al archivo fuente es que cada regla
+  queda anidada bajo ".pagos-jas-page" para no chocar con las clases
+  genéricas de Bootstrap/react-bootstrap (.table, .btn, etc.) que ya usa el
+  resto del panel de administración. El sidebar del mockup no se incluye:
+  esta página usa el sidebar real de la app (NavbarAdmin.jsx), igual que
+  AdministradorClientes.jsx (ver styles/ClientesAdminJAS.css).
+
+  El mockup no define .stats-strip en el body de Pagos (esas reglas existen
+  en su CSS pero no se usan ahí), así que no se incluyen aquí.
+*/
+
+.pagos-jas-page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --c2: #2D6CDF; --c3: #4E6A9C;
+  --c4: #B4C8D8; --c5: #E4ECF0; --white: #FFFFFF; --accent: #6FAEDB;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(0,0,42,0.10); --line-2: rgba(0,0,42,0.18); --muted: rgba(0,0,42,0.55); --muted-2: rgba(0,0,42,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F6F8;
+  -webkit-font-smoothing: antialiased;
+}
+.pagos-jas-page *,
+.pagos-jas-page *::before,
+.pagos-jas-page *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.pagos-jas-page button,
+.pagos-jas-page input { font-family: inherit; }
+.pagos-jas-page button { cursor: pointer; border: 0; background: none; color: inherit; }
+.pagos-jas-page a { color: inherit; text-decoration: none; }
+
+/* Offset para no quedar tapado por el sidebar real (NavbarAdmin.jsx / Sidebar.css),
+   que es position:fixed y no reserva espacio en el flujo normal. Los anchos (280px /
+   70px colapsado) están tomados de Sidebar.css. No existía en el mockup estático. */
+.pagos-jas-page .topbar,
+.pagos-jas-page .content { margin-left: 280px; transition: margin-left 0.3s ease; }
+.pagos-jas-page:has(.sidebar.collapsed) .topbar,
+.pagos-jas-page:has(.sidebar.collapsed) .content { margin-left: 70px; }
+@media (max-width: 768px) {
+  .pagos-jas-page .topbar,
+  .pagos-jas-page .content { margin-left: 0; }
+}
+
+.pagos-jas-page .topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.pagos-jas-page .crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.pagos-jas-page .crumb .accent { color: var(--c2); }
+.pagos-jas-page .page-title-h { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
+.pagos-jas-page .top-actions { display: flex; align-items: center; gap: 8px; }
+.pagos-jas-page .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: #F4F6F8; display: flex; align-items: center; justify-content: center; transition: background 0.2s; position: relative; }
+.pagos-jas-page .icon-btn:hover { background: var(--c5); }
+.pagos-jas-page .badge-num { position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; padding: 0 4px; background: var(--rose); color: var(--white); border: 2px solid var(--white); border-radius: 999px; font-size: 9px; font-weight: 700; font-family: var(--mono); display: flex; align-items: center; justify-content: center; }
+.pagos-jas-page .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.pagos-jas-page .btn-accent { background: var(--c2); color: var(--white); }
+.pagos-jas-page .btn-accent:hover { background: #1f5dcc; transform: translateY(-1px); }
+.pagos-jas-page .btn-ghost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
+.pagos-jas-page .btn-ghost:hover { background: #F4F6F8; }
+.pagos-jas-page .btn-sm { padding: 8px 13px; font-size: 12px; }
+
+.pagos-jas-page .content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 20px; }
+
+/* toolbar */
+.pagos-jas-page .toolbar { display: flex; align-items: center; gap: 12px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; flex-wrap: wrap; }
+.pagos-jas-page .search-box { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: #F4F6F8; border: 1px solid var(--line); border-radius: 10px; flex: 1; min-width: 240px; max-width: 380px; }
+.pagos-jas-page .search-box input { border: 0; outline: 0; background: transparent; flex: 1; font: inherit; font-size: 13px; }
+.pagos-jas-page .seg { display: inline-flex; padding: 3px; background: #F4F6F8; border: 1px solid var(--line); border-radius: 10px; gap: 2px; }
+.pagos-jas-page .seg button { padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--muted); transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.pagos-jas-page .seg button.active { background: var(--c1); color: var(--c5); }
+.pagos-jas-page .seg button .cnt { font-family: var(--mono); font-size: 10px; opacity: 0.7; }
+
+/* table */
+.pagos-jas-page .table-card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.pagos-jas-page .table { width: 100%; border-collapse: collapse; }
+.pagos-jas-page .table th { text-align: left; padding: 13px 22px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: #F8FAFB; border-bottom: 1px solid var(--line); font-weight: 600; }
+.pagos-jas-page .table td { padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: middle; }
+.pagos-jas-page .table tr:last-child td { border-bottom: 0; }
+.pagos-jas-page .table tbody tr:hover td { background: #FAFBFC; }
+.pagos-jas-page .row-num { font-family: var(--mono); font-size: 11px; color: var(--muted-2); }
+
+.pagos-jas-page .tramite-cell { display: flex; align-items: center; gap: 11px; }
+.pagos-jas-page .tramite-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--c5); color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pagos-jas-page .tramite-name { font-weight: 600; font-size: 13px; }
+.pagos-jas-page .tramite-folio { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 1px; }
+.pagos-jas-page .client-name { font-weight: 600; font-size: 13px; }
+.pagos-jas-page .client-meta { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 1px; }
+.pagos-jas-page .pay-date { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.pagos-jas-page .pay-amount { font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
+.pagos-jas-page .pay-amount small { font-family: var(--mono); font-size: 10px; color: var(--muted); font-weight: 500; margin-left: 3px; }
+.pagos-jas-page .pay-method { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.pagos-jas-page .pay-method .mlogo { padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; font-style: italic; }
+
+/* estado (pay-check) */
+.pagos-jas-page .pay-check-wrap { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+.pagos-jas-page .pay-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--line-2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.pagos-jas-page .pay-check.on { background: var(--c1); border-color: var(--c1); }
+.pagos-jas-page .pay-check svg { opacity: 0; transition: opacity 0.15s; }
+.pagos-jas-page .pay-check.on svg { opacity: 1; }
+.pagos-jas-page .pay-check-label { font-size: 12.5px; font-weight: 600; }
+.pagos-jas-page .pay-check-label.on { color: var(--c1); }
+.pagos-jas-page .pay-check-label.off { color: var(--muted); }
+.pagos-jas-page .cash-badge { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+
+.pagos-jas-page .row-actions { display: inline-flex; gap: 4px; }
+.pagos-jas-page .row-actions button { width: 30px; height: 30px; border-radius: 8px; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.pagos-jas-page .row-actions button:hover { background: var(--c5); color: var(--c1); }
+
+/* empresa: placeholder hasta que exista el dato en backend (ver resumen entregado al usuario) */
+.pagos-jas-page .empresa-cell { display: flex; align-items: center; gap: 8px; width: fit-content; }
+.pagos-jas-page .empresa-code { font-size: 12px; font-weight: 600; color: var(--muted-2); }
+
+/* pagination */
+.pagos-jas-page .pagination { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; }
+.pagos-jas-page .pg-info { font-size: 12.5px; color: var(--muted); }
+.pagos-jas-page .pg-info strong { color: var(--c1); }
+.pagos-jas-page .pg-controls { display: flex; gap: 4px; align-items: center; }
+.pagos-jas-page .pg-btn { width: 34px; height: 34px; border-radius: 9px; background: var(--white); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--c1); transition: all 0.2s; }
+.pagos-jas-page .pg-btn:hover { background: #F4F6F8; }
+.pagos-jas-page .pg-btn.active { background: var(--c1); color: var(--c5); border-color: var(--c1); }
+.pagos-jas-page .pg-btn.disabled { color: var(--muted-2); cursor: not-allowed; }
+
+/* empty state (no existía en el mockup estático, necesario para datos reales) */
+.pagos-jas-page .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; }
+.pagos-jas-page .empty-state.show { display: flex; }
+.pagos-jas-page .empty-icon { width: 72px; height: 72px; border-radius: 20px; background: #F4F6F8; color: var(--muted-2); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.pagos-jas-page .empty-title { font-family: var(--display); font-weight: 600; font-size: 20px; margin-bottom: 6px; }
+.pagos-jas-page .empty-sub { font-size: 13px; color: var(--muted); max-width: 320px; }
+
+/* loading state (no existía en el mockup estático, necesario para datos reales) */
+.pagos-jas-page .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 12px; color: var(--muted); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .pagos-jas-page .topbar { flex-wrap: wrap; }
+}

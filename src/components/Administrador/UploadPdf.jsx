@@ -37,10 +37,13 @@ export default function UploadPdf() {
   // Estados para archivos y mensajes
   const [filePrivacidad, setFilePrivacidad] = useState(null);
   const [fileTerminos, setFileTerminos] = useState(null);
+  const [fileFormulario, setFileFormulario] = useState(null);
   const [mensajePrivacidad, setMensajePrivacidad] = useState('');
   const [mensajeTerminos, setMensajeTerminos] = useState('');
+  const [mensajeFormulario, setMensajeFormulario] = useState('');
   const [loadingPrivacidad, setLoadingPrivacidad] = useState(false);
   const [loadingTerminos, setLoadingTerminos] = useState(false);
+  const [loadingFormulario, setLoadingFormulario] = useState(false);
 
   // Subida genérica para evitar repetir código
   const uploadPdf = async (file, tipo, setMensaje, setLoading) => {
@@ -147,6 +150,9 @@ export default function UploadPdf() {
     cardHeaderTerminos: {
       background: 'linear-gradient(135deg, #374151 0%, #1f2937 100%)'
     },
+    cardHeaderFormulario: {
+      background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)'
+    },
     cardTitle: {
       fontSize: '20px',
       fontWeight: 'bold',
@@ -214,6 +220,12 @@ export default function UploadPdf() {
     },
     buttonTerminosHover: {
       backgroundColor: '#1f2937'
+    },
+    buttonFormulario: {
+      backgroundColor: '#2563eb'
+    },
+    buttonFormularioHover: {
+      backgroundColor: '#1e40af'
     },
     buttonDisabled: {
       backgroundColor: '#d1d5db',
@@ -414,6 +426,74 @@ export default function UploadPdf() {
                 }}>
                   {mensajeTerminos.includes('Error') ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
                   <span>{mensajeTerminos}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Card Formulario DS-160 */}
+          <div style={styles.card}>
+            <div style={{ ...styles.cardHeader, ...styles.cardHeaderFormulario }}>
+              <FileText size={32} color="#ffffff" />
+              <h2 style={styles.cardTitle}>Formulario DS-160</h2>
+            </div>
+            <div style={styles.cardBody}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Seleccionar archivo PDF</label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={e => handleFileChange(e, setFileFormulario, setMensajeFormulario)}
+                  style={styles.fileInput}
+                  onMouseEnter={e => e.target.style.backgroundColor = styles.fileInputHover.backgroundColor}
+                  onMouseLeave={e => e.target.style.backgroundColor = styles.fileInput.backgroundColor}
+                />
+                {fileFormulario && (
+                  <div style={styles.fileInfo}>
+                    <FileText size={16} />
+                    <span>Archivo seleccionado: {fileFormulario.name}</span>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => uploadPdf(fileFormulario, 'formulario', setMensajeFormulario, setLoadingFormulario)}
+                disabled={!fileFormulario || loadingFormulario}
+                style={{
+                  ...styles.button,
+                  ...((!fileFormulario || loadingFormulario) ? styles.buttonDisabled : styles.buttonFormulario)
+                }}
+                onMouseEnter={e => {
+                  if (!(!fileFormulario || loadingFormulario)) {
+                    e.target.style.backgroundColor = styles.buttonFormularioHover.backgroundColor;
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!(!fileFormulario || loadingFormulario)) {
+                    e.target.style.backgroundColor = styles.buttonFormulario.backgroundColor;
+                  }
+                }}
+              >
+                {loadingFormulario ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    <span>Subiendo...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload size={20} />
+                    <span>Subir Archivo</span>
+                  </>
+                )}
+              </button>
+
+              {mensajeFormulario && (
+                <div style={{
+                  ...styles.message,
+                  ...(mensajeFormulario.includes('Error') ? styles.messageError : styles.messageSuccess)
+                }}>
+                  {mensajeFormulario.includes('Error') ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
+                  <span>{mensajeFormulario}</span>
                 </div>
               )}
             </div>

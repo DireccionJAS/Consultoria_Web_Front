@@ -1,0 +1,57 @@
+/* ClienteServiciosGrid.module.css */
+
+.page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30;
+  --primary: #1FA0D1; --hover: #205C81; --light: #C4E7F5; --c5: #E4F4FB;
+  --white: #FFFFFF;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA;
+  --line: rgba(15, 26, 48, 0.10); --line-2: rgba(15, 26, 48, 0.18); --muted: rgba(15, 26, 48, 0.55); --muted-2: rgba(15, 26, 48, 0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F8FB;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+}
+.page button { cursor: pointer; border: 0; background: none; color: inherit; font-family: inherit; }
+
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; z-index: 10; }
+.crumb { font-size: 12px; color: var(--muted); }
+.accent { color: var(--primary); font-weight: 600; }
+.pageTitleH { font-family: var(--display); font-weight: 600; font-size: 26px; letter-spacing: -0.025em; }
+
+.content { padding: 24px 32px 60px; display: flex; flex-direction: column; gap: 18px; }
+.empty { background: var(--white); border: 1px solid var(--line); border-radius: 20px; padding: 48px 32px; text-align: center; color: var(--muted); font-size: 13.5px; }
+
+.svcGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.svcCard { background: var(--white); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; transition: all 0.3s; display: flex; flex-direction: column; }
+.svcCard:hover { transform: translateY(-4px); border-color: var(--light); box-shadow: 0 16px 36px -20px rgba(15, 26, 48, 0.2); }
+.svcImg { aspect-ratio: 16/10; background-size: cover; background-position: center; background-color: var(--c5); position: relative; }
+.svcNum { position: absolute; top: 12px; left: 12px; padding: 4px 10px; background: rgba(228, 244, 251, 0.92); backdrop-filter: blur(10px); color: var(--c1); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; border-radius: 999px; font-weight: 600; }
+.svcBody { padding: 18px 18px 0; flex: 1; }
+.svcName { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -0.015em; margin-bottom: 6px; }
+.svcDesc { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+.svcFoot { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); }
+.svcActions { display: flex; gap: 6px; }
+.svcAction { display: inline-flex; align-items: center; gap: 5px; padding: 7px 11px; background: var(--c5); color: var(--c1); border-radius: 999px; font-size: 11px; font-weight: 500; transition: all 0.2s; cursor: pointer; }
+.svcAction:hover { background: var(--light); }
+.svcAction svg { width: 11px; height: 11px; }
+.svcPriceRow { display: flex; align-items: center; justify-content: space-between; }
+.svcPrice { font-family: var(--display); font-weight: 600; font-size: 19px; letter-spacing: -0.02em; }
+.svcPrice small { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-left: 3px; font-weight: 500; }
+.svcContratar { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; background: var(--c1); color: var(--c5); border-radius: 999px; font-size: 12px; font-weight: 600; transition: all 0.25s; cursor: pointer; }
+.svcContratar:hover { background: var(--primary); color: var(--white); }
+.svcContratar svg { width: 11px; height: 11px; }
+
+@media (max-width: 1100px) {
+  .svcGrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .svcGrid { grid-template-columns: 1fr; }
+}

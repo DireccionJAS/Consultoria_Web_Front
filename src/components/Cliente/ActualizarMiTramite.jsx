@@ -778,7 +778,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
         const result = await Swal.fire({
             icon: 'warning',
             title: '¿Estás seguro que quieres cancelar la cita?',
-            text: 'Solamente puedes cancelar la cita una vez, el pago anterior no será reembolsado, en caso de que la cita ya haya sido pagada. -',
+            text: 'Solamente puedes cancelar la cita una vez. Si la cita aún no ha pasado, se generará un cargo de $99 MXN por la cancelación. El pago anterior no será reembolsado, en caso de que la cita ya haya sido pagada.',
             showCancelButton: true,
             confirmButtonText: 'Sí, cancelar cita',
             cancelButtonText: 'No',
@@ -799,11 +799,20 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
                 }
                 const response = await cancelarCita(cliente.idTransactProgress);
                 if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cita cancelada exitosamente',
-                        confirmButtonText: 'Aceptar',
-                    });
+                    if (response.response?.comisionGenerada) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Cita cancelada, se generó un cargo',
+                            text: 'Esta cancelación generó una comisión de $99 MXN, la verás reflejada en Pagos.',
+                            confirmButtonText: 'Aceptar',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cita cancelada exitosamente',
+                            confirmButtonText: 'Aceptar',
+                        });
+                    }
                     if (typeof onClienteRegistrado === 'function') {
                         onClienteRegistrado();
                     }

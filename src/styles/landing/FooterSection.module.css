@@ -1,394 +1,127 @@
-/* Estilos del Footer */
 .footer {
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  overflow-x: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  padding: 60px 0 40px 0;
-  color: #FFFFFF;
-  margin-bottom: 0;
+  background: var(--c1);
+  color: rgba(228, 236, 240, 0.7);
+  padding: 100px 0 32px;
   position: relative;
   overflow: hidden;
 }
-
-/* Tabla de horarios */
-.scheduleContainer {
-  margin-top: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.navLogo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: var(--c5);
+  margin-bottom: 24px;
+}
+.navLogo img {
+  width: 34px; height: 38px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 60px;
+  padding: 60px 0;
+  border-top: 1px solid rgba(228, 236, 240, 0.10);
+}
+.footerBrand p {
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 320px;
+  margin-bottom: 28px;
+}
+.footerSocial {
+  display: flex;
+  gap: 10px;
+}
+.footerSocial a {
+  width: 52px; height: 52px;
+  border-radius: 18px;
+  background: rgba(228, 236, 240, 0.06);
+  border: 1px solid rgba(228, 236, 240, 0.12);
+  color: var(--c5);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
   overflow: hidden;
 }
-
-.scheduleTitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: #60A5FA;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.footerSocial a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand, var(--accent));
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.tableWrapper {
-  overflow-x: auto;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.2);
+.footerSocial a svg { position: relative; z-index: 1; transition: color 0.2s; }
+.footerSocial a:hover {
+  transform: translateY(-4px);
+  border-color: transparent;
+  color: #fff;
 }
+.footerSocial a:hover::before { transform: translateY(0); }
+.fb { --brand: #1877F2; }
+.ig { --brand: linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%); }
+.tk { --brand: #000000; }
+.wa { --brand: #25D366; }
+.th { --brand: #101010; }
 
-.scheduleTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-  color: #E2E8F0;
-}
-
-.tableHeader {
-  background: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
-  border-bottom: 2px solid rgba(96, 165, 250, 0.3);
-}
-
-.headerCell {
-  padding: 15px 12px;
-  font-weight: 600;
-  color: #60A5FA;
-  font-size: 0.95rem;
-  letter-spacing: 0.5px;
-}
-
-.headerCellLeft {
-  padding: 15px 12px;
-  font-weight: 600;
-  color: #60A5FA;
-  font-size: 0.95rem;
-  letter-spacing: 0.5px;
-  text-align: left;
-}
-
-.headerCellCenter {
-  padding: 15px 12px;
-  font-weight: 600;
-  color: #60A5FA;
-  font-size: 0.95rem;
-  letter-spacing: 0.5px;
-  text-align: center;
-}
-
-.tableRow {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
-  cursor: default;
-}
-
-.tableRow:last-child {
-  border-bottom: none;
-}
-
-.tableRow:hover {
-  background: rgba(96, 165, 250, 0.1);
-}
-
-.dayCell {
-  padding: 12px;
-  font-weight: 600;
-  color: #F1F5F9;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dayIndicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.dayIndicatorActive {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22C55E;
-}
-
-.dayIndicatorSpecial {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #F59E0B;
-}
-
-.timeCell {
-  padding: 12px;
-  text-align: center;
-  color: #CBD5E1;
-  font-weight: 500;
-}
-
-.timeBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.officeBadge {
-  composes: timeBadge;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.onlineBadge {
-  composes: timeBadge;
-  background: rgba(34, 197, 94, 0.1);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #22C55E;
-}
-
-.closedBadge {
-  composes: timeBadge;
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #EF4444;
-}
-
-.infoNote {
-  margin-top: 15px;
-  padding: 12px;
-  background: rgba(59, 130, 246, 0.1);
-  border-radius: 10px;
-  border: 1px solid rgba(59, 130, 246, 0.2);
+.footerSocialLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(228, 236, 240, 0.45);
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
-.infoText {
-  font-size: 0.85rem;
-  color: #94A3B8;
-  line-height: 1.4;
-  margin: 0;
+.footerSocialLabel::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(228, 236, 240, 0.10);
 }
-
-.infoIcon {
-  color: #60A5FA;
-  flex-shrink: 0;
+.footerColTitle {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
 }
-
-.foote {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 30px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 15px;
-  padding: 20px;
-  margin-bottom: 0;
+.footerCol ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.footerCol a {
+  font-size: 14px;
+  transition: color 0.2s;
 }
-
-.texto {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #94A3B8;
-  font-weight: 400;
-}
-
-/* --- Social Section Responsive Styles --- */
-.socialContainer {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  height: 100%;
-}
-
-.socialTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 25px;
-  color: #60A5FA;
+.footerCol a:hover { color: var(--accent); }
+.footerBottom {
+  padding-top: 32px;
+  border-top: 1px solid rgba(228, 236, 240, 0.10);
   display: flex;
-  align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(228, 236, 240, 0.5);
 }
+.right { display: flex; gap: 24px; }
 
-.socialGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-.socialLink {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  text-decoration: none;
-  color: #E2E8F0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-}
-.socialLink:hover {
-  background: rgba(96, 165, 250, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(96, 165, 250, 0.3);
-}
-
-.practicasBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  text-decoration: none;
-  color: #E2E8F0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  cursor: pointer;
-  width: 100%;
-  grid-column: span 2;
-}
-.practicasBtn:hover {
-  background: rgba(96, 165, 250, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(96, 165, 250, 0.3);
-}
-
-/* --- Cards Horarios --- */
-.cardsWrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-top: 10px;
-  justify-content: center;
-}
-
-.dayCard {
-  background: rgba(30, 41, 59, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(59,130,246,0.08);
-  border: 1px solid rgba(96, 165, 250, 0.15);
-  padding: 18px 20px;
-  min-width: 220px;
-  max-width: 320px;
-  flex: 1 1 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.dayCardHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.dayCardTitle {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #60A5FA;
-}
-
-.dayCardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.dayCardSection {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.98rem;
-}
-
-.dayCardLabel {
-  color: #94A3B8;
-  font-weight: 500;
-}
-
-.dayCardTime {
-  background: rgba(255,255,255,0.07);
-  border-radius: 8px;
-  padding: 4px 10px;
-  color: #E2E8F0;
-  font-weight: 600;
-  margin-left: 4px;
-}
-
-.dayCardTimeOnline {
-  background: rgba(34,197,94,0.08);
-  border-radius: 8px;
-  padding: 4px 10px;
-  color: #22C55E;
-  font-weight: 600;
-  margin-left: 4px;
-}
-
-.dayCardTimeClosed {
-  background: rgba(239,68,68,0.08);
-  border-radius: 8px;
-  padding: 4px 10px;
-  color: #EF4444;
-  font-weight: 600;
-  margin-left: 4px;
-}
-
-@media (max-width: 600px) {
-  .socialGrid {
-    grid-template-columns: 1fr;
-  }
-  .practicasBtn {
-    grid-column: span 1;
-    font-size: 1rem;
-    padding: 16px 10px;
+@media (max-width: 991.98px) {
+  .footer { padding: 70px 0 24px; }
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 40px 0;
   }
 }
 
-/* Responsive para footer */
-@media (max-width: 768px) {
-  .scheduleContainer {
-    padding: 15px;
-  }
-  
-  .tableWrapper {
-    font-size: 0.8rem;
-  }
-  
-  .headerCell {
-    padding: 10px 8px;
-    font-size: 0.85rem;
-  }
-  
-  .dayCell,
-  .timeCell {
-    padding: 8px;
-  }
-  
-  .timeBadge {
-    padding: 4px 8px;
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 700px) {
-  .cardsWrapper {
-    flex-direction: column;
-    gap: 14px;
-  }
-  .dayCard {
-    min-width: 0;
-    max-width: 100%;
-    padding: 14px 10px;
-  }
-  .dayCardTitle {
-    font-size: 1rem;
-  }
+@media (max-width: 575.98px) {
+  .footerGrid { grid-template-columns: 1fr; gap: 32px; }
+  .footerBottom { flex-direction: column; gap: 8px; align-items: flex-start; }
 }

@@ -1,119 +1,103 @@
-import React, { useEffect, useState } from "react";
-import { MessageSquare } from "lucide-react";
+import React, { useState } from "react";
+import useReveal from "../../hooks/useReveal";
+import t1 from "../../img/landing/testimonial-1.jpg";
+import t2 from "../../img/landing/testimonial-2.jpg";
+import t3 from "../../img/landing/testimonial-3.jpg";
+import t4 from "../../img/landing/testimonial-4.jpg";
+import t5 from "../../img/landing/testimonial-5.jpg";
+import t6 from "../../img/landing/testimonial-6.jpg";
+import t7 from "../../img/landing/testimonial-7.jpg";
+import t8 from "../../img/landing/testimonial-8.jpg";
+import t9 from "../../img/landing/testimonial-9.jpg";
 import styles from '../../styles/landing/TestimonialsSection.module.css';
 
+const TESTIMONIOS = [
+  { img: t1, tag: "Visa B1/B2", name: "Mariana S.", sub: "Visa aprobada · Marzo 2026" },
+  { img: t2, tag: "eTA Canadá", name: "Carlos R.", sub: "Aprobado en 48 horas" },
+  { img: t3, tag: "DS-160 × 4", name: "Familia López", sub: "4 visas el mismo día" },
+  { img: t4, tag: "Visa B1/B2 · Renovación", name: "Andrea V.", sub: "10 años de vigencia" },
+  { img: t5, tag: "Pasaporte SRE", name: "Patricia G.", sub: "Renovación sin filas" },
+  { img: t6, tag: "Simulación + Visa", name: "Roberto M.", sub: "Primera visa aprobada" },
+  { img: t7, tag: "eTA Canadá", name: "Lucía R.", sub: "Vacaciones familiares" },
+  { img: t8, tag: "Visa B1/B2", name: "Juan P.", sub: "Viaje de negocios" },
+  { img: t9, tag: "Familia · Múltiple", name: "Familia Ortiz", sub: "3 generaciones viajando" },
+];
+
+function ZoomIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3M9 11h4M11 9v4" /></svg>
+  );
+}
+
 export default function TestimonialsSection() {
-  // Corrected useState destructuring
-  const [videosIds, setVideosIds] = useState([]);
-  const [loading, setLoading] = useState(true); // Added loading state back
-  const [error, setError] = useState(null);     // Added error state back
-  const [lengthArray, setLengthArray] = useState(0); // Added lengthArray state
-
-  const folderId = "1QnjhCrysPgz6gNILAAVpxtrRSEAYpp74"; // tu carpeta
-  const apiKey = "AIzaSyDlorWPzhf2zFW7YBA9YE4Vqyutg7DVKOw";
-  
-
-  useEffect(() => {
-    const fetchDriveVideos = async () => { // Renamed for clarity to avoid confusion with fetchImages in previous examples
-      try {
-        setLoading(true); // Set loading true at the start of fetch
-
-        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink)`;
-
-        const response = await fetch(url);
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status} - ${data.error?.message || response.statusText}`);
-        }
-
-        if (data.error) {
-          throw new Error(`Error de API: ${data.error.message}`);
-        }
-
-        if (!data.files) {
-          console.warn("No se recibieron archivos en la respuesta de la API.");
-          setLoading(false);
-          return; // Exit if no files
-        }
-
-
-        // Mezclar y tomar solo 9 IDs al azar
-        function getRandomSample(arr, n) {
-          const shuffled = arr.slice().sort(() => 0.5 - Math.random());
-          return shuffled.slice(0, n);
-        }
-        const driveVideoIds = data.files.map(file => file.id);
-        const randomIds = getRandomSample(driveVideoIds, 9);
-        setVideosIds(randomIds);
-        setLengthArray(driveVideoIds.length);
-
-      } catch (e) {
-        console.error("Error al cargar videos de Google Drive:", e);
-        setError(e.message); // Set error message
-      } finally {
-        setLoading(false); // Set loading false after fetch is complete (success or error)
-      }
-    };
-
-    fetchDriveVideos(); // Call the async function
-
-  }, []); // Empty dependency array means this useEffect runs once on mount
-
-  if (loading) {
-    return (
-      <section id="testimonios" className={styles.testimoniosSection}>
-        <div className={styles.loadingMessage}>Cargando testimonios...</div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section id="testimonios" className={styles.testimoniosSection}>
-        <div className={styles.errorMessage}>
-          Error al cargar testimonios: {error}
-        </div>
-      </section>
-    );
-  }
-
+  const [headerRef, headerIn] = useReveal();
+  const [gridRef, gridIn] = useReveal();
+  const [selected, setSelected] = useState(null);
 
   return (
-    <section id="testimonios" className={styles.testimoniosSection}>
-      <div className={styles.testimoniosContainer}>
-        <div className={styles.testimoniosHeader}>
-          <div className={styles.sectionIcon}>
-            <MessageSquare size={40} color="#60A5FA" />
+    <section className={styles.testimonials} id="testimonios">
+      <div className="jas-container">
+        <div ref={headerRef} className={`${styles.testimonialsHeader} jas-reveal ${headerIn ? 'jas-in' : ''}`}>
+          <h2 className="jas-display jas-light">
+            Mira las historias<br />de quienes ya <em>cruzaron.</em>
+          </h2>
+          <div className={styles.testimonialsMeta}>
+            <p>
+              Testimonios reales de nuestros clientes. Toca cualquier tarjeta
+              para ver la imagen completa.
+            </p>
+            <div className={styles.testimonialsStats}>
+              <div>
+                <div className={styles.ts}>9</div>
+                <div className={styles.tl}>Testimonios</div>
+              </div>
+              <div>
+                <div className={styles.ts}>4.<em>9</em></div>
+                <div className={styles.tl}>Calificación promedio</div>
+              </div>
+              <div>
+                <div className={styles.ts}>100<em>%</em></div>
+                <div className={styles.tl}>Reales · sin actores</div>
+              </div>
+            </div>
           </div>
-          <h2 className={styles.testimoniosTitle}>Testimonios</h2>
-          <p className={styles.testimoniosDescription}>
-            Nuestros clientes comparten sus experiencias positivas con nuestros servicios,
-            destacando la eficiencia y profesionalismo de nuestro equipo.
-          </p>
         </div>
 
-        <div className={styles.testimoniosGrid}>
-          {videosIds.length > 0 ? (
-            videosIds.map((videoId, index) => (
-              <div key={videoId} className={`${styles.testimonioCard} ${styles.fadeInUp}`}> {/* Use videoId as key for better performance */}
-                <iframe
-                  src={`https://drive.google.com/file/d/${videoId}/preview`}
-                  className={styles.testimonioImagenFrame}
-                  allow="autoplay"
-                  allowFullScreen // Good practice for iframes, especially for video
-                  title={`Testimonio ${index + 1}`}
-                />
+        <div ref={gridRef} className={`${styles.videoGrid} jas-reveal ${gridIn ? 'jas-in' : ''}`}>
+          {TESTIMONIOS.map((v) => (
+            <div
+              key={v.name}
+              className={styles.videoCard}
+              onClick={() => setSelected(v)}
+            >
+              <div className={styles.vtImg} style={{ backgroundImage: `url("${v.img}")` }}></div>
+              <div className={styles.videoPlay}><ZoomIcon /></div>
+              <div className={styles.vtInfo}>
+                <span className={styles.vtTag}>{v.tag}</span>
+                <div className={styles.vtName}>{v.name}</div>
+                <div className={styles.vtSub}>{v.sub}</div>
               </div>
-            ))
-          ) : (
-            <div className={styles.noTestimoniosMessage}>
-              No hay testimonios disponibles.
             </div>
-          )}
+          ))}
         </div>
       </div>
+
+      {selected && (
+        <div className={styles.testimonialZoomOverlay} onClick={() => setSelected(null)}>
+          <div className={styles.testimonialZoomHeader}>
+            <span className={styles.testimonialZoomTitle}>{selected.name} — {selected.tag}</span>
+            <button
+              type="button"
+              className={styles.testimonialZoomClose}
+              onClick={(e) => { e.stopPropagation(); setSelected(null); }}
+              aria-label="Cerrar"
+            >
+              &times;
+            </button>
+          </div>
+          <img src={selected.img} alt={selected.name} className={styles.testimonialZoomImage} />
+        </div>
+      )}
     </section>
   );
 }

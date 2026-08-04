@@ -30,12 +30,6 @@ const StripePaymentSection = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [extraFee, setExtraFee] = useState(0);
-  const isDS160 = service?.name && [
-    'ds-160',
-    'ds160',
-    'creación y generación de ds160',
-    'creacion y generacion de ds160'
-  ].some(name => service.name.trim().toLowerCase() === name);
   const showSinglePayment = service?.cashAdvance !== undefined && service?.cost !== undefined && Number(service.cashAdvance) === Number(service.cost);
 
   // Detectar si es adelanto de cita visa americana
@@ -72,9 +66,9 @@ const StripePaymentSection = ({
       {showSinglePayment && !isAdvanceVisaAmericana ? (
         <div style={{ marginBottom: 24 }}>
           <InfoBox
-            backgroundColor="#e8f5e8"
-            borderColor="#4caf50"
-            color="#2e7d32"
+            backgroundColor="#DFF5E5"
+            borderColor="rgba(40,160,82,0.25)"
+            color="#1F7B3D"
             title="Pago único"
             items={[
               `Monto a pagar: $${service.cashAdvance} MXN`,
@@ -120,8 +114,6 @@ const StripePaymentSection = ({
               service={service}
               idTransactProgress={service?.idTransactProgress}
               liquidationPlan={selectedLiquidationPlan}
-          
-              
             />
           </Elements>
         </div>
@@ -136,9 +128,9 @@ const StripePaymentSection = ({
           {/* Visa Americana Info */}
           {isVisaAmericana && (
             <InfoBox
-              backgroundColor="#e3f2fd"
-              borderColor="#2196f3"
-              color="#1976d2"
+              backgroundColor="rgba(111, 174, 219, 0.10)"
+              borderColor="rgba(111, 174, 219, 0.30)"
+              color="#1A3F75"
               title="Información sobre Visa Americana"
               items={[
                 'El apartado reserva tu lugar en el proceso',

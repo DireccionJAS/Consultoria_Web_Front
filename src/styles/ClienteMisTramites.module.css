@@ -1,0 +1,67 @@
+/* ClienteMisTramites.module.css */
+
+.page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --primary: #1FA0D1; --hover: #205C81; --light: #C4E7F5; --c5: #E4F4FB; --white: #FFFFFF;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(15, 26, 48, 0.10); --line-2: rgba(15, 26, 48, 0.18); --muted: rgba(15, 26, 48, 0.55); --muted-2: rgba(15, 26, 48, 0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif; --sans: "Inter", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F8FB;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+}
+.page button { cursor: pointer; border: 0; background: none; color: inherit; font-family: inherit; }
+
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.accent { color: var(--primary); }
+.pageTitleH { font-family: var(--display); font-weight: 600; font-size: 26px; letter-spacing: -0.025em; line-height: 1; }
+.topAvatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--hover)); color: var(--white); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 700; font-size: 15px; }
+
+.content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 18px; }
+.sectionLabel { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 8px 0 2px; }
+
+.empty { background: var(--white); border: 1px solid var(--line); border-radius: 20px; padding: 48px 32px; text-align: center; color: var(--muted); font-size: 13.5px; }
+
+/* trámite card */
+.tcard { background: var(--white); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; display: grid; grid-template-columns: 240px 1fr; }
+.tcardImg { background-size: cover; background-position: center; background-color: var(--c5); position: relative; min-height: 240px; }
+.tcardImg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(27, 42, 74, 0.35), rgba(32, 92, 129, 0.25)); }
+.tcardFolio { position: absolute; bottom: 16px; left: 16px; z-index: 2; color: var(--white); }
+.tcardFolioLbl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; opacity: 0.8; text-transform: uppercase; }
+.tcardFolioNum { font-family: var(--mono); font-size: 16px; font-weight: 600; }
+.tcardBody { padding: 24px 26px; display: flex; flex-direction: column; }
+.tcardHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.tcardName { font-family: var(--display); font-weight: 600; font-size: 24px; letter-spacing: -0.02em; }
+.tcardCat { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.tag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.tagProceso { background: var(--light); color: var(--hover); }
+.tagEspera { background: var(--amber-soft); color: var(--amber); }
+.tagAprobado { background: var(--green-soft); color: var(--green); }
+.tagCancelado { background: var(--gray-soft); color: var(--gray); }
+.tcardMeta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.tmLbl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.tmVal { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
+.advisor { display: flex; align-items: center; gap: 8px; }
+.advisorAv { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--hover)); color: var(--white); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 700; font-size: 10px; }
+.tcardProg { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.tpBar { flex: 1; height: 8px; background: #EEF2F6; border-radius: 4px; overflow: hidden; }
+.tpFill { height: 100%; background: var(--primary); border-radius: 4px; }
+.tpLbl { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.tcardFoot { display: flex; align-items: center; gap: 10px; margin-top: auto; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.btnPrimary { background: var(--primary); color: var(--white); }
+.btnPrimary:hover { background: var(--hover); transform: translateY(-1px); }
+.btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
+.btnGhost:hover { background: #F4F8FB; }
+
+@media (max-width: 767.98px) {
+  .tcard { grid-template-columns: 1fr; }
+  .tcardImg { min-height: 160px; }
+}

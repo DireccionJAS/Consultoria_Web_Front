@@ -1,258 +1,243 @@
-/* Estilos de la sección de servicios */
-.seccion {
-  background: linear-gradient(135deg, #043370 0%, #0d6e69 50%, #032f64 100%);
+.services {
+  padding: 140px 0;
+  background: var(--c1);
+  color: var(--c5);
   position: relative;
-  min-height: 100vh;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  padding: 100px 0;
+  overflow: hidden;
+}
+.servicesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 112px;
+  gap: 60px;
+}
+.servicesHeader :global(.jas-display) {
+  font-size: clamp(48px, 6vw, 88px);
+}
+.servicesHeader p {
+  max-width: 360px;
+  color: rgba(228, 236, 240, 0.65);
+  font-size: 15px;
+}
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 300px;
+  gap: 14px;
+}
+.bentoCard {
+  border-radius: 24px;
+  padding: 24px 22px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: rgba(228, 236, 240, 0.04);
+  border: 1px solid rgba(228, 236, 240, 0.10);
+}
+.bentoCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(228, 236, 240, 0.25);
+}
+.bentoCard:hover .bentoCta {
+  background: var(--accent);
+  color: var(--c1);
+}
+.bentoNum {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(228, 236, 240, 0.4);
+  letter-spacing: 0.1em;
+}
+.bentoIcon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: rgba(111, 174, 219, 0.15);
+  color: var(--accent);
   display: flex;
   align-items: center;
-  overflow: hidden;
+  justify-content: center;
 }
-
-.seccion::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Estilos de las tarjetas de servicios */
-.cardContainer {
-  padding: 10px;
-  perspective: 1000px;
-  position: relative;
-  z-index: 10;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 15;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.cardImage {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.card:hover .cardImage {
-  transform: scale(1.05);
-}
-
-.cardBody {
-  padding: 24px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  position: relative;
-  z-index: 20;
-}
-
-.cardBody::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 24px;
-  right: 24px;
-  height: 2px;
-  background: linear-gradient(90deg, #0b457e, #187177, #0d4284);
-  border-radius: 2px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.cardTitle {
-  font-size: 1.3rem;
+.bentoCard h3 {
+  font-family: var(--display);
   font-weight: 600;
-  margin-bottom: 12px;
-  color: white;
-  line-height: 1.4;
-  margin-top: 16px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-top: 14px;
 }
-
-.cardDescription {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.9rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  flex-grow: 1;
-  font-weight: 300;
+.bentoDesc {
+  font-size: 12.5px;
+  color: rgba(228, 236, 240, 0.6);
+  line-height: 1.5;
+  margin-top: 6px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
-.cardCost {
-  color: #1dad35;
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin-top: 8px;
-}
-
-.cardButtons {
-  display: flex;
+.bentoFoot {
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 12px;
-  flex-wrap: wrap;
+  align-items: center;
   margin-top: auto;
-  position: relative;
-  z-index: 20;
+  padding-top: 14px;
 }
-
-.cardButton {
-  background: rgba(193, 188, 188, 0.447);  border: 2px solid rgb(224, 218, 218) !important;
-  border-radius: 8px !important;
-  padding: 12px 20px !important;
-  color: white !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-  text-decoration: none !important;
-  display: inline-block !important;
-  font-size: 0.9rem !important;
-  flex: 1 !important;
-  min-width: 120px !important;
-  text-align: center !important;
-  position: relative !important;
-  cursor: pointer !important;
-  z-index: 999 !important;
-  pointer-events: auto !important;
-  user-select: none !important;
-}
-
-.cardButton::before {
-  display: none !important;
-}
-
-.cardButton:hover::before {
-  left: 100%;
-}
-
-.cardButton:hover {
-  background: rgba(59, 130, 246, 1) !important;
-  transform: scale(1.02) !important;
-}
-
-/* Badge de categoría moderno */
-.cardBadge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 3;
-}
-
-/* Estilos para el slider */
-.slider-container {
-  position: relative;
-  padding-bottom: 50px;
-}
-
-.slider-arrows-container {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+.bentoLinks {
   display: flex;
-  gap: 20px;
-  z-index: 10;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
-
-.slickArrow {
-  background: transparent;
-  border: none;
+.bentoLinks a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(228, 236, 240, 0.08);
+  border: 1px solid rgba(228, 236, 240, 0.14);
+  color: rgba(228, 236, 240, 0.92);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.25s ease;
   cursor: pointer;
-  position: relative;
-  padding: 5px;
-  transition: all 0.3s ease;
+}
+.bentoLinks a svg {
+  width: 11px; height: 11px;
+  transition: transform 0.2s;
+}
+.bentoLinks a:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--c1);
+  transform: translateY(-1px);
+}
+.bentoLinks a:hover svg { transform: translateX(2px); }
+.bentoPrice {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bentoPriceLabel {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(228, 236, 240, 0.45);
+}
+.bentoPriceAmount {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.bentoPriceAmount small {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(228, 236, 240, 0.5);
+  letter-spacing: 0.05em;
+  margin-left: 4px;
+}
+.bentoCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: var(--c1);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+.bentoCta:hover {
+  background: var(--c5);
+  transform: translateY(-2px);
+}
+.bentoCta svg { transition: transform 0.3s; }
+.bentoCta:hover svg { transform: translateX(3px); }
+
+/* Featured card (first service) */
+.featured {
+  grid-column: span 2;
+  grid-row: span 2;
+  background: linear-gradient(135deg, var(--c2) 0%, var(--c3) 100%);
+  border-color: transparent;
+}
+.featured:hover .bentoCta { background: var(--c5); }
+.featured .bentoImg {
+  position: absolute;
+  inset: 0;
+  background-image: url("../../img/landing/bento-featured.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  transition: opacity 0.4s;
+}
+.featured:hover .bentoImg { opacity: 0.4; }
+.featured > * { position: relative; z-index: 1; }
+.featured h3 { font-size: 48px; line-height: 0.95; }
+.featured .bentoDesc {
+  color: rgba(228, 236, 240, 0.85);
+  font-size: 15px;
+  max-width: 380px;
+}
+.featured .bentoPriceAmount { font-size: 36px; }
+.featured .bentoCta { font-size: 14px; padding: 14px 22px; background: var(--c5); color: var(--c1); }
+.featured .bentoCta:hover { background: var(--accent); }
+.featured .bentoIcon {
+  width: 56px; height: 56px;
+  background: rgba(228, 236, 240, 0.15);
+  color: var(--c5);
 }
 
-.slickArrow:hover {
-  transform: scale(1.1);
+.bentoCtaCard {
+  background: var(--c5);
+  color: var(--c1);
+  grid-column: span 2;
 }
-
-.slickArrowPrev,
-.slickArrowNext {
-  z-index: 2;
+.bentoCtaCard h3 { font-size: 36px; color: var(--c1); }
+.bentoCtaCard .bentoDesc { color: var(--muted); }
+.bentoCtaCard .bentoCta {
+  background: var(--c1);
+  color: var(--c5);
+  font-size: 13px;
+  padding: 12px 20px;
 }
+.bentoCtaCard .bentoCta:hover { background: var(--c2); color: var(--c5); }
 
-/* Estilos responsivos */
-@media (max-width: 768px) {
-  .cardImage {
-    height: 160px;
-  }
-  
-  .cardBody {
-    padding: 20px;
-  }
-  
-  .cardTitle {
-    font-size: 1.2rem;
-  }
-  
-  .cardButtons {
+@media (max-width: 991.98px) {
+  .services { padding: 90px 0; }
+  .servicesHeader {
     flex-direction: column;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 56px;
   }
-  
-  .cardButton {
-    flex: none;
-    width: 100%;
-    padding: 12px 20px;
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: auto;
   }
-  
-  .cardBadge {
-    top: 15px;
-    right: 15px;
-    padding: 4px 10px;
-    font-size: 0.7rem;
-  }
+  .bentoCard { min-height: 260px; }
+  .featured h3 { font-size: 32px; }
 }
 
-@media (max-width: 576px) {
-  .cardContainer {
-    padding: 5px;
-  }
-  
-  .cardImage {
-    height: 140px;
-  }
+@media (max-width: 575.98px) {
+  .bento { grid-template-columns: 1fr; }
+  .featured, .bentoCtaCard { grid-column: span 1; }
+  .featured { grid-row: span 1; }
+  .featured h3 { font-size: 28px; }
 }

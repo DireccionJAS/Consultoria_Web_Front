@@ -1,0 +1,133 @@
+/*
+  EmpresaPracticas.module.css
+  Extraído 1:1 de "17-Practicas (standalone).html".
+*/
+
+.page {
+  --c1: #1B2A4A; --c1-deep: #0F1A30; --c2: #2D6CDF; --c3: #4E6A9C;
+  --c4: #B4C8D8; --c5: #E4ECF0; --white: #FFFFFF; --accent: #6FAEDB;
+  --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
+  --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --line: rgba(0,0,42,0.10); --line-2: rgba(0,0,42,0.18); --muted: rgba(0,0,42,0.55); --muted-2: rgba(0,0,42,0.38);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--sans);
+  color: var(--c1);
+  background: #F4F6F8;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+}
+.page button, .page input { font-family: inherit; }
+.page button { cursor: pointer; border: 0; background: none; color: inherit; }
+
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.topbar { padding: 18px 32px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; position: sticky; top: 0; z-index: 10; }
+.crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 5px; }
+.crumbSep { color: var(--muted-2); }
+.accent { color: var(--c2); }
+.pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
+
+.content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 22px; }
+
+/* tabs */
+.tabs { display: flex; gap: 4px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 5px; width: fit-content; }
+.tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--muted) !important; background: transparent !important; transition: all 0.2s; }
+.tab.active { background: var(--c1) !important; color: var(--c5) !important; }
+.tabCount { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 999px; background: rgba(0,0,42,0.06); }
+.tab.active .tabCount { background: rgba(228,236,240,0.18); color: var(--c5); }
+
+.pane { display: flex; flex-direction: column; gap: 18px; }
+
+/* stats */
+.statsStrip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.statMini { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+.lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.val { font-family: var(--display); font-weight: 700; font-size: 30px; letter-spacing: -0.025em; line-height: 1; }
+
+/* table */
+.tableCard { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.tblHeadRow { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+.tblTitle { font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -0.015em; }
+.tblSub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.searchBox { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: #F4F6F8; border: 1px solid var(--line); border-radius: 10px; width: 280px; }
+.searchBox input { border: 0; outline: 0; background: transparent; flex: 1; font: inherit; font-size: 13px; }
+.tableScroll { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; min-width: 760px; }
+.table th { text-align: left; padding: 13px 22px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: #F8FAFB; border-bottom: 1px solid var(--line); font-weight: 600; white-space: nowrap; }
+.table td { padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: middle; }
+.table tr:last-child td { border-bottom: 0; }
+.table tbody tr:hover td { background: #FAFBFC; }
+.rowNum { font-family: var(--mono); font-size: 11px; color: var(--muted-2); }
+.solCell { display: flex; align-items: center; gap: 12px; }
+.solAvatar { width: 36px; height: 36px; border-radius: 50%; color: var(--white); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.solName { font-weight: 600; font-size: 13.5px; }
+.solWa { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 1px; }
+.instTag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(45,108,223,0.10); color: var(--c2); border-radius: 999px; font-size: 11px; font-weight: 600; }
+.newBadge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: var(--green-soft); color: var(--green); border-radius: 999px; font-size: 9px; font-weight: 700; font-family: var(--mono); letter-spacing: 0.04em; margin-left: 6px; }
+.cellMuted { color: var(--muted); }
+.cellMono { font-family: var(--mono); color: var(--muted); }
+.rowActions { display: inline-flex; gap: 4px; }
+.rowActions button { width: 30px; height: 30px; border-radius: 8px; background: transparent !important; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.rowActions button:hover { background: var(--c5) !important; color: var(--c1); }
+.rowActions button.del:hover { background: var(--rose-soft) !important; color: var(--rose); }
+
+.emptyState { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center; }
+.emptyIcon { width: 60px; height: 60px; border-radius: 16px; background: var(--c5); color: var(--c3); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.emptyTitle { font-family: var(--display); font-weight: 600; font-size: 17px; margin-bottom: 6px; }
+.emptySub { font-size: 12.5px; color: var(--muted); }
+
+/* logos grid */
+.logosGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 22px; }
+.logoCard { border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; position: relative; transition: all 0.2s; }
+.logoCard:hover { border-color: var(--c3); }
+.logoMark { width: 56px; height: 56px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 700; font-size: 20px; color: var(--white); }
+.logoName { font-family: var(--display); font-weight: 600; font-size: 15px; }
+.logoSub { font-size: 11px; color: var(--muted); }
+.logoDel { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 8px; background: #F4F6F8 !important; color: var(--muted); display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.2s; }
+.logoCard:hover .logoDel { opacity: 1; }
+.logoDel:hover { background: var(--rose-soft) !important; color: var(--rose); }
+.logoAdd { border: 1.5px dashed var(--line-2); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; min-height: 140px; }
+.logoAdd:hover { border-color: var(--c2); background: rgba(45,108,223,0.03); }
+.logoAddIcon { width: 44px; height: 44px; border-radius: 12px; background: rgba(45,108,223,0.10); color: var(--c2); display: flex; align-items: center; justify-content: center; }
+.logoAddText { font-size: 12px; font-weight: 600; color: var(--c2); }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px; font-size: 12.5px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btnGhost { background: transparent !important; color: var(--c1) !important; border: 1px solid var(--line-2); }
+.btnGhost:hover { background: #F4F6F8 !important; }
+
+/* detail / delete modal */
+.scrim { position: fixed; inset: 0; background: rgba(15,26,48,0.45); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; z-index: 50; }
+.modal { width: 100%; max-width: 460px; background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 40px 100px -20px rgba(0,0,42,0.5); }
+.modalHead { padding: 22px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: var(--c5); position: relative; }
+.mhEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; margin-bottom: 6px; }
+.mhTitle { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
+.mhClose { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 50%; background: rgba(228,236,240,0.18) !important; color: var(--c5) !important; display: flex; align-items: center; justify-content: center; }
+.mhClose:hover { background: rgba(228,236,240,0.28) !important; }
+.modalBody { padding: 20px 22px; }
+.detRow { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.detRow:last-child { border-bottom: 0; }
+.detIcon { width: 34px; height: 34px; border-radius: 9px; background: #F4F6F8; color: var(--c2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.detLbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
+.detVal { font-size: 14px; font-weight: 600; margin-top: 1px; }
+.modalFoot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+.btnWa { flex: 1; justify-content: center; background: #25D366 !important; color: #fff !important; }
+.btnMail { flex: 1; justify-content: center; background: var(--c1) !important; color: var(--c5) !important; }
+
+/* nueva institución modal */
+.instField { margin-bottom: 14px; }
+.instField:last-child { margin-bottom: 0; }
+.instLabel { font-size: 11px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 6px; }
+.instInput { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--line-2); font-size: 14px; font-family: inherit; color: var(--c1); transition: border-color 0.2s; }
+.instInput:focus { outline: 0; border: 1.5px solid var(--c2); }
+
+@media (max-width: 991.98px) {
+  .topbar { padding: 14px 20px; }
+  .content { padding: 20px; }
+  .statsStrip { grid-template-columns: repeat(2, 1fr); }
+  .logosGrid { grid-template-columns: repeat(2, 1fr); }
+}

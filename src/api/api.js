@@ -1,5 +1,6 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
+import apiClient from './apiClient';
 
 // =============================================================================
 // CONFIGURACIÓN DE URLS
@@ -14,7 +15,7 @@ const URL_DS160 = import.meta.env.VITE_URL_DS160;
 
 export const Login = async (email, password) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, {
+    const response = await apiClient.post(`/login`, {
       email,
       password,
     });
@@ -25,13 +26,29 @@ export const Login = async (email, password) => {
   }
 };
 
-export const FindByID = async (id, token) => {
+export const loginWithGoogle = async (accessToken) => {
   try {
-    const response = await axios.get(`${API_URL}/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await apiClient.post(`/auth/google`, { accessToken });
+    return response.data;
+  } catch (error) {
+    console.error('Error during Google login:', error);
+    throw error;
+  }
+};
+
+export const completeGoogleSignup = async (accessToken, phone) => {
+  try {
+    const response = await apiClient.post(`/auth/google/complete`, { accessToken, phone });
+    return response.data;
+  } catch (error) {
+    console.error('Error completing Google signup:', error);
+    throw error;
+  }
+};
+
+export const FindByID = async (id) => {
+  try {
+    const response = await apiClient.get(`/users/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching user by ID:', error);
@@ -39,13 +56,9 @@ export const FindByID = async (id, token) => {
   }
 };
 
-export const forgetPassword = async (email, token) => {
+export const forgetPassword = async (email) => {
   try {
-    const response = await axios.post(`${API_URL}/forget-password`, { email }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await apiClient.post(`/forget-password`, { email });
     return response.data;
   } catch (error) {
     console.error('Error during password recovery:', error);
@@ -55,7 +68,7 @@ export const forgetPassword = async (email, token) => {
 
 export const obtenerUsuarioPorCorreo = async (email) => {
   try {
-    const response = await axios.get(`${API_URL}/users/email/${email}`);
+    const response = await apiClient.get(`/users/email/${email}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener usuario por correo', error);
@@ -65,7 +78,7 @@ export const obtenerUsuarioPorCorreo = async (email) => {
 
 export const actualizarContra = async (id_user, data) => {
   try {
-    const response = await axios.put(`${API_URL}/users/password/${id_user}`, { password: data });
+    const response = await apiClient.put(`/users/password/${id_user}`, { password: data });
     return response.data;
   } catch (error) {
     console.error('Error al actualizar contraseña', error);
@@ -79,7 +92,7 @@ export const actualizarContra = async (id_user, data) => {
 
 export const clientes = async () => {
   try {
-    const response = await axios.get(`${API_URL}/users`);
+    const response = await apiClient.get(`/users`);
     return response.data;
   } catch (error) {
     console.error('Error durante la peticion', error);
@@ -89,7 +102,7 @@ export const clientes = async () => {
 
 export const clientePorId = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/users/${id}`);
+    const response = await apiClient.get(`/users/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error durante la peticion', error);
@@ -99,7 +112,7 @@ export const clientePorId = async (id) => {
 
 export const RegistrarCliente = async (data) => {
   try {
-    const response = await axios.post(`${API_URL}/users`, data);
+    const response = await apiClient.post(`/users`, data);
     return response.data;
   } catch (error) {
     console.error('Error al hacer el post', error);
@@ -107,9 +120,19 @@ export const RegistrarCliente = async (data) => {
   }
 };
 
+export const createAdmin = async (data) => {
+  try {
+    const response = await apiClient.post(`/users/admin`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear el admin', error);
+    throw error;
+  }
+};
+
 export const actualizarStatusCliente = async (id_user, nuevoEstado) => {
   try {
-    const response = await axios.put(`${API_URL}/users/${id_user}/status`, { status: nuevoEstado });
+    const response = await apiClient.put(`/users/${id_user}/status`, { status: nuevoEstado });
     return response.data;
   } catch (error) {
     console.error("Error al actualizar el estado del cliente", error);
@@ -117,9 +140,19 @@ export const actualizarStatusCliente = async (id_user, nuevoEstado) => {
   }
 };
 
+export const archivarCliente = async (id_user, archivado) => {
+  try {
+    const response = await apiClient.put(`/users/${id_user}/archive`, { archived: archivado });
+    return response.data;
+  } catch (error) {
+    console.error("Error al archivar el cliente", error);
+    throw error;
+  }
+};
+
 export const actualizar = async (idUser, datosActualizados) => {
   try {
-    const response = await axios.put(`${API_URL}/users/${idUser}`, {
+    const response = await apiClient.put(`/users/${idUser}`, {
       idUser,
       name: datosActualizados.name,
       email: datosActualizados.email,
@@ -139,7 +172,7 @@ export const actualizar = async (idUser, datosActualizados) => {
 
 export const getAllProcess = async () => {
   try {
-    const response = await axios.get(`${API_URL}/transaction/web`);
+    const response = await apiClient.get(`/transaction/web`);
     return response.data;
   } catch (error) {
     console.error('Error fetching processes:', error);
@@ -148,9 +181,23 @@ export const getAllProcess = async () => {
   }
 };
 
+export const subirPdfLegal = async (tipo, file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post(`/pdf/upload/${tipo}`, formData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al subir el PDF', error);
+    throw error;
+  }
+};
+
+export const getPdfLegalUrl = (tipo) => `${API_URL}/pdf/download/${tipo}`;
+
 export const servicios = async () => {
   try {
-    const response = await axios.get(`${API_URL}/transaction`);
+    const response = await apiClient.get(`/transaction`);
     return response.data;
   } catch (error) {
     console.error('Error fetching processes:', error);
@@ -177,7 +224,7 @@ export const createService = async (serviceData) => {
       isDateService: serviceData.isDateService ?? false
     };
 
-    const response = await axios.post(`${API_URL}/transaction/web`, payload, {
+    const response = await apiClient.post(`/transaction/web`, payload, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -192,7 +239,7 @@ export const createService = async (serviceData) => {
 
 export const getNameService = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/transaction/${id}`);
+    const response = await apiClient.get(`/transaction/${id}`);
     const name = response.data.response.Transact.name;
     return name;
   } catch (error) {
@@ -203,7 +250,7 @@ export const getNameService = async (id) => {
 
 export const getServiceById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/transaction/${id}`)
+    const response = await apiClient.get(`/transaction/${id}`)
     return response.data
   } catch (error) {
     console.error('Error fetching steps:', error);
@@ -235,7 +282,7 @@ export const updateService = async (id, serviceData) => {
       image: serviceData.image, // Base64 string
     };
 
-    const response = await axios.put(`${API_URL}/transaction/web/update/${serviceId}`, payload, {
+    const response = await apiClient.put(`/transaction/web/update/${serviceId}`, payload, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -249,7 +296,7 @@ export const updateService = async (id, serviceData) => {
 }
 
 export const getAllServices = async () => {
-  const response = await axios.get(`${API_URL}/services`);
+  const response = await apiClient.get(`/services`);
   return response.data;
 };
 
@@ -259,7 +306,7 @@ export const getAllServices = async () => {
 
 export const getSteps = async () => {
   try {
-    const response = await axios.get(`${API_URL}/steps`);
+    const response = await apiClient.get(`/steps`);
     return response.data;
   } catch (error) {
     console.error('Error fetching steps:', error);
@@ -269,11 +316,7 @@ export const getSteps = async () => {
 
 export const deleteStepById = async (stepId) => {
   try {
-    const response = await axios.delete(`${API_URL}/steps/${stepId}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await apiClient.delete(`/steps/${stepId}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting step:', error);
@@ -283,7 +326,7 @@ export const deleteStepById = async (stepId) => {
 
 export const getStepById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/steps/${id}`);
+    const response = await apiClient.get(`/steps/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching step by ID:', error);
@@ -293,7 +336,7 @@ export const getStepById = async (id) => {
 
 export const obtenerLosPasos = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/steps/${id}`);
+    const response = await apiClient.get(`/steps/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener los pasos', error);
@@ -321,7 +364,7 @@ export const createSteps = async (stepsArray) => {
         needCalendar: 0
       };
 
-      const response = await axios.post(`${API_URL}/steps`, payload, {
+      const response = await apiClient.post(`/steps`, payload, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -388,10 +431,9 @@ export const updateSteps = async (idTransact, stepsArray) => {
       if (isNewStep) {
         // Creamos un nuevo paso
 
-        response = await axios.post(`${API_URL}/steps`, payloadCreate, {
+        response = await apiClient.post(`/steps`, payloadCreate, {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Content-Type': 'application/json'
           }
         });
 
@@ -402,10 +444,9 @@ export const updateSteps = async (idTransact, stepsArray) => {
         });
       } else {
         // Actualizamos un paso existente
-        response = await axios.put(`${API_URL}/steps/${stepData.id}`, payload, {
+        response = await apiClient.put(`/steps/${stepData.id}`, payload, {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Content-Type': 'application/json'
           }
         });
 
@@ -431,12 +472,56 @@ export const updateSteps = async (idTransact, stepsArray) => {
 }
 
 // =============================================================================
+// GESTIÓN DE PERSONAS / FORMULARIOS DS-160
+// =============================================================================
+
+export const getPersonasByProgress = async (idTransactProgress) => {
+  try {
+    const response = await apiClient.get(`/tramite-personas/progress/${idTransactProgress}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las personas del trámite', error);
+    throw error;
+  }
+};
+
+export const createPersona = async (data) => {
+  try {
+    const response = await apiClient.post(`/tramite-personas`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al agregar la persona', error);
+    throw error;
+  }
+};
+
+export const updatePersona = async (id, data) => {
+  try {
+    const response = await apiClient.put(`/tramite-personas/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al actualizar la persona', error);
+    throw error;
+  }
+};
+
+export const deletePersona = async (id) => {
+  try {
+    const response = await apiClient.delete(`/tramite-personas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar la persona', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE TRÁMITES/TRANSACCIONES
 // =============================================================================
 
 export const tramitesPorId = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/progress/progressByUserIdWeb/${id}`);
+    const response = await apiClient.get(`/progress/progressByUserIdWeb/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener las transacciones', error);
@@ -446,7 +531,7 @@ export const tramitesPorId = async (id) => {
 
 export const deleteTRansactProgress = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/progress/delete/${id}`);
+    const response = await apiClient.delete(`/progress/delete/${id}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -455,7 +540,7 @@ export const deleteTRansactProgress = async (id) => {
 
 export const cancelarCita = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/progress/cancelSimulation/${id}`);
+    const response = await apiClient.get(`/progress/cancelSimulation/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error al cancelar la cita', error);
@@ -465,7 +550,7 @@ export const cancelarCita = async (id) => {
 
 export const trasacciones = async () => {
   try {
-    const response = await axios.get(`${API_URL}/progress/transactWithDataUser`)
+    const response = await apiClient.get(`/progress/transactWithDataUser`)
     return response.data;
   } catch (error) {
     console.error("Error obtener las trasacciones", error);
@@ -475,7 +560,7 @@ export const trasacciones = async () => {
 
 export const trasaccionesPorCliente = async () => {
   try {
-    const response = await axios.get(`${API_URL}/progress/transactWithDataUser`)
+    const response = await apiClient.get(`/progress/transactWithDataUser`)
     return response.data;
   } catch (error) {
     console.error("Error obtener las trasacciones", error);
@@ -485,8 +570,8 @@ export const trasaccionesPorCliente = async () => {
 
 export const actualizarT = async (idTransactProgress, nuevoEstado) => {
   try {
-    const response = await axios.patch(
-      `${API_URL}/progress/${idTransactProgress}/status`,
+    const response = await apiClient.patch(
+      `/progress/${idTransactProgress}/status`,
       { status: nuevoEstado }
     );
     return response.data;
@@ -498,9 +583,8 @@ export const actualizarT = async (idTransactProgress, nuevoEstado) => {
 
 export const actualizarTC = async (idTransactProgress, datosActualizados) => {
   try {
-    const response = await axios.put(`${API_URL}/progress/${idTransactProgress}`,
+    const response = await apiClient.put(`/progress/${idTransactProgress}`,
       {
-        idTransactProgress,
         advance: datosActualizados.advance ? 1 : 0,
         dateCas: datosActualizados.dateCas ? dayjs(datosActualizados.dateCas).format('YYYY-MM-DD HH:mm:ss') : null,
         dateCon: datosActualizados.dateCon ? dayjs(datosActualizados.dateCon).format('YYYY-MM-DD HH:mm:ss') : null,
@@ -512,7 +596,12 @@ export const actualizarTC = async (idTransactProgress, datosActualizados) => {
         paid: datosActualizados.paid,
         paidAll: datosActualizados.paidAll,
         status: datosActualizados.status,
-        stepProgress: datosActualizados.stepProgress
+        stepProgress: datosActualizados.stepProgress,
+        casCity: datosActualizados.casCity ?? null,
+        conCity: datosActualizados.conCity ?? null,
+        documentsDelivered: !!datosActualizados.documentsDelivered,
+        visaIssued: datosActualizados.visaIssued ?? null,
+        idEncargado: datosActualizados.idEncargado ?? null
       }
     );
     return response.data;
@@ -522,10 +611,20 @@ export const actualizarTC = async (idTransactProgress, datosActualizados) => {
   }
 };
 
+export const listarEncargados = async () => {
+  try {
+    const response = await apiClient.get(`/users/admins`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener los encargados", error);
+    throw error;
+  }
+};
+
 //PARA ACTUALIZAR LA SIMULACION SOLAMENTE UNA VEZ, ESTE ENDPOINT TIENE LA VALIDACION DE QUE SE ACTUALIZE UNA SOLA VEZ
 export const actualizarTCS = async (idTransactProgress, datosActualizados) => {
   try {
-    const response = await axios.put(`${API_URL}/progress/simulation/${idTransactProgress}`,
+    const response = await apiClient.put(`/progress/simulation/${idTransactProgress}`,
       {
         idTransactProgress,
         advance: datosActualizados.advance ? 1 : 0,
@@ -552,8 +651,8 @@ export const actualizarTCS = async (idTransactProgress, datosActualizados) => {
 
 export const actualizarPaso = async (idTransactProgress, datosActualizados) => {
   try {
-    const response = await axios.put(
-      `${API_URL}/progress/${idTransactProgress}/stepProgress`,
+    const response = await apiClient.put(
+      `/progress/${idTransactProgress}/stepProgress`,
       {
         idTransactProgress,
         stepProgress: datosActualizados.stepProgress
@@ -569,7 +668,7 @@ export const actualizarPaso = async (idTransactProgress, datosActualizados) => {
 
 export const RegistrarTransaccion = async (data) => {
   try {
-    const response = await axios.post(`${API_URL}/progress`, data);
+    const response = await apiClient.post(`/progress`, data);
     return response.data;
   } catch (error) {
     console.error('Error al crear el tramite', error);
@@ -579,7 +678,7 @@ export const RegistrarTransaccion = async (data) => {
 
 export const Obtenertrasacciones = async () => {
   try {
-    const response = await axios.get(`${API_URL}/progress`)
+    const response = await apiClient.get(`/progress`)
     return response.data;
   } catch (error) {
     console.error("Error obtener las trasacciones", error);
@@ -589,7 +688,7 @@ export const Obtenertrasacciones = async () => {
 
 export const createProcessWithPayment = async (data) => {
   try {
-    const response = await axios.post(`${API_URL}/progress/CreateProgressWithPay`, data);
+    const response = await apiClient.post(`/progress/CreateProgressWithPay`, data);
     return response.data;
   } catch (error) {
     console.error("Error al crear proceso con pago:", error);
@@ -600,7 +699,7 @@ export const createProcessWithPayment = async (data) => {
 
 export const getAllDates = async () => {
   try {
-    const response = await axios.get(`${API_URL}/progress/simulation`);
+    const response = await apiClient.get(`/progress/simulation`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener las fechas", error);
@@ -609,12 +708,86 @@ export const getAllDates = async () => {
 }
 
 // =============================================================================
+// GESTIÓN DE HORARIOS / CITAS
+// =============================================================================
+
+export const getHorarios = async () => {
+  try {
+    const response = await apiClient.get(`/horarios`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener los horarios', error);
+    throw error;
+  }
+};
+
+export const guardarHorario = async (tipo, data) => {
+  try {
+    const response = await apiClient.put(`/horarios/${tipo}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al guardar el horario', error);
+    throw error;
+  }
+};
+
+export const getMisCitas = async (idUser) => {
+  try {
+    const response = await apiClient.get(`/citas/user/${idUser}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las citas', error);
+    throw error;
+  }
+};
+
+export const getHorasTomadas = async (tipo, fecha) => {
+  try {
+    const response = await apiClient.get(`/citas/disponibilidad`, { params: { tipo, fecha } });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la disponibilidad', error);
+    throw error;
+  }
+};
+
+export const crearCita = async (data) => {
+  try {
+    const response = await apiClient.post(`/citas`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al agendar la cita', error);
+    throw error;
+  }
+};
+
+export const eliminarCita = async (id) => {
+  try {
+    const response = await apiClient.delete(`/citas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al cancelar la cita', error);
+    throw error;
+  }
+};
+
+export const getCambiosCita = async (idUser) => {
+  try {
+    const response = await apiClient.get(`/citas/cambios/${idUser}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener los cambios de cita', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE PAGOS
 // =============================================================================
 
 export const getAllPayments = async () => {
   try {
-    const response = await axios.get(`${API_URL}/payment`);
+    const response = await apiClient.get(`/payment`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener los pagos", error);
@@ -622,9 +795,25 @@ export const getAllPayments = async () => {
   }
 };
 
+export const registrarPagoEfectivo = async ({ idUser, idTransact, total, quantity = 1 }) => {
+  try {
+    const response = await apiClient.post(`/payment`, {
+      idUser,
+      idTransact,
+      total,
+      quantity,
+      status: 1,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al registrar el pago en efectivo", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export const statusPayments = async (idPayment, datosActualizados) => {
   try {
-    const response = await axios.put(`${API_URL}/payment/${idPayment}`, {
+    const response = await apiClient.put(`/payment/${idPayment}`, {
       idPayment,
       status: datosActualizados.status,
       total: datosActualizados.total
@@ -637,7 +826,7 @@ export const statusPayments = async (idPayment, datosActualizados) => {
 };
 
 export const createPaymentIntent = async (data) => {
-  const response = await axios.post(`${API_URL}/stripe/payment-intent`, data);
+  const response = await apiClient.post(`/stripe/payment-intent`, data);
   return response.data;
 };
 
