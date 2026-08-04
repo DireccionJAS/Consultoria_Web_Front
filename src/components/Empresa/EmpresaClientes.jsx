@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { clientes, actualizarStatusCliente, archivarCliente } from './../../api/api.js';
 import styles from './../../styles/EmpresaClientes.module.css';
+import NotificationBell from './../common/NotificationBell.jsx';
 import ClienteModal from '../Administrador/ClienteModal.jsx';
 
 const ITEMS_POR_PAGINA = 7;
@@ -92,14 +93,6 @@ function IconPlus() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <path d="M12 5v14M5 12h14"></path>
-    </svg>
-  );
-}
-
-function IconBell() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0"></path>
     </svg>
   );
 }
@@ -247,9 +240,7 @@ export default function EmpresaClientes() {
             <div className={styles.pageTitle}>Gestión de clientes</div>
           </div>
           <div className={styles.topActions}>
-            <button className={styles.iconBtn} aria-label="Notificaciones">
-              <IconBell />
-            </button>
+            <NotificationBell role="empresa" />
             <button className={styles.btnAccent} onClick={() => { setClienteSeleccionado(null); setShowClienteModal(true); }}>
               <IconPlus /> Agregar cliente
             </button>

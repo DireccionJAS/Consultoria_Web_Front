@@ -6,16 +6,9 @@ import { getAllPayments, clientePorId, getNameService, statusPayments } from './
 import ModalDetallePago from '../Administrador/ModalDetallePago.jsx';
 import ModalConfirmarPagoEfectivo from '../Administrador/ModalConfirmarPagoEfectivo.jsx';
 import styles from './../../styles/EmpresaPagos.module.css';
+import NotificationBell from './../common/NotificationBell.jsx';
 
 const ITEMS_POR_PAGINA = 7;
-
-function IconBell() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0"></path>
-    </svg>
-  );
-}
 
 function IconPlus() {
   return (
@@ -236,9 +229,7 @@ export default function EmpresaPagos() {
             <div className={styles.pageTitle}>Gestión de pagos</div>
           </div>
           <div className={styles.topActions}>
-            <button className={styles.iconBtn} aria-label="Notificaciones">
-              <IconBell />
-            </button>
+            <NotificationBell role="empresa" />
             <button className={styles.btnAccent} onClick={() => { setPagoContextoEfectivo(null); setModalEfectivoAbierto(true); }}>
               <IconPlus /> Agregar pago
             </button>

@@ -8,9 +8,9 @@ import CrearTramiteModal from '../tramites/CrearTramiteModal.jsx';
 import ActualizarTramiteModal from '../tramites/ActualizarTramiteModal.jsx';
 import { trasacciones, actualizarT } from './../../api/api.js';
 import styles from './../../styles/AdminTramites.module.css';
+import NotificationBell from './../common/NotificationBell.jsx';
 
 function SearchIcon() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)' }}><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>; }
-function BellIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>; }
 function PlusIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>; }
 function ChevronDownIcon() { return <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>; }
 function CheckIcon() { return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7" /></svg>; }
@@ -234,9 +234,7 @@ export default function AdminTramites() {
             <div className={styles.pageTitle}>Gestión de <em>trámites</em></div>
           </div>
           <div className={styles.topActions}>
-            <button className={styles.iconBtn} aria-label="Notificaciones">
-              <BellIcon />
-            </button>
+            <NotificationBell role="admin" />
             <button className={styles.btnAccent} onClick={() => setShowCrearTramite(true)}>
               <PlusIcon />
               Agregar trámite

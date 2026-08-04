@@ -9,7 +9,6 @@ import AdminClientes from "./components/Admin/AdminClientes.jsx";
 import AdminPagos from "./components/Admin/AdminPagos.jsx";
 import AdminCalendario from "./components/Admin/AdminCalendario.jsx";
 import AdminPerfil from "./components/Admin/AdminPerfil.jsx";
-import AdminNotificaciones from "./components/Admin/AdminNotificaciones.jsx";
 import EmpresaDashboard from "./components/Empresa/EmpresaDashboard.jsx";
 import EmpresaTramites from "./components/Empresa/EmpresaTramites.jsx";
 import EmpresaClientes from "./components/Empresa/EmpresaClientes.jsx";
@@ -23,7 +22,6 @@ import EmpresaPracticas from "./components/Empresa/EmpresaPracticas.jsx";
 import EmpresaRecursos from "./components/Empresa/EmpresaRecursos.jsx";
 import EmpresaLegalidad from "./components/Empresa/EmpresaLegalidad.jsx";
 import EmpresaPerfil from "./components/Empresa/EmpresaPerfil.jsx";
-import EmpresaNotificaciones from "./components/Empresa/EmpresaNotificaciones.jsx";
 import AdministradorServicios from "./components/Admin/AdministradorServicios";
 import RegistrarTramite from "./components/Administrador/RegistrarTramite";
 import RegistrarCliente from './components/Administrador/RegistrarCliente'
@@ -156,11 +154,6 @@ function App() {
             <EmpresaPerfil />
           </ProtectedRoute>
         } />
-        <Route path="/EmpresaNotificaciones" element={
-          <ProtectedRoute allowedRoles={["EMPRESA"]}>
-            <EmpresaNotificaciones />
-          </ProtectedRoute>
-        } />
         <Route path="/PDF" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <UploadPfd />
@@ -179,11 +172,6 @@ function App() {
         <Route path="/PerfilAdmin" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <AdminPerfil />
-          </ProtectedRoute>
-        } />
-        <Route path="/AdminNotificaciones" element={
-          <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <AdminNotificaciones />
           </ProtectedRoute>
         } />
         <Route path="/ClientesAdmin" element={

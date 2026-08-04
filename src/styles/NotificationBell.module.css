@@ -1,0 +1,206 @@
+/* NotificationBell.module.css */
+
+.root {
+  --c1: #1B2A4A;
+  --white: #FFFFFF;
+  --sky: #1FA0D1;
+  --sky-dark: #205C81;
+  --sky-light: #C4E7F5;
+  --violet: #635BFF;
+  --violet-light: #E7E4FB;
+  --green: #28A052;
+  --green-soft: #DFF5E5;
+  --amber: #C68714;
+  --amber-soft: #FBEBC9;
+  --rose: #B73E3E;
+  --rose-soft: #F5DADA;
+  --line: rgba(0, 0, 42, 0.10);
+  --muted: rgba(0, 0, 42, 0.55);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  position: relative;
+  font-family: var(--sans);
+  text-align: left;
+}
+
+.trigger {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F4F6F8;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c1);
+  transition: background 0.2s;
+  position: relative;
+}
+.trigger:hover {
+  background: #E4ECF0;
+}
+.triggerBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--rose);
+  color: var(--white);
+  border: 2px solid var(--white);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px -24px rgba(15, 26, 48, 0.4), 0 0 0 1px rgba(15, 26, 48, 0.05);
+  overflow: hidden;
+  z-index: 100;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.panelTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panelTitle {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--c1);
+}
+.panelBadge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--sky-dark);
+  background: var(--sky-light);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.markAllBtn {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sky);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.markAllBtn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+.markAllBtn:disabled {
+  color: rgba(0, 0, 42, 0.3);
+  cursor: default;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.item:last-child {
+  border-bottom: 0;
+}
+.item:not(.unread):hover {
+  background: #F8FAFB;
+}
+.item.unread {
+  background: var(--sky-light);
+}
+.item.unread:hover {
+  background: #B7DEF0;
+}
+
+.itemIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.itemIcon.persona {
+  background: var(--sky-light);
+  color: var(--sky-dark);
+}
+.itemIcon.pago {
+  background: var(--violet-light);
+  color: var(--violet);
+}
+.itemIcon.efectivo {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.itemIcon.cita {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+.itemIcon.aviso {
+  background: var(--rose-soft);
+  color: var(--rose);
+}
+
+.itemBody {
+  flex: 1;
+  min-width: 0;
+}
+.itemText {
+  font-size: 12.5px;
+  color: var(--c1);
+  line-height: 1.45;
+}
+.itemText strong {
+  font-weight: 600;
+}
+.itemTime {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.itemDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sky);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
