@@ -20,6 +20,22 @@ function EmptyIcon() { return <svg width="32" height="32" viewBox="0 0 24 24" fi
 function ChevronLeftIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>; }
 function ChevronRightIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>; }
 
+const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+function formatFechaCorta(fecha) {
+  if (!fecha) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(fecha);
+  let year, month, day;
+  if (m) {
+    [, year, month, day] = m;
+  } else {
+    const d = new Date(fecha);
+    if (isNaN(d.getTime())) return null;
+    year = d.getFullYear(); month = d.getMonth() + 1; day = d.getDate();
+  }
+  return `${String(day).padStart(2, '0')} ${MESES_CORTOS[Number(month) - 1]} ${year}`;
+}
+
 const STATUS_META = {
   1: { label: 'En proceso', cls: 'stProceso', color: 'var(--c2)' },
   2: { label: 'En espera', cls: 'stEspera', color: 'var(--amber)' },
@@ -311,7 +327,10 @@ export default function AdminTramites() {
                             <div className={styles.tramImg}><DocIcon /></div>
                             <div>
                               <div className={styles.tramName}>{cliente.transact?.name}</div>
-                              <div className={styles.tramFolio}>#{String(cliente.idTransactProgress).padStart(6, '0')}</div>
+                              <div className={styles.tramFolio}>
+                                #{String(cliente.idTransactProgress).padStart(3, '0')}
+                                {formatFechaCorta(cliente.dateStart) ? ` • ${formatFechaCorta(cliente.dateStart)}` : ''}
+                              </div>
                             </div>
                           </div>
                         </td>
