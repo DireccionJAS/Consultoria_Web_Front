@@ -26,6 +26,7 @@ function IconEye({ size = 15 }) { return <svg width={size} height={size} viewBox
 function IconCheck({ size = 13 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12l5 5L20 7"></path></svg>; }
 function IconCheckThin({ size = 11 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7"></path></svg>; }
 function IconInfo() { return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>; }
+function IconPower({ size = 18 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>; }
 
 function initials(name) {
   const parts = (name || '').trim().split(/\s+/);
@@ -251,6 +252,23 @@ export default function EmpresaPerfil() {
               </button>
             </div>
           </form>
+
+          <div className={styles.section}>
+            <div className={styles.secHead}>
+              <div className={`${styles.secIcon} ${styles.rose}`}><IconPower size={18} /></div>
+              <div><div className={styles.secTitle}>Desactivar cuenta</div><div className={styles.secSub}>Suspende el acceso de esta cuenta al panel</div></div>
+            </div>
+            <div className={styles.secBody}>
+              <div className={`${styles.fieldMsg} ${styles.error}`}>
+                <IconInfo /> No puedes desactivar tu propia cuenta de Empresa. Si necesitas suspender el acceso, contacta al Super Administrador del sistema.
+              </div>
+            </div>
+            <div className={styles.secFoot}>
+              <button type="button" className={`${styles.btn} ${styles.btnDanger}`} disabled title="No puedes desactivar tu propia cuenta">
+                <IconPower size={14} /> Desactivar mi cuenta
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>

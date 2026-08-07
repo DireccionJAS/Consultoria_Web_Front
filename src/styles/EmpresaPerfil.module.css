@@ -45,6 +45,7 @@
 .secHead { padding: 18px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
 .secIcon { width: 36px; height: 36px; border-radius: 10px; background: var(--c5); color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .secIcon.amber { background: var(--amber-soft); color: var(--amber); }
+.secIcon.rose { background: var(--rose-soft); color: var(--rose); }
 .secTitle { font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -0.015em; }
 .secSub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
 .secReadonly { margin-left: auto; font-size: 10px; font-family: var(--mono); letter-spacing: 0.05em; padding: 4px 10px; border-radius: 999px; background: var(--gray-soft); color: var(--gray); text-transform: uppercase; }
@@ -89,8 +90,10 @@
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
 .btnGhost:hover { background: #F4F6F8; }
-.btnPrimary { background: var(--c1); color: var(--c5); }
+.btnPrimary { background: var(--c1); color: var(--c5); border: 1px solid rgba(0,0,0,0.15); }
 .btnPrimary:hover:not(:disabled) { background: var(--c2); transform: translateY(-1px); }
+.btnDanger { background: var(--rose-soft); color: var(--rose); border: 1px solid var(--rose); }
+.btnDanger:hover:not(:disabled) { background: #EFC7C7; }
 
 @media (max-width: 767.98px) {
   .topbar { padding: 14px 20px; }
