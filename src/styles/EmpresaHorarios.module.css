@@ -97,7 +97,7 @@
 
 .secFoot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 10px; background: #FCFDFE; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
-.btnPrimary { background: var(--primary) !important; color: #fff; }
+.btnPrimary { background: var(--primary) !important; color: #fff; border: 1px solid rgba(0,0,0,0.15) !important; }
 .btnPrimary:hover { background: var(--hover) !important; transform: translateY(-1px); }
 .btnGhost { background: transparent !important; color: var(--c1); border: 1px solid var(--line-2); }
 .btnGhost:hover { background: #F4F8FB !important; }

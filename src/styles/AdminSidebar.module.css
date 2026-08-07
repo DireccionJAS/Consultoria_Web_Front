@@ -150,9 +150,9 @@
   flex: 1; padding: 11px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
   cursor: pointer; border: 0; transition: all 0.2s; font-family: inherit;
 }
-.logoutBtnGhost { background: #F4F6F8; color: var(--c1); }
+.logoutBtnGhost { background: #F4F6F8; color: var(--c1); border: 1px solid rgba(0,0,42,0.18); }
 .logoutBtnGhost:hover { background: #E4ECF0; }
-.logoutBtnDanger { background: var(--rose); color: var(--white); }
+.logoutBtnDanger { background: var(--rose); color: var(--white); border: 1px solid rgba(0,0,0,0.15); }
 .logoutBtnDanger:hover { background: #9c3434; }
 
 @media (max-width: 991.98px) {

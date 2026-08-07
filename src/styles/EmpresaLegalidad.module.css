@@ -71,7 +71,7 @@
 .inp.withBar { border-radius: 0 0 10px 10px; }
 
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
-.btnPrimary { background: var(--c1) !important; color: var(--c5) !important; }
+.btnPrimary { background: var(--c1) !important; color: var(--c5) !important; border: 1px solid rgba(0,0,0,0.15) !important; }
 .btnPrimary:hover { background: var(--c2) !important; }
 .saveHint { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 14px; }
 

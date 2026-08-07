@@ -36,7 +36,7 @@
 .pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
 .topActions { display: flex; align-items: center; gap: 8px; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
-.btnAccent { background: var(--c2) !important; color: var(--white); }
+.btnAccent { background: var(--c2) !important; color: var(--white); border: 1px solid rgba(0,0,0,0.15) !important; }
 .btnAccent:hover { background: #1f5dcc !important; transform: translateY(-1px); }
 .btnGhost { background: transparent !important; color: var(--c1); border: 1px solid var(--line-2); }
 .btnGhost:hover { background: #F4F6F8 !important; }
@@ -154,7 +154,7 @@
 .ncTopRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
 .ncFieldLabel { font-size: 12px; font-weight: 600; color: var(--ncmInk); white-space: nowrap; }
 .req { color: var(--teal); }
-.ncExtBtn { background: var(--navy) !important; color: #fff; border: none; font-size: 11.5px; font-weight: 600; padding: 7px 12px; border-radius: 9px; display: flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.ncExtBtn { background: var(--navy) !important; color: #fff; border: 1px solid rgba(0,0,0,0.15); font-size: 11.5px; font-weight: 600; padding: 7px 12px; border-radius: 9px; display: flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .ncExtBtn:hover { background: #0f3a5c !important; }
 .ncTypeGrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
 .ncTypeCard { border: 1.5px solid var(--ncmLine); border-radius: 11px; padding: 10px 6px 9px; text-align: center; cursor: pointer; transition: all .15s; }
@@ -204,7 +204,7 @@
 .ncBtn:disabled { opacity: .55; cursor: not-allowed; }
 .ncBtnGhost { background: #fff !important; border: 1.5px solid var(--ncmLine); color: var(--ncmInk); }
 .ncBtnGhost:hover { background: #F7F9FA !important; }
-.ncBtnDark { background: var(--navy) !important; color: #fff; }
+.ncBtnDark { background: var(--navy) !important; color: #fff; border: 1px solid rgba(0,0,0,0.15); }
 .ncBtnDark:hover { background: #0f3a5c !important; }
 
 /* cita externa (Atención al cliente) */
@@ -294,6 +294,6 @@
 
 .ccFoot { padding: 16px 24px; border-top: 1px solid var(--cc-line); }
 .ccBtn { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px; border-radius: 12px; font-size: 13.5px; font-weight: 600; transition: all 0.2s; }
-.ccBtnPrimary { background: var(--cc-primary) !important; color: #fff; }
+.ccBtnPrimary { background: var(--cc-primary) !important; color: #fff; border: 1px solid rgba(0,0,0,0.15); }
 .ccBtnPrimary:hover:not(:disabled) { background: var(--cc-hover) !important; transform: translateY(-1px); }
 .ccBtnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }

@@ -447,7 +447,7 @@
 
 .btnSecondary {
   background-color: #6c757d;
-  border: none;
+  border: 1px solid #545b62;
   border-radius: 5px;
   padding: 8px 20px;
   font-weight: bold;
@@ -463,8 +463,7 @@
 
 .btnPrimary {
   background-color: #007bff;
-  border-color: #0056b3;
-  border: none;
+  border: 1px solid #0056b3;
   border-radius: 5px;
   padding: 8px 20px;
   font-weight: bold;
@@ -475,7 +474,7 @@
 
 .btnInfo {
   background-color: #17a2b8;
-  border-color: #117a8b;
+  border: 1px solid #117a8b;
   font-size: clamp(12px, 2vw, 14px);
   width: 100%;
   max-width: 150px;
