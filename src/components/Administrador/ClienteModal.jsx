@@ -108,6 +108,21 @@ function IconStatus() {
   );
 }
 
+function IconBuilding() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="4" y="2" width="16" height="20" rx="1"></rect>
+      <line x1="9" y1="6" x2="9" y2="6.01"></line>
+      <line x1="15" y1="6" x2="15" y2="6.01"></line>
+      <line x1="9" y1="10" x2="9" y2="10.01"></line>
+      <line x1="15" y1="10" x2="15" y2="10.01"></line>
+      <line x1="9" y1="14" x2="9" y2="14.01"></line>
+      <line x1="15" y1="14" x2="15" y2="14.01"></line>
+      <line x1="9" y1="18" x2="15" y2="18"></line>
+    </svg>
+  );
+}
+
 function IconCheck() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -124,6 +139,9 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
   const [status, setStatus] = useState(true);
   const [showPw, setShowPw] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  // Sin backend de Empresas todavía (no existe esa entidad) - selector
+  // decorativo por ahora, opción fija única, no se envía al guardar el cliente.
+  const [empresa, setEmpresa] = useState('');
 
   useEffect(() => {
     if (!show) return;
@@ -134,6 +152,7 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
       setCampos(CAMPOS_INICIALES);
       setStatus(true);
     }
+    setEmpresa('');
     setShowPw(false);
   }, [show, cliente]);
 
@@ -267,6 +286,17 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
                     onChange={handleChange('phone')}
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className={`${styles.field} ${styles.full}`}>
+              <label className={styles.fieldLabel}>Empresa</label>
+              <div className={styles.inpWrap}>
+                <span className={styles.inpIcon}><IconBuilding /></span>
+                <select className={styles.inp} value={empresa} onChange={(e) => setEmpresa(e.target.value)}>
+                  <option value="">Selecciona una empresa</option>
+                  <option value="Consultoría JAS">Consultoría JAS</option>
+                </select>
               </div>
             </div>
 
