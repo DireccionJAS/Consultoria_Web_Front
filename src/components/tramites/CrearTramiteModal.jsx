@@ -58,6 +58,11 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
   const [buscarCliente, setBuscarCliente] = useState('');
   const [buscarServicio, setBuscarServicio] = useState('');
 
+  // Sin backend de Empresas todavía (no existe esa entidad) - selector
+  // decorativo por ahora, opción fija única, no se envía al guardar el trámite.
+  const [empresa, setEmpresa] = useState('');
+  const [openEmpresa, setOpenEmpresa] = useState(false);
+
   const [pagoInicial, setPagoInicial] = useState(0);
   const [costoTotal, setCostoTotal] = useState(0);
 
@@ -65,6 +70,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
 
   const clienteRef = useRef(null);
   const servicioRef = useRef(null);
+  const empresaRef = useRef(null);
 
   useEffect(() => {
     if (!show) return;
@@ -105,6 +111,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
     const handleClickOutside = (e) => {
       if (clienteRef.current && !clienteRef.current.contains(e.target)) setOpenCliente(false);
       if (servicioRef.current && !servicioRef.current.contains(e.target)) setOpenServicio(false);
+      if (empresaRef.current && !empresaRef.current.contains(e.target)) setOpenEmpresa(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -121,6 +128,8 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
     setBuscarServicio('');
     setOpenCliente(false);
     setOpenServicio(false);
+    setEmpresa('');
+    setOpenEmpresa(false);
     setErrors({});
   };
 
@@ -304,6 +313,34 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
               )}
             </div>
             {errors.idUser && <div className={styles.fieldMsg}>{errors.idUser}</div>}
+          </div>
+
+          {/* Empresa */}
+          <div className={styles.field}>
+            <label className={styles.fieldLabel}>Empresa</label>
+            <div ref={empresaRef} className={`${styles.selWrap} ${openEmpresa ? styles.open : ''}`}>
+              <button type="button" className={styles.selTrigger} onClick={() => setOpenEmpresa((v) => !v)}>
+                <span className={styles.selMain}>
+                  {empresa ? (
+                    <span className={styles.selName}>{empresa}</span>
+                  ) : (
+                    <span className={styles.selPlaceholder}>Selecciona una empresa</span>
+                  )}
+                </span>
+                <svg className={styles.selChev} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              {openEmpresa && (
+                <div className={styles.selMenu}>
+                  <div className={styles.selList}>
+                    <div className={styles.selOpt} onClick={() => { setEmpresa('Consultoría JAS'); setOpenEmpresa(false); }}>
+                      <span className={styles.selName}>Consultoría JAS</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Servicio */}
