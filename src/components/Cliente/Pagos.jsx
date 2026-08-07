@@ -102,7 +102,7 @@ export default function Pagos() {
     const restante = (t.paidAll || 0) - (t.paid || 0);
     if (restante <= 0) return { label: 'Pagado', cls: styles.stPagado };
     if ((t.paid || 0) > 0) return { label: 'En proceso', cls: styles.stProceso };
-    return { label: 'Pendiente', cls: styles.stPend };
+    return { label: 'Falta de pago', cls: styles.stPend };
   };
 
   const abrirDetalle = (t) => setDetalle(t);
