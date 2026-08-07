@@ -84,6 +84,14 @@ export default function Calendario() {
       .catch((error) => console.error('Error al obtener horarios:', error));
   };
 
+  // Refresca los horarios cada 60s para reflejar cambios que la Empresa
+  // guarde en Empresa > Horarios mientras el Cliente ya tiene esta
+  // pantalla abierta, sin necesidad de recargar.
+  useEffect(() => {
+    const interval = setInterval(cargarHorarios, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const cargarCitas = (idUser) => {
     getMisCitas(idUser)
       .then((response) => { if (response.success) setCitas(response.response?.citas || []); })
