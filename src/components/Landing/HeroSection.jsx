@@ -37,10 +37,31 @@ function PhoneIcon() {
   );
 }
 
+// Ubicaciones operativas: se configuran en Empresa > Página pública > Inicio
+// (EmpresaPaginaPublica.jsx), sin backend todavía, así que viajan por
+// localStorage bajo HERO_UBICACIONES_STORAGE_KEY. Si no hay nada guardado
+// (nadie abrió esa pantalla en este navegador), se cae a la ubicación real
+// de hoy.
+const HERO_UBICACIONES_STORAGE_KEY = 'empresaHeroUbicacionesConfig';
+const HERO_UBICACIONES_FALLBACK = ['Jiutepec, Morelos'];
+
+function cargarHeroUbicaciones() {
+  try {
+    const raw = localStorage.getItem(HERO_UBICACIONES_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : HERO_UBICACIONES_FALLBACK;
+  } catch {
+    return HERO_UBICACIONES_FALLBACK;
+  }
+}
+
 export default function HeroSection() {
   const [topRowRef, topRowIn] = useReveal();
   const [headlineRef, headlineIn] = useReveal();
   const [destinosRef, destinosIn] = useReveal();
+
+  const [ubicaciones, setUbicaciones] = useState(HERO_UBICACIONES_FALLBACK);
+  useEffect(() => { setUbicaciones(cargarHeroUbicaciones()); }, []);
 
   const [time, setTime] = useState('— —:— hrs · MX');
   useEffect(() => {
@@ -101,10 +122,12 @@ export default function HeroSection() {
       <div className={`jas-container ${styles.heroContent}`}>
         <div ref={topRowRef} className={`${styles.heroTopRow} jas-reveal ${topRowIn ? 'jas-in' : ''}`}>
           <div className={styles.heroLocator}>
-            <div className={styles.heroLocatorPill}>
-              <span className={styles.dot}></span>
-              Operando en Jiutepec, Morelos
-            </div>
+            {ubicaciones.map((u, i) => (
+              <div key={i} className={styles.heroLocatorPill}>
+                <span className={styles.dot}></span>
+                Operando en {u}
+              </div>
+            ))}
             <span className={styles.heroLocatorTime}>{time}</span>
           </div>
           <div className={styles.heroLocatorTime}>

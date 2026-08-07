@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
@@ -56,6 +56,24 @@ const UBICACIONES_INICIALES = [
   { id: 1, titulo: 'Sucursal Jiutepec', direccion: 'Calle Pablo Torres 18 · Centro · 62550' },
 ];
 
+// Ubicaciones del Hero: sin backend todavía (igual que el resto de esta
+// pantalla), se persisten en localStorage para que HeroSection.jsx pinte
+// un pill por cada una en la landing real. Si no hay nada guardado, tanto
+// aquí como en HeroSection.jsx se cae a "Jiutepec, Morelos" (la única que
+// existe hoy hardcodeada).
+export const HERO_UBICACIONES_STORAGE_KEY = 'empresaHeroUbicacionesConfig';
+const HERO_UBICACION_DEFAULT = 'Jiutepec, Morelos';
+
+function cargarHeroUbicacionesGuardadas() {
+  try {
+    const raw = localStorage.getItem(HERO_UBICACIONES_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 function escapeAttr(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -109,8 +127,37 @@ export default function EmpresaPaginaPublica() {
   const setTab = (key) => setSearchParams({ tab: key });
 
   // Inicio (real: HeroSection.jsx)
-  const [heroUbicacion, setHeroUbicacion] = useState('Operando en Jiutepec, Morelos');
+  const heroUbicacionesGuardadas = useMemo(() => cargarHeroUbicacionesGuardadas(), []);
+  const [heroUbicaciones, setHeroUbicaciones] = useState(
+    (heroUbicacionesGuardadas || [HERO_UBICACION_DEFAULT]).map((texto, i) => ({ id: i + 1, texto }))
+  );
   const [heroTelefono, setHeroTelefono] = useState('777 395 6677');
+
+  useEffect(() => {
+    localStorage.setItem(HERO_UBICACIONES_STORAGE_KEY, JSON.stringify(heroUbicaciones.map((u) => u.texto)));
+  }, [heroUbicaciones]);
+
+  const handleAgregarHeroUbicacion = async () => {
+    const { value } = await Swal.fire({
+      title: 'Nueva ubicación', input: 'text', inputPlaceholder: 'Ej. Cuernavaca, Morelos',
+      showCancelButton: true, confirmButtonText: 'Agregar', cancelButtonText: 'Cancelar',
+      inputValidator: (v) => !v.trim() && 'Escribe una ubicación',
+    });
+    if (!value) return;
+    setHeroUbicaciones((prev) => [...prev, { id: Date.now(), texto: value.trim() }]);
+  };
+
+  const handleEditarHeroUbicacion = async (id, actual) => {
+    const { value } = await Swal.fire({
+      title: 'Editar ubicación', input: 'text', inputValue: actual.texto,
+      showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
+      inputValidator: (v) => !v.trim() && 'Escribe una ubicación',
+    });
+    if (!value) return;
+    setHeroUbicaciones((prev) => prev.map((u) => (u.id === id ? { ...u, texto: value.trim() } : u)));
+  };
+
+  const handleEliminarHeroUbicacion = (id) => setHeroUbicaciones((prev) => prev.filter((u) => u.id !== id));
 
   // Servicios (real: ServicesSection.jsx / StatsSection.jsx)
   const [servicios, setServicios] = useState([]);
@@ -297,8 +344,18 @@ export default function EmpresaPaginaPublica() {
                 </div>
                 <div className={styles.cardBody}>
                   <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Texto de ubicación operativa <span className={styles.fieldHint}>— aparece en el hero superior</span></label>
-                    <input className={styles.inp} value={heroUbicacion} onChange={(e) => setHeroUbicacion(e.target.value)} />
+                    <label className={styles.fieldLabel}>Ubicaciones operativas <span className={styles.fieldHint}>— aparecen como pills en el hero superior</span></label>
+                    {heroUbicaciones.map((u) => (
+                      <div key={u.id} className={styles.repRow}>
+                        <div className={styles.repIcon}><IconHome /></div>
+                        <div className={styles.repMain}><div className={styles.repTitle}>{u.texto}</div></div>
+                        <div className={styles.repActions}>
+                          <button title="Editar" onClick={() => handleEditarHeroUbicacion(u.id, u)}><IconEditSm size={15} /></button>
+                          <button className={styles.del} title="Eliminar" onClick={() => handleEliminarHeroUbicacion(u.id)}><IconTrashSm size={15} /></button>
+                        </div>
+                      </div>
+                    ))}
+                    <button className={styles.addBtn} onClick={handleAgregarHeroUbicacion}><IconPlus /> Agregar ubicación</button>
                   </div>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Número de teléfono principal <span className={styles.fieldHint}>— botón Cotizar y navbar</span></label>
