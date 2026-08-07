@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 import { RegistrarCliente as registrarClienteAPI, actualizar as actualizarClienteAPI } from './../../api/api.js';
 import styles from './../../styles/ClienteModal.module.css';
@@ -108,21 +108,6 @@ function IconStatus() {
   );
 }
 
-function IconBuilding() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="4" y="2" width="16" height="20" rx="1"></rect>
-      <line x1="9" y1="6" x2="9" y2="6.01"></line>
-      <line x1="15" y1="6" x2="15" y2="6.01"></line>
-      <line x1="9" y1="10" x2="9" y2="10.01"></line>
-      <line x1="15" y1="10" x2="15" y2="10.01"></line>
-      <line x1="9" y1="14" x2="9" y2="14.01"></line>
-      <line x1="15" y1="14" x2="15" y2="14.01"></line>
-      <line x1="9" y1="18" x2="15" y2="18"></line>
-    </svg>
-  );
-}
-
 function IconCheck() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -133,6 +118,54 @@ function IconCheck() {
 
 const CAMPOS_INICIALES = { name: '', email: '', phone: '', password: '' };
 
+// UI-only: no existe todavía una entidad Empresa en el backend, así que la
+// asignación aquí no se persiste. Mismas 2 empresas que ya usa el selector
+// decorativo de AdminTramites.jsx/EmpresaTramites.jsx.
+const EMPRESAS = [
+  { code: 'JAS', label: 'C.JAS', name: 'Consultoría JAS' },
+  { code: 'CMG', label: 'COR.M', name: 'Corporativo Migratorio Gutiérrez' },
+];
+
+function EmpresaDropdown({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const empresa = EMPRESAS.find((e) => e.code === value) || null;
+
+  useEffect(() => {
+    const handleOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  return (
+    <div className={styles.statusDd} ref={ref}>
+      <div className={styles.empresaCell} style={{ cursor: 'pointer' }} onClick={() => setOpen((o) => !o)}>
+        <span className={styles.empresaAvatar}>{empresa ? empresa.code.slice(0, 3) : '—'}</span>
+        <span className={styles.empresaCode}>{empresa ? empresa.name : 'Selecciona una empresa'}</span>
+        <IconChevronDown />
+      </div>
+      {open && (
+        <div className={styles.statusMenu}>
+          <div className={`${styles.statusOpt} ${!value ? styles.sel : ''}`} onClick={() => { onChange(null); setOpen(false); }}>
+            Sin asignar
+            {!value && <span className={styles.check}><IconCheck /></span>}
+          </div>
+          {EMPRESAS.map((e) => (
+            <div
+              key={e.code}
+              className={`${styles.statusOpt} ${value === e.code ? styles.sel : ''}`}
+              onClick={() => { onChange(e.code); setOpen(false); }}
+            >
+              {e.name} ({e.label})
+              {value === e.code && <span className={styles.check}><IconCheck /></span>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
   const esEdicion = !!cliente;
   const [campos, setCampos] = useState(CAMPOS_INICIALES);
@@ -140,8 +173,8 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
   const [showPw, setShowPw] = useState(false);
   const [guardando, setGuardando] = useState(false);
   // Sin backend de Empresas todavía (no existe esa entidad) - selector
-  // decorativo por ahora, opción fija única, no se envía al guardar el cliente.
-  const [empresa, setEmpresa] = useState('');
+  // decorativo por ahora, no se envía al guardar el cliente.
+  const [empresa, setEmpresa] = useState(null);
 
   useEffect(() => {
     if (!show) return;
@@ -152,7 +185,7 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
       setCampos(CAMPOS_INICIALES);
       setStatus(true);
     }
-    setEmpresa('');
+    setEmpresa(null);
     setShowPw(false);
   }, [show, cliente]);
 
@@ -291,13 +324,7 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
 
             <div className={`${styles.field} ${styles.full}`}>
               <label className={styles.fieldLabel}>Empresa</label>
-              <div className={styles.inpWrap}>
-                <span className={styles.inpIcon}><IconBuilding /></span>
-                <select className={styles.inp} value={empresa} onChange={(e) => setEmpresa(e.target.value)}>
-                  <option value="">Selecciona una empresa</option>
-                  <option value="Consultoría JAS">Consultoría JAS</option>
-                </select>
-              </div>
+              <EmpresaDropdown value={empresa} onChange={setEmpresa} />
             </div>
 
             {!esEdicion && (

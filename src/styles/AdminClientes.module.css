@@ -120,6 +120,24 @@
 .tgLabel.on { color: var(--green); }
 .tgLabel.off { color: var(--muted); }
 
+/* Empresa (decorativo, sin backend todavía) */
+.empresaCell { display: inline-flex; align-items: center; gap: 8px; }
+.empresaAvatar {
+  width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--c3));
+  color: var(--c1); font-family: var(--display); font-weight: 700; font-size: 9px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.empresaCode { font-size: 12px; font-weight: 600; color: var(--c1); }
+.statusDd { position: relative; display: inline-block; }
+.statusMenu {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; background: var(--white);
+  border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 16px 40px -12px rgba(0, 0, 42, 0.25); padding: 6px; min-width: 190px;
+}
+.statusOpt { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+.statusOpt:hover { background: #F4F6F8; }
+.statusOpt.sel { font-weight: 600; }
+.statusOpt.sel .check { margin-left: auto; color: var(--c2); display: flex; }
+
 .rowActions { display: inline-flex; gap: 4px; }
 .rowActions button {
   width: 30px; height: 30px; border-radius: 8px; background: transparent; color: var(--muted);

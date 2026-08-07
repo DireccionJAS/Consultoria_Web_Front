@@ -69,6 +69,24 @@
 .pwBar.on { background: var(--green); }
 .pwBar.mid { background: var(--amber, #C68714); }
 
+/* Empresa (decorativo, sin backend todavía) */
+.empresaCell { display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px; background: var(--white); border: 1px solid var(--line-2); border-radius: 12px; }
+.empresaAvatar {
+  width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--c3));
+  color: var(--c1); font-family: var(--display); font-weight: 700; font-size: 9px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.empresaCode { font-size: 13.5px; font-weight: 600; color: var(--c1); flex: 1; }
+.statusDd { position: relative; display: block; }
+.statusMenu {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30; background: var(--white);
+  border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 16px 40px -12px rgba(0, 0, 42, 0.25); padding: 6px;
+}
+.statusOpt { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+.statusOpt:hover { background: #F4F6F8; }
+.statusOpt.sel { font-weight: 600; }
+.statusOpt.sel .check { margin-left: auto; color: var(--c2); display: flex; }
+
 /* status toggle box */
 .statusBox { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; background: #F8FAFB; border: 1px solid var(--line); border-radius: 14px; margin-top: 4px; }
 .statusInfo { display: flex; align-items: center; gap: 12px; }
