@@ -44,6 +44,9 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
 
   const [usuarios, setUsuarios] = useState([]);
   const [transacciones, setTransacciones] = useState([]);
+  // Sin backend de Empresas todavía (no existe esa entidad) - selector
+  // decorativo por ahora, no se envía al guardar el trámite.
+  const [empresa, setEmpresa] = useState('');
 
   useEffect(() => {
     register('advance');
@@ -115,6 +118,7 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
       });
 
       reset();
+      setEmpresa('');
       onHide();
       if (typeof onClienteRegistrado === 'function') {
         onClienteRegistrado();
@@ -146,6 +150,14 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
               ))}
             </select>
             <span className="error">{errors.idUser?.message}</span>
+          </div>
+
+          <div className="form-group">
+            <label>Empresa:</label>
+            <select value={empresa} onChange={(e) => setEmpresa(e.target.value)}>
+              <option value="">Selecciona una empresa</option>
+              <option value="Consultoría JAS">Consultoría JAS</option>
+            </select>
           </div>
 
           <div className="form-group">
