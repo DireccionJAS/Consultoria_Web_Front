@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import styles from './../../styles/EmpresaDashboard.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 function SearchIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)' }}><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>; }
 function PlusIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>; }
@@ -85,6 +86,7 @@ export default function EmpresaDashboard() {
 
           <div className={styles.topActions}>
             <NotificationBell role="empresa" />
+            <HeaderLogoutButton />
             <button className={styles.btnAccent}>
               <PlusIcon />
               Nuevo trámite

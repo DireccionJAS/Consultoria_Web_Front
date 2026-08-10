@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { subirPdfLegal, getPdfLegalUrl } from './../../api/api.js';
 import styles from './../../styles/EmpresaLegalidad.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraído 1:1 de "19-Legalidad (standalone).html". Los 2 PDFs
 // (Términos, Privacidad) SÍ tienen backend real: POST /api/pdf/upload/
@@ -137,6 +138,7 @@ export default function EmpresaLegalidad() {
             <div className={styles.pageTitle}>Documentos legales</div>
           </div>
           <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardarTodo}><IconCheck /> Guardar todo</button>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

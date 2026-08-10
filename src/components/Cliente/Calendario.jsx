@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import { clientePorId, getHorarios, getMisCitas, getHorasTomadas, crearCita, eliminarCita, getCambiosCita } from './../../api/api.js';
 import styles from './../../styles/ClienteCitas.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 function ChevronLeft() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>; }
 function ChevronRight() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>; }
@@ -279,6 +280,7 @@ export default function Calendario() {
             <div className={styles.pageTitleH}>Mis citas</div>
           </div>
           <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={abrirModal}><PlusIcon /> Agendar cita</button>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

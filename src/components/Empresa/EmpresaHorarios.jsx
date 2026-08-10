@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { getHorarios, guardarHorario } from './../../api/api.js';
 import styles from './../../styles/EmpresaHorarios.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraída 1:1 de "20-Horarios (standalone).html". Simulación y Atención
 // remota se guardan en /api/horarios (tabla horario_dia/horario_hora).
@@ -230,6 +231,7 @@ export default function EmpresaHorarios() {
             <div className={styles.crumb}><span>Empresa</span> <span className={styles.crumbSep}>/</span> <span className={styles.accent}>Horarios</span></div>
             <div className={styles.pageTitle}>Gestión de horarios</div>
           </div>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

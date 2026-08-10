@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import { clientePorId, tramitesPorId, getPersonasByProgress } from './../../api/api.js';
 import styles from './../../styles/ClienteFormularios.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 function WarnIcon() { return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg>; }
 function InfoIcon() { return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>; }
@@ -98,6 +99,7 @@ export default function Formularios() {
             <div className={styles.pageTitleH}>Formularios requeridos</div>
           </div>
           <div className={styles.topAvatar}>{(nombre.trim().charAt(0) || 'C').toUpperCase()}</div>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

@@ -9,6 +9,7 @@ import ActualizarTramiteModal from '../tramites/ActualizarTramiteModal.jsx';
 import { trasacciones, actualizarT } from './../../api/api.js';
 import styles from './../../styles/EmpresaTramites.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 function SearchIcon() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)' }}><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>; }
 function PlusIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>; }
@@ -251,6 +252,7 @@ export default function EmpresaTramites() {
           </div>
           <div className={styles.topActions}>
             <NotificationBell role="empresa" />
+            <HeaderLogoutButton />
             <button className={styles.btnAccent} onClick={() => setShowCrearTramite(true)}>
               <PlusIcon />
               Agregar trámite

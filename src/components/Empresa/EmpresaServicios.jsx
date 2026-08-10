@@ -11,6 +11,7 @@ import { getAllProcess, getStepById, updateService } from './../../api/api.js';
 import ModalServicio from '../Administrador/ModalServicio.jsx';
 import ModalPasos from '../Administrador/ModalPasos.jsx';
 import styles from './../../styles/EmpresaServicios.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraído 1:1 de "14-Servicios (standalone).html". El mockup incluye
 // varios campos que no existen en el backend (Transact no tiene
@@ -152,6 +153,7 @@ export default function EmpresaServicios() {
           </div>
           <div className={styles.topActions}>
             <button className={`${styles.btn} ${styles.btnAccent}`} onClick={abrirModalAgregar}><IconPlus /> Agregar servicio</button>
+            <HeaderLogoutButton />
           </div>
         </header>
 

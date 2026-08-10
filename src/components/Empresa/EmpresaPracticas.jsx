@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import styles from './../../styles/EmpresaPracticas.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraído 1:1 de "17-Practicas (standalone).html" y del modal "Nueva
 // institución" agregado en "17-Practicas (standalone) (1).html". El
@@ -121,6 +122,7 @@ export default function EmpresaPracticas() {
             <div className={styles.crumb}><span>Menú extendido</span> <span className={styles.crumbSep}>/</span> <span className={styles.accent}>Prácticas profesionales</span></div>
             <div className={styles.pageTitle}>Prácticas profesionales</div>
           </div>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

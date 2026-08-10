@@ -6,6 +6,7 @@ import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { clientes, actualizarStatusCliente, archivarCliente } from './../../api/api.js';
 import styles from './../../styles/EmpresaClientes.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import ClienteModal from '../Administrador/ClienteModal.jsx';
 
 const ITEMS_POR_PAGINA = 7;
@@ -298,6 +299,7 @@ export default function EmpresaClientes() {
           </div>
           <div className={styles.topActions}>
             <NotificationBell role="empresa" />
+            <HeaderLogoutButton />
             <button className={styles.btnAccent} onClick={() => { setClienteSeleccionado(null); setShowClienteModal(true); }}>
               <IconPlus /> Agregar cliente
             </button>

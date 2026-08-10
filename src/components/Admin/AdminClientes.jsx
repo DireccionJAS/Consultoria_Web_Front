@@ -6,6 +6,7 @@ import AdminSidebar from './AdminSidebar.jsx';
 import { clientes, actualizarStatusCliente, archivarCliente } from './../../api/api.js';
 import styles from './../../styles/AdminClientes.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import ClienteModal from '../Administrador/ClienteModal.jsx';
 
 const ITEMS_POR_PAGINA = 7;
@@ -298,6 +299,7 @@ export default function AdminClientes() {
           </div>
           <div className={styles.topActions}>
             <NotificationBell role="admin" />
+            <HeaderLogoutButton />
             <button className={styles.btnAccent} onClick={() => { setClienteSeleccionado(null); setShowClienteModal(true); }}>
               <IconPlus /> Agregar cliente
             </button>

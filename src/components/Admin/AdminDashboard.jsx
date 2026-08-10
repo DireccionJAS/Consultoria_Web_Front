@@ -5,6 +5,7 @@ import AdminSidebar from './AdminSidebar.jsx';
 import { clientePorId } from './../../api/api.js';
 import styles from './../../styles/AdminDashboard.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 function SearchIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)' }}><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>; }
 function ArrowIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10" /></svg>; }
@@ -79,6 +80,7 @@ export default function AdminDashboard() {
 
           <div className={styles.topActions}>
             <NotificationBell role="admin" />
+            <HeaderLogoutButton />
           </div>
         </header>
 

@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { clientePorId, actualizarContra } from './../../api/api.js';
 import styles from './../../styles/EmpresaPerfil.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraído 1:1 de "12-Perfil (standalone).html". "Información personal"
 // usa datos reales del usuario (GET /users/{id}, igual que
@@ -140,6 +141,7 @@ export default function EmpresaPerfil() {
             <div className={styles.crumb}><span>Sistema</span> <span className={styles.accent} style={{ color: 'var(--muted-2)' }}>/</span> <span className={styles.accent}>Mi perfil</span></div>
             <div className={styles.pageTitle}>Mi perfil</div>
           </div>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

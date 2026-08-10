@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { getAllProcess } from './../../api/api.js';
 import styles from './../../styles/EmpresaPaginaPublica.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import aboutMainImg from './../../img/landing/about-main.jpg';
 import t1 from './../../img/landing/testimonial-1.jpg';
 import t2 from './../../img/landing/testimonial-2.jpg';
@@ -322,6 +323,7 @@ export default function EmpresaPaginaPublica() {
             <span className={styles.liveBadge}><span className={styles.liveDot}></span>EN VIVO</span>
             <button className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`} onClick={handleVistaPrevia}><IconEye /> Vista previa</button>
             <button className={`${styles.btn} ${styles.btnAccent}`} onClick={handlePublicar}><IconCheck /> Publicar cambios</button>
+            <HeaderLogoutButton />
           </div>
         </header>
 

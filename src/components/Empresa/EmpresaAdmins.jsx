@@ -7,6 +7,7 @@ import { listarEncargados, actualizarStatusCliente, archivarCliente, clientes as
 import ModalAdmin from '../Administrador/ModalAdmin.jsx';
 import modalStyles from './../../styles/ClienteModal.module.css';
 import styles from './../../styles/EmpresaAdmins.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraído 1:1 de "16-Admins (standalone).html". El botón "Ver clientes"
 // abre un modal con reasignar/quitar/agregar cliente, pero no existe
@@ -220,6 +221,7 @@ export default function EmpresaAdmins() {
             <button className={styles.btnAccent} onClick={() => { setAdminEditando(null); setModalAdminAbierto(true); }}>
               <IconPlus /> Agregar admin
             </button>
+            <HeaderLogoutButton />
           </div>
         </header>
 

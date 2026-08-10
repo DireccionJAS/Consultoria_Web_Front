@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import mexico from '@svg-maps/mexico';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import styles from './../../styles/EmpresaRecursos.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraído 1:1 de "18-Recursos (standalone).html". Estos 3 editores
 // alimentan visualmente la sección "Nuestros números" de la landing
@@ -136,6 +137,7 @@ export default function EmpresaRecursos() {
             <div className={styles.crumb}><span>Menú extendido</span> <span className={styles.crumbSep}>/</span> <span className={styles.accent}>Recursos</span></div>
             <div className={styles.pageTitle}>Recursos</div>
           </div>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

@@ -6,6 +6,7 @@ import ClienteSidebar from './ClienteSidebar.jsx';
 import Liquidacion from './Modals/Liquidacion.jsx';
 import { clientePorId, tramitesPorId, getStepById } from './../../api/api.js';
 import styles from './../../styles/ClientePagos.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 function TramiteIcon() { return <svg width="17" height="17" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="6" y="4" width="20" height="28" rx="2" /><circle cx="16" cy="14" r="3.5" /><path d="M10 22h12M10 26h8" /></svg>; }
 function PayIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg>; }
@@ -124,6 +125,7 @@ export default function Pagos() {
             <div className={styles.pageTitleH}>Mis pagos</div>
           </div>
           <div className={styles.topAvatar}>{(nombre.trim().charAt(0) || 'C').toUpperCase()}</div>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import AdminSidebar from './AdminSidebar.jsx';
 import { clientePorId, actualizarContra } from './../../api/api.js';
 import styles from './../../styles/AdminPerfil.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 // Extraído 1:1 de "12-Perfil (standalone).html" (mismo componente que
 // EmpresaPerfil.jsx, adaptado a AdminSidebar). "Información personal" usa
@@ -137,6 +138,7 @@ export default function AdminPerfil() {
             <div className={styles.crumb}><span>Sistema</span> <span className={styles.accent} style={{ color: 'var(--muted-2)' }}>/</span> <span className={styles.accent}>Mi perfil</span></div>
             <div className={styles.pageTitle}>Mi perfil</div>
           </div>
+          <HeaderLogoutButton />
         </header>
 
         <div className={styles.content}>

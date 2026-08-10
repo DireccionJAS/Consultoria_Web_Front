@@ -6,6 +6,7 @@ import AdminSidebar from './AdminSidebar.jsx';
 import { HORARIOS_STORAGE_KEY } from '../Empresa/EmpresaHorarios.jsx';
 import { trasacciones, listarEncargados, actualizarTC } from './../../api/api.js';
 import styles from './../../styles/AdminCalendario.module.css';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 const DOW = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -515,6 +516,7 @@ export default function AdminCalendario() {
             <div className={styles.pageTitle}>Calendario de citas</div>
           </div>
           <div className={styles.topActions}>
+            <HeaderLogoutButton />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--mono)', textTransform: 'uppercase' }}>Filtrar:</span>
               <RichSelect

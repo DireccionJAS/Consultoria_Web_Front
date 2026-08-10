@@ -7,6 +7,7 @@ import ModalDetallePago from '../Administrador/ModalDetallePago.jsx';
 import ModalConfirmarPagoEfectivo from '../Administrador/ModalConfirmarPagoEfectivo.jsx';
 import styles from './../../styles/EmpresaPagos.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
+import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 const ITEMS_POR_PAGINA = 7;
 
@@ -230,6 +231,7 @@ export default function EmpresaPagos() {
           </div>
           <div className={styles.topActions}>
             <NotificationBell role="empresa" />
+            <HeaderLogoutButton />
             <button className={styles.btnAccent} onClick={() => { setPagoContextoEfectivo(null); setModalEfectivoAbierto(true); }}>
               <IconPlus /> Agregar pago
             </button>
