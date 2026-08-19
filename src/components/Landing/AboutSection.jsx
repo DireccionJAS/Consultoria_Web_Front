@@ -17,7 +17,7 @@ export default function AboutSection() {
               <img src={Logo} alt="Consultoría JAS" />
             </div>
             <div className={styles.aboutStatOverlay}>
-              <div className={styles.num}>2011<em>.</em></div>
+              <div className={styles.num}>2019<em>.</em></div>
               <p>Nuestro primer trámite</p>
             </div>
           </div>
