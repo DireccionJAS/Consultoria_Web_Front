@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Swal from 'sweetalert2';
 import useReveal from "../../hooks/useReveal";
-import { enviarCorreoConDatos } from "../../api/api.js";
+import { enviarCorreoConDatos, getPdfLegalUrl } from "../../api/api.js";
 import styles from '../../styles/landing/PracticasSection.module.css';
 
 const DESTINO_PRACTICAS = 'consultoriacomercializacionjas@gmail.com';
@@ -160,7 +160,7 @@ export default function PracticasSection() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </button>
               <p className={styles.pracNote}>
-                Tus datos serán tratados conforme a nuestro <a href="#">Aviso de Privacidad</a>.
+                Tus datos serán tratados conforme a nuestro <a href={getPdfLegalUrl('privacidad')} target="_blank" rel="noreferrer">Aviso de Privacidad</a>.
               </p>
             </form>
           )}
