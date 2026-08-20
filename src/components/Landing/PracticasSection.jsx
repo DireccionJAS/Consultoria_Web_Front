@@ -4,7 +4,7 @@ import useReveal from "../../hooks/useReveal";
 import { enviarCorreoConDatos, getPdfLegalUrl } from "../../api/api.js";
 import styles from '../../styles/landing/PracticasSection.module.css';
 
-const DESTINO_PRACTICAS = 'consultoriacomercializacionjas@gmail.com';
+const DESTINO_PRACTICAS = 'recursoshumanos@consultoriajas.com';
 
 const INSTITUTIONS = [
   { mark: 'U', color: '#1B6B3A', name: 'UTEZ', sub: 'Univ. Tecnológica Emiliano Zapata' },

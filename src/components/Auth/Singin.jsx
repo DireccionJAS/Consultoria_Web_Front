@@ -265,7 +265,7 @@ export default function Signin({ onCancel }) {
 </div>`;
 
     try {
-      await enviarCorreoConDatos('consultoriacomercializacionjas@gmail.com', asuntoAdmin, mensajeAdmin);
+      await enviarCorreoConDatos('avisos@consultoriajas.com', asuntoAdmin, mensajeAdmin);
       return true;
     } catch (error) {
       console.error('Error al enviar notificación al administrador:', error);

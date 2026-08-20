@@ -4,7 +4,7 @@ import useReveal from "../../hooks/useReveal";
 import { enviarCorreoConDatos } from "../../api/api.js";
 import styles from '../../styles/landing/AgendaSection.module.css';
 
-const DESTINO_AGENDA = 'consultoriacomercializacionjas@gmail.com';
+const DESTINO_AGENDA = 'direcciongeneral@consultoriajas.com';
 
 function ArrowIcon() {
   return (
