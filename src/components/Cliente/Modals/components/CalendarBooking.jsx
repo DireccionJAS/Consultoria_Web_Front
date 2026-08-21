@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { getHorarios } from './../../../../api/api.js';
+
+// Días/horas reales de disponibilidad: se reutiliza el horario configurado
+// para SIMULACION (Empresa > Horarios) porque este flujo guarda la fecha en
+// el mismo campo TransactProgress.dateSimulation (ver
+// TransactProgressServiceImp.createProgressWithPayment). Si todavía no hay
+// nada configurado, se cae a un fallback con los mismos horarios de antes.
+const HORAS_FALLBACK = Array.from({ length: 15 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
 
 const CalendarBooking = ({ onDateSelected, disabledDates = [], minDate }) => {
   const [selectedDate, setSelectedDate] = useState(null); // Date object
   const [selectedTime, setSelectedTime] = useState('');
+  const [diasDisponibles, setDiasDisponibles] = useState(null); // null = aún no cargado, sin restringir
+  const [horasDisponibles, setHorasDisponibles] = useState(HORAS_FALLBACK);
 
-  // Horarios de trabajo (9:00 AM a 7:00 PM)
-  const availableHours = Array.from({ length: 15 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
+  useEffect(() => {
+    getHorarios()
+      .then((response) => {
+        const sim = response?.response?.horarios?.SIMULACION;
+        if (sim?.dias?.length) setDiasDisponibles(sim.dias);
+        if (sim?.horas?.length) {
+          setHorasDisponibles(sim.horas.map((h) => (h.length === 4 ? `0${h}` : h)));
+        }
+      })
+      .catch((error) => console.error('Error al obtener horarios:', error));
+  }, []);
+
+  const availableHours = horasDisponibles;
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -24,10 +45,12 @@ const CalendarBooking = ({ onDateSelected, disabledDates = [], minDate }) => {
     }
   };
 
-  // Deshabilitar fechas ocupadas
+  // Deshabilitar fechas ocupadas (prop) y días fuera del horario configurado
   const isDateDisabled = date => {
     const dateStr = date.toISOString().split('T')[0];
-    return disabledDates.some(d => d.startsWith(dateStr));
+    if (disabledDates.some(d => d.startsWith(dateStr))) return true;
+    if (diasDisponibles && !diasDisponibles.includes(date.getDay())) return true;
+    return false;
   };
 
   return (
