@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { getNotificaciones, marcarNotificacionLeida, marcarTodasNotificacionesLeidas } from "./../../api/api.js";
 import styles from "./../../styles/NotificationBell.module.css";
 
 function IconBell() {
@@ -62,108 +63,35 @@ const ICONS_POR_TIPO = {
   aviso: IconWarning,
 };
 
-const NOTIFICACIONES_EMPRESA = [
-  {
-    id: 1,
-    tipo: "persona",
-    leida: false,
-    hora: "Hace 8 min · 24 jun, 14:32",
-    mensaje: <>El cliente <strong>Andrea Vega</strong> se ha registrado en el sistema</>,
-  },
-  {
-    id: 2,
-    tipo: "pago",
-    leida: false,
-    hora: "Hace 1 h · 24 jun, 13:40",
-    mensaje: <>El cliente <strong>María Rodríguez</strong> realizó un pago de <strong>$4,500</strong> por Visa B1/B2 mediante <strong>Stripe</strong></>,
-  },
-  {
-    id: 3,
-    tipo: "efectivo",
-    leida: false,
-    hora: "Hace 3 h · 24 jun, 11:15",
-    mensaje: <>El admin <strong>Jasmín A.</strong> confirmó un pago en efectivo de <strong>$3,000</strong> del cliente <strong>Juan P. Ortiz</strong></>,
-  },
-  {
-    id: 4,
-    tipo: "cita",
-    leida: false,
-    hora: "Ayer · 23 jun, 18:20",
-    mensaje: <>El cliente <strong>Carlos Domínguez</strong> agendó una cita de <strong>Simulación</strong> para el 28 jun a las 16:00</>,
-  },
-  {
-    id: 5,
-    tipo: "cita",
-    leida: false,
-    hora: "Ayer · 23 jun, 16:05",
-    mensaje: <>Un visitante (<strong>Laura Méndez</strong>) agendó una cita de Atención al cliente para el 26 jun a las 10:00</>,
-  },
-  {
-    id: 6,
-    tipo: "aviso",
-    leida: true,
-    hora: "22 jun, 09:50",
-    mensaje: <>El cliente <strong>Pedro Morales</strong> cambió su cita con menos de 24 horas. Comisión generada: <strong>$99</strong></>,
-  },
-];
+// Refresca la bandeja cada 60s (mismo intervalo que Cliente/Calendario.jsx
+// usa para horarios) para que el badge de no-leídas se mantenga al día sin
+// depender de que el usuario recargue la página.
+const INTERVALO_REFRESCO_MS = 60000;
 
-const NOTIFICACIONES_ADMIN = [
-  {
-    id: 1,
-    tipo: "persona",
-    leida: false,
-    hora: "Hace 20 min · 24 jun, 14:10",
-    mensaje: <>Se te ha asignado el cliente <strong>María Rodríguez</strong> para el trámite <strong>Visa Americana B1/B2</strong></>,
-  },
-  {
-    id: 2,
-    tipo: "pago",
-    leida: false,
-    hora: "Hace 1 h · 24 jun, 13:40",
-    mensaje: <>El cliente <strong>María Rodríguez</strong> realizó un pago de <strong>$4,500</strong> por Visa B1/B2 mediante <strong>Stripe</strong></>,
-  },
-  {
-    id: 3,
-    tipo: "cita",
-    leida: false,
-    hora: "Hace 4 h · 24 jun, 10:30",
-    mensaje: <>El cliente <strong>Carlos Domínguez</strong> agendó una cita de <strong>Simulación</strong> para el 28 jun a las 16:00</>,
-  },
-  {
-    id: 4,
-    tipo: "cita",
-    leida: false,
-    hora: "Ayer · 23 jun, 17:42",
-    mensaje: <>El cliente <strong>Lucía Rangel</strong> cambió su cita del <strong>23 jun</strong> al <strong>30 jun</strong></>,
-  },
-  {
-    id: 5,
-    tipo: "aviso",
-    leida: false,
-    hora: "Ayer · 23 jun, 09:50",
-    mensaje: <>El cliente <strong>Pedro Morales</strong> cambió su cita con menos de 24 horas. Comisión: <strong>$99</strong></>,
-  },
-  {
-    id: 6,
-    tipo: "cita",
-    leida: false,
-    hora: "22 jun, 16:05",
-    mensaje: <>Un visitante (<strong>Laura Méndez</strong>) agendó una cita de Atención al cliente para el 26 jun a las 10:00</>,
-  },
-  {
-    id: 7,
-    tipo: "efectivo",
-    leida: true,
-    hora: "21 jun, 12:18",
-    mensaje: <>El cliente <strong>Andrea Vega</strong> liquidó el pago total de su trámite <strong>eTA Canadá</strong></>,
-  },
-];
-
-export default function NotificationBell({ role = "empresa" }) {
-  const initial = role === "admin" ? NOTIFICACIONES_ADMIN : NOTIFICACIONES_EMPRESA;
-  const [notificaciones, setNotificaciones] = useState(initial);
+// El backend decide a qué bandeja pertenece cada notificación según el rol
+// real del JWT de quien llama (ver NotificationServiceImp.esVisibleParaCaller),
+// no según ningún prop — los 8 call sites siguen pasando role="empresa"/
+// "admin" mayormente por documentación in-situ, ya no tiene efecto aquí.
+export default function NotificationBell() {
+  const [notificaciones, setNotificaciones] = useState([]);
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
+
+  const cargarNotificaciones = () => {
+    getNotificaciones()
+      .then((response) => {
+        if (response.success && Array.isArray(response.response.notificaciones)) {
+          setNotificaciones(response.response.notificaciones);
+        }
+      })
+      .catch((error) => console.error("Error al obtener notificaciones:", error));
+  };
+
+  useEffect(() => {
+    cargarNotificaciones();
+    const interval = setInterval(cargarNotificaciones, INTERVALO_REFRESCO_MS);
+    return () => clearInterval(interval);
+  }, []);
 
   const noLeidas = notificaciones.filter((n) => !n.leida).length;
 
@@ -183,12 +111,14 @@ export default function NotificationBell({ role = "empresa" }) {
     };
   }, [open]);
 
-  const marcarLeida = (id) => {
-    setNotificaciones((prev) => prev.map((n) => (n.id === id ? { ...n, leida: true } : n)));
+  const marcarLeida = (idNotification) => {
+    setNotificaciones((prev) => prev.map((n) => (n.idNotification === idNotification ? { ...n, leida: true } : n)));
+    marcarNotificacionLeida(idNotification).catch((error) => console.error("Error al marcar notificación como leída:", error));
   };
 
   const marcarTodasLeidas = () => {
     setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
+    marcarTodasNotificacionesLeidas().catch((error) => console.error("Error al marcar notificaciones como leídas:", error));
   };
 
   return (
@@ -211,25 +141,31 @@ export default function NotificationBell({ role = "empresa" }) {
           </div>
 
           <div className={styles.list}>
-            {notificaciones.map((n) => {
-              const Icon = ICONS_POR_TIPO[n.tipo];
-              return (
-                <div
-                  key={n.id}
-                  className={`${styles.item} ${!n.leida ? styles.unread : ""}`}
-                  onClick={() => marcarLeida(n.id)}
-                >
-                  <div className={`${styles.itemIcon} ${styles[n.tipo]}`}>
-                    <Icon />
+            {notificaciones.length === 0 ? (
+              <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: 'rgba(0,0,42,0.5)' }}>
+                No tienes notificaciones todavía.
+              </div>
+            ) : (
+              notificaciones.map((n) => {
+                const Icon = ICONS_POR_TIPO[n.tipo] || IconWarning;
+                return (
+                  <div
+                    key={n.idNotification}
+                    className={`${styles.item} ${!n.leida ? styles.unread : ""}`}
+                    onClick={() => marcarLeida(n.idNotification)}
+                  >
+                    <div className={`${styles.itemIcon} ${styles[n.tipo]}`}>
+                      <Icon />
+                    </div>
+                    <div className={styles.itemBody}>
+                      <div className={styles.itemText}>{n.mensaje}</div>
+                      <div className={styles.itemTime}>{n.createdAt}</div>
+                    </div>
+                    {!n.leida && <span className={styles.itemDot}></span>}
                   </div>
-                  <div className={styles.itemBody}>
-                    <div className={styles.itemText}>{n.mensaje}</div>
-                    <div className={styles.itemTime}>{n.hora}</div>
-                  </div>
-                  {!n.leida && <span className={styles.itemDot}></span>}
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
       )}

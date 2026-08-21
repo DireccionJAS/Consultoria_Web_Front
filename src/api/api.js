@@ -716,6 +716,40 @@ export const getAllDates = async () => {
 }
 
 // =============================================================================
+// NOTIFICACIONES
+// =============================================================================
+
+export const getNotificaciones = async () => {
+  try {
+    const response = await apiClient.get(`/notificaciones`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las notificaciones', error);
+    throw error;
+  }
+};
+
+export const marcarNotificacionLeida = async (idNotification) => {
+  try {
+    const response = await apiClient.put(`/notificaciones/${idNotification}/leer`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al marcar la notificación como leída', error);
+    throw error;
+  }
+};
+
+export const marcarTodasNotificacionesLeidas = async () => {
+  try {
+    const response = await apiClient.put(`/notificaciones/leer-todas`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al marcar las notificaciones como leídas', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE HORARIOS / CITAS
 // =============================================================================
 
