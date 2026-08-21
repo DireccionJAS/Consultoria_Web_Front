@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
-import { RegistrarCliente as registrarClienteAPI, actualizar as actualizarClienteAPI } from './../../api/api.js';
+import { RegistrarCliente as registrarClienteAPI, actualizar as actualizarClienteAPI, getEmpresas } from './../../api/api.js';
 import styles from './../../styles/ClienteModal.module.css';
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -118,18 +119,10 @@ function IconCheck() {
 
 const CAMPOS_INICIALES = { name: '', email: '', phone: '', password: '' };
 
-// UI-only: no existe todavía una entidad Empresa en el backend, así que la
-// asignación aquí no se persiste. Mismas 2 empresas que ya usa el selector
-// decorativo de AdminTramites.jsx/EmpresaTramites.jsx.
-const EMPRESAS = [
-  { code: 'JAS', label: 'C.JAS', name: 'Consultoría JAS' },
-  { code: 'CMG', label: 'COR.M', name: 'Corporativo Migratorio Gutiérrez' },
-];
-
-function EmpresaDropdown({ value, onChange }) {
+function EmpresaDropdown({ value, onChange, empresas }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
-  const empresa = EMPRESAS.find((e) => e.code === value) || null;
+  const empresa = empresas.find((e) => e.idEmpresa === value) || null;
 
   useEffect(() => {
     const handleOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
@@ -150,14 +143,14 @@ function EmpresaDropdown({ value, onChange }) {
             Sin asignar
             {!value && <span className={styles.check}><IconCheck /></span>}
           </div>
-          {EMPRESAS.map((e) => (
+          {empresas.map((e) => (
             <div
-              key={e.code}
-              className={`${styles.statusOpt} ${value === e.code ? styles.sel : ''}`}
-              onClick={() => { onChange(e.code); setOpen(false); }}
+              key={e.idEmpresa}
+              className={`${styles.statusOpt} ${value === e.idEmpresa ? styles.sel : ''}`}
+              onClick={() => { onChange(e.idEmpresa); setOpen(false); }}
             >
-              {e.name} ({e.label})
-              {value === e.code && <span className={styles.check}><IconCheck /></span>}
+              {e.name} ({e.code})
+              {value === e.idEmpresa && <span className={styles.check}><IconCheck /></span>}
             </div>
           ))}
         </div>
@@ -166,15 +159,34 @@ function EmpresaDropdown({ value, onChange }) {
   );
 }
 
+function getRolActual() {
+  try {
+    const token = localStorage.getItem('token');
+    return token ? jwtDecode(token).role : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
   const esEdicion = !!cliente;
+  const esAdmin = getRolActual() === 'ADMIN';
   const [campos, setCampos] = useState(CAMPOS_INICIALES);
   const [status, setStatus] = useState(true);
   const [showPw, setShowPw] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  // Sin backend de Empresas todavía (no existe esa entidad) - selector
-  // decorativo por ahora, no se envía al guardar el cliente.
+  // Elegir empresa solo aplica al crear y solo tiene sentido para ADMIN: a un
+  // cliente creado por EMPRESA el backend ya le asigna la empresa del caller
+  // sin importar lo que se mande aquí (ver UserServiceImp.createUser).
   const [empresa, setEmpresa] = useState(null);
+  const [empresas, setEmpresas] = useState([]);
+
+  useEffect(() => {
+    if (!show || esEdicion || !esAdmin) return;
+    getEmpresas()
+      .then((response) => setEmpresas(response.success && Array.isArray(response.response.empresas) ? response.response.empresas : []))
+      .catch((error) => { console.error('Error al obtener las empresas:', error); setEmpresas([]); });
+  }, [show, esEdicion, esAdmin]);
 
   useEffect(() => {
     if (!show) return;
@@ -217,6 +229,7 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
           phone: campos.phone,
           password: campos.password,
           status,
+          ...(esAdmin && empresa ? { idEmpresa: empresa } : {}),
         });
       }
       Swal.fire({
@@ -322,10 +335,12 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
               </div>
             </div>
 
-            <div className={`${styles.field} ${styles.full}`}>
-              <label className={styles.fieldLabel}>Empresa</label>
-              <EmpresaDropdown value={empresa} onChange={setEmpresa} />
-            </div>
+            {!esEdicion && esAdmin && (
+              <div className={`${styles.field} ${styles.full}`}>
+                <label className={styles.fieldLabel}>Empresa</label>
+                <EmpresaDropdown value={empresa} onChange={setEmpresa} empresas={empresas} />
+              </div>
+            )}
 
             {!esEdicion && (
               <div className={`${styles.field} ${styles.full}`}>

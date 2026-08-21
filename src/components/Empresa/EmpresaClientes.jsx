@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
@@ -106,58 +106,15 @@ function IconCheck() {
   );
 }
 
-function IconChevronDown() {
+// Empresa real del cliente (user.empresaName/empresaCode, poblado en el
+// backend desde User.empresa) — solo lectura. Para una vista Empresa esto
+// siempre es la propia empresa del caller (los datos ya vienen filtrados),
+// se mantiene por consistencia con AdminClientes.jsx.
+function EmpresaBadge({ nombre, code }) {
   return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <path d="M6 9l6 6 6-6"></path>
-    </svg>
-  );
-}
-
-// UI-only: no existe todavía una entidad Empresa en el backend, así que la
-// asignación aquí no se persiste. Mismas 2 empresas que ya usa el selector
-// decorativo de EmpresaTramites.jsx.
-const EMPRESAS = [
-  { code: 'JAS', label: 'C.JAS', name: 'Consultoría JAS' },
-  { code: 'CMG', label: 'COR.M', name: 'Corporativo Migratorio Gutiérrez' },
-];
-
-function EmpresaDropdown({ value, onChange }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  const empresa = EMPRESAS.find((e) => e.code === value) || null;
-
-  useEffect(() => {
-    const handleOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener('mousedown', handleOutside);
-    return () => document.removeEventListener('mousedown', handleOutside);
-  }, []);
-
-  return (
-    <div className={styles.statusDd} ref={ref}>
-      <div className={styles.empresaCell} style={{ cursor: 'pointer' }} onClick={() => setOpen((o) => !o)}>
-        <span className={styles.empresaAvatar}>{empresa ? empresa.code.slice(0, 3) : '—'}</span>
-        <span className={styles.empresaCode}>{empresa ? empresa.label : 'Sin asignar'}</span>
-        <IconChevronDown />
-      </div>
-      {open && (
-        <div className={styles.statusMenu}>
-          <div className={`${styles.statusOpt} ${!value ? styles.sel : ''}`} onClick={() => { onChange(null); setOpen(false); }}>
-            Sin asignar
-            {!value && <span className={styles.check}><IconCheck /></span>}
-          </div>
-          {EMPRESAS.map((e) => (
-            <div
-              key={e.code}
-              className={`${styles.statusOpt} ${value === e.code ? styles.sel : ''}`}
-              onClick={() => { onChange(e.code); setOpen(false); }}
-            >
-              {e.name} ({e.label})
-              {value === e.code && <span className={styles.check}><IconCheck /></span>}
-            </div>
-          ))}
-        </div>
-      )}
+    <div className={styles.empresaCell}>
+      <span className={styles.empresaAvatar}>{code ? code.slice(0, 3) : '—'}</span>
+      <span className={styles.empresaCode}>{nombre || 'Sin empresa'}</span>
     </div>
   );
 }
@@ -197,7 +154,6 @@ export default function EmpresaClientes() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [tabActiva, setTabActiva] = useState('activos');
-  const [empresaAsignada, setEmpresaAsignada] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -404,10 +360,7 @@ export default function EmpresaClientes() {
                             )}
                           </td>
                           <td>
-                            <EmpresaDropdown
-                              value={empresaAsignada[cliente.idUser] || null}
-                              onChange={(code) => setEmpresaAsignada((prev) => ({ ...prev, [cliente.idUser]: code }))}
-                            />
+                            <EmpresaBadge nombre={cliente.empresaName} code={cliente.empresaCode} />
                           </td>
                           <td>
                             <div className={styles.tgWrap}>
