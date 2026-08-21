@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { HORARIOS_STORAGE_KEY } from './EmpresaHorarios.jsx';
-import { trasacciones, listarEncargados, actualizarTC } from './../../api/api.js';
+import { trasacciones, listarEncargados, actualizarTC, getHorarios } from './../../api/api.js';
 import styles from './../../styles/EmpresaCalendario.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
@@ -19,11 +18,10 @@ const EV_META = {
   aten: { headClass: 'aten', type: 'Atención a cliente · Vía Zoom', badge: 'Atención a cliente' },
 };
 
-// "Cita externa" (Atención al cliente) no tiene backend: ni entidad, ni
-// sistema de disponibilidad. Los días/horas se leen de la configuración
-// guardada en Empresa > Horarios (pestaña "Atención remota", localStorage
-// vía HORARIOS_STORAGE_KEY) para que reflejen lo que la empresa configuró
-// ahí en vez de un mockup fijo. Si todavía no se guardó nada, se cae a un
+// "Cita externa" (Atención al cliente) no tiene entidad propia de citas, pero
+// sus días/horas disponibles sí vienen del backend real: se leen de
+// GET /api/horarios (tipo ATENCION_REMOTA), la misma fuente que usa
+// Empresa > Horarios. Si todavía no hay nada configurado, se cae a un
 // fallback con los mismos datos de demo de antes.
 const EXT_DIAS_FALLBACK = [
   { d: '16', m: 'JUN' },
@@ -45,15 +43,6 @@ const DIAS_SEMANA_EXT = [
   { key: 'lunes', dow: 1 }, { key: 'martes', dow: 2 }, { key: 'miercoles', dow: 3 },
   { key: 'jueves', dow: 4 }, { key: 'viernes', dow: 5 }, { key: 'sabado', dow: 6 },
 ];
-
-function cargarHorariosGuardados() {
-  try {
-    const raw = localStorage.getItem(HORARIOS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
 
 function calcularExtDias(diasActivos, cantidad = 4) {
   const dowsActivos = DIAS_SEMANA_EXT.filter((d) => diasActivos?.[d.key]).map((d) => d.dow);
@@ -250,18 +239,25 @@ export default function EmpresaCalendario() {
   const [extDia, setExtDia] = useState(0);
   const [extHora, setExtHora] = useState('10:00');
   const [extAtencion, setExtAtencion] = useState('zoom');
+  const [horarioRemoto, setHorarioRemoto] = useState(null);
+
+  useEffect(() => {
+    if (!extAbierta) return;
+    getHorarios()
+      .then((response) => setHorarioRemoto(response?.response?.horarios?.ATENCION_REMOTA || null))
+      .catch((error) => console.error('Error al obtener horarios de atención remota:', error));
+  }, [extAbierta]);
 
   const extDias = useMemo(() => {
-    const guardado = cargarHorariosGuardados();
-    const dias = calcularExtDias(guardado?.llamadaDias);
+    const diasObj = {};
+    DIAS_SEMANA_EXT.forEach((d) => { diasObj[d.key] = (horarioRemoto?.dias || []).includes(d.dow); });
+    const dias = calcularExtDias(diasObj);
     return dias.length > 0 ? dias : EXT_DIAS_FALLBACK;
-  }, [extAbierta]);
+  }, [horarioRemoto]);
   const extHoras = useMemo(() => {
-    const guardado = cargarHorariosGuardados();
-    if (!guardado?.llamadaHoras) return EXT_HORAS_FALLBACK;
-    const disponibles = Object.entries(guardado.llamadaHoras).filter(([, activa]) => activa).map(([hora]) => ({ hora }));
-    return disponibles.length > 0 ? disponibles : EXT_HORAS_FALLBACK;
-  }, [extAbierta]);
+    if (!horarioRemoto?.horas?.length) return EXT_HORAS_FALLBACK;
+    return horarioRemoto.horas.map((hora) => ({ hora }));
+  }, [horarioRemoto]);
 
   const [ccAbierta, setCcAbierta] = useState(false);
   const [ccContext, setCcContext] = useState(null);
