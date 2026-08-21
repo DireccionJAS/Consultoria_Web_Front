@@ -12,7 +12,6 @@ const URL_DS160 = import.meta.env.VITE_URL_DS160;
 // =============================================================================
 // AUTENTICACIÓN Y USUARIOS
 // =============================================================================
-
 export const Login = async (email, password) => {
   try {
     const response = await apiClient.post(`/login`, {
@@ -25,7 +24,6 @@ export const Login = async (email, password) => {
     throw error;
   }
 };
-
 export const loginWithGoogle = async (accessToken) => {
   try {
     const response = await apiClient.post(`/auth/google`, { accessToken });
