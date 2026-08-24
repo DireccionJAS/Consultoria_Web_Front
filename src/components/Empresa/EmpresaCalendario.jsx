@@ -395,6 +395,33 @@ export default function EmpresaCalendario() {
     ? (new Date(`${ccContext.fecha}T${ccContext.hora}:00`) - new Date()) < 24 * 60 * 60 * 1000
     : false;
 
+  const handleCancelarCita = async () => {
+    if (!eventoDetalle) return;
+    const { tipo, item } = eventoDetalle;
+    const confirm = await Swal.fire({
+      icon: 'warning',
+      title: '¿Cancelar esta cita?',
+      text: 'Se eliminará la cita agendada. El cliente podrá agendar una nueva.',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+    });
+    if (!confirm.isConfirmed) return;
+    const payload = { ...item };
+    if (tipo === 'cas') payload.dateCas = null;
+    if (tipo === 'con') payload.dateCon = null;
+    if (tipo === 'sim') payload.dateSimulation = null;
+    try {
+      const res = await actualizarTC(item.idTransactProgress, payload);
+      if (!res?.success) throw new Error(res?.message || 'No se pudo cancelar la cita');
+      await fetchServices();
+      setEventoDetalle(null);
+      Swal.fire({ icon: 'success', title: 'Cita cancelada', text: 'La cita fue eliminada correctamente.' });
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: 'No se pudo cancelar', text: error.message || 'Ocurrió un error al cancelar la cita.' });
+    }
+  };
+
   const handleConfirmarCambioLejos = async () => {
     if (!ccContext || !ccFecha || !ccHora) return;
     setCcGuardando(true);
@@ -639,6 +666,9 @@ export default function EmpresaCalendario() {
                 </div>
                 <button className={`${styles.btn} ${styles.btnGhost}`} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={abrirCambiarCita}>
                   <IconCalSmall /> Cambiar cita
+                </button>
+                <button className={`${styles.btn} ${styles.btnDanger}`} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }} onClick={handleCancelarCita}>
+                  <IconClose size={13} /> Cancelar cita
                 </button>
                 <button className={`${styles.btn} ${styles.btnAccent}`} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }} onClick={() => navigate('/EmpresaTramites')}>
                   Ver trámite completo <IconExternal />

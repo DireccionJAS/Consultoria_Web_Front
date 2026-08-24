@@ -47,21 +47,6 @@ function CloseIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6l12 12M6 18L18 6" /></svg>
   );
 }
-function ShieldIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2L4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z" /><path d="M9 12l2 2 4-4" /></svg>
-  );
-}
-function GridIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
-  );
-}
-function UserIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="7" r="4" /><path d="M3 21v-1a7 7 0 0 1 14 0v1" /></svg>
-  );
-}
 function GoogleGIcon() {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24">
@@ -250,42 +235,14 @@ export default function Home() {
           </p>
         </div>
 
-        {variant === 'client' ? (
-          <div className={styles.roleHint}>
-            <div className={styles.roleHintHead}>
-              <div className={styles.roleHintIcon}><ShieldIcon /></div>
-              <div className={styles.roleHintTitle}>Detección automática de rol</div>
-            </div>
-            <p className={styles.roleHintDesc}>
-              No necesitas elegir tu tipo de cuenta — el sistema te redirige según tu perfil después de validar tus credenciales.
-            </p>
-            <div className={styles.roleChips}>
-              <div className={`${styles.roleChip} ${styles.admin}`}>
-                <div className={styles.roleChipIcon}><GridIcon /></div>
-                <div className={styles.roleChipText}>
-                  <div className={styles.roleChipName}>Administrador</div>
-                  <div className={styles.roleChipSub}>→ Panel admin</div>
-                </div>
-              </div>
-              <div className={`${styles.roleChip} ${styles.client}`}>
-                <div className={styles.roleChipIcon}><UserIcon /></div>
-                <div className={styles.roleChipText}>
-                  <div className={styles.roleChipName}>Cliente</div>
-                  <div className={styles.roleChipSub}>→ Portal de trámites</div>
-                </div>
-              </div>
-            </div>
+        <div className={styles.brandFoot}>
+          <div className={styles.brandStats}>
+            <div className={styles.brandStat}><div className={styles.v}>87</div><div className={styles.l}>Trámites activos</div></div>
+            <div className={styles.brandStat}><div className={styles.v}>96<em>%</em></div><div className={styles.l}>Aprobación</div></div>
+            <div className={styles.brandStat}><div className={styles.v}>214</div><div className={styles.l}>Clientes</div></div>
           </div>
-        ) : (
-          <div className={styles.brandFoot}>
-            <div className={styles.brandStats}>
-              <div className={styles.brandStat}><div className={styles.v}>87</div><div className={styles.l}>Trámites activos</div></div>
-              <div className={styles.brandStat}><div className={styles.v}>96<em>%</em></div><div className={styles.l}>Aprobación</div></div>
-              <div className={styles.brandStat}><div className={styles.v}>214</div><div className={styles.l}>Clientes</div></div>
-            </div>
-            <div>© 2026 · Jiutepec, Morelos</div>
-          </div>
-        )}
+          <div>© 2026 · Jiutepec, Morelos</div>
+        </div>
       </section>
 
       {/* RIGHT FORM PANEL */}

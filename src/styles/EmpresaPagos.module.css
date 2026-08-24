@@ -70,7 +70,7 @@
 }
 .btnAccent {
   display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px;
-  font-size: 13px; font-weight: 600; background: var(--c2) !important; color: var(--white); transition: all 0.2s;
+  font-size: 13px; font-weight: 600; background: var(--c2) !important; color: var(--white) !important; transition: all 0.2s;
   border: 1px solid rgba(0,0,0,0.15) !important;
 }
 .btnAccent:hover { background: #1f5dcc !important; transform: translateY(-1px); }

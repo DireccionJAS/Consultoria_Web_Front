@@ -90,7 +90,7 @@
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
 .btnGhost:hover { background: #F4F6F8; }
-.btnPrimary { background: var(--c1); color: var(--c5); border: 1px solid rgba(0,0,0,0.15); }
+.btnPrimary { background: var(--c1); color: var(--c5) !important; border: 1px solid rgba(0,0,0,0.15); }
 .btnPrimary:hover:not(:disabled) { background: var(--c2); transform: translateY(-1px); }
 .btnDanger { background: var(--rose-soft); color: var(--rose); border: 1px solid var(--rose); }
 .btnDanger:hover:not(:disabled) { background: #EFC7C7; }

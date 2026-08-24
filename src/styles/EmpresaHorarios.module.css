@@ -65,7 +65,7 @@
 .dayChip:hover { border-color: var(--primary); }
 .dayChip.on { border-color: var(--primary); background: var(--light) !important; }
 .dayBox { width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--line-2); background: var(--white) !important; display: flex; align-items: center; justify-content: center; color: transparent; transition: all 0.2s; flex-shrink: 0; }
-.dayChip.on .dayBox { background: var(--primary) !important; border-color: var(--primary); color: #fff; }
+.dayChip.on .dayBox { background: var(--primary) !important; border-color: var(--primary); color: #fff !important; }
 .dayName { font-size: 12.5px; font-weight: 600; }
 
 /* fechas próximas */
@@ -80,7 +80,7 @@
 .hours { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
 .hourChip { padding: 11px 6px; border: 1.5px solid var(--line-2); border-radius: 10px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 12.5px; font-weight: 600; font-family: var(--mono); }
 .hourChip:hover { border-color: var(--primary); }
-.hourChip.on { border-color: var(--primary); background: var(--primary) !important; color: #fff; }
+.hourChip.on { border-color: var(--primary); background: var(--primary) !important; color: #fff !important; }
 .hoursMeta { font-size: 11px; color: var(--muted); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
 
 /* fixed schedule (presencial) */
@@ -97,7 +97,7 @@
 
 .secFoot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 10px; background: #FCFDFE; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
-.btnPrimary { background: var(--primary) !important; color: #fff; border: 1px solid rgba(0,0,0,0.15) !important; }
+.btnPrimary { background: var(--primary) !important; color: #fff !important; border: 1px solid rgba(0,0,0,0.15) !important; }
 .btnPrimary:hover { background: var(--hover) !important; transform: translateY(-1px); }
 .btnGhost { background: transparent !important; color: var(--c1); border: 1px solid var(--line-2); }
 .btnGhost:hover { background: #F4F8FB !important; }

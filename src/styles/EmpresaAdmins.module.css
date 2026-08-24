@@ -35,7 +35,7 @@
 .accent { color: var(--c2); }
 .pageTitle { font-family: var(--display); font-weight: 600; font-size: 28px; letter-spacing: -0.025em; line-height: 1; }
 .topActions { display: flex; align-items: center; gap: 8px; }
-.btnAccent { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--c2) !important; color: var(--white); transition: all 0.2s; border: 1px solid rgba(0,0,0,0.15) !important; }
+.btnAccent { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--c2) !important; color: var(--white) !important; transition: all 0.2s; border: 1px solid rgba(0,0,0,0.15) !important; }
 .btnAccent:hover { background: #1f5dcc !important; transform: translateY(-1px); }
 
 .content { padding: 28px 32px 60px; display: flex; flex-direction: column; gap: 20px; }
