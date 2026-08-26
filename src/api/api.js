@@ -750,6 +750,43 @@ export const marcarTodasNotificacionesLeidas = async () => {
 };
 
 // =============================================================================
+// TESTIMONIOS (galería pública)
+// =============================================================================
+
+export const getTestimonios = async () => {
+  try {
+    const response = await apiClient.get(`/testimonios`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener los testimonios', error);
+    throw error;
+  }
+};
+
+export const crearTestimonio = async (file, tag) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('tag', tag);
+    const response = await apiClient.post(`/testimonios`, formData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al subir el testimonio', error);
+    throw error;
+  }
+};
+
+export const eliminarTestimonio = async (idTestimonio) => {
+  try {
+    const response = await apiClient.delete(`/testimonios/${idTestimonio}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar el testimonio', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE HORARIOS / CITAS
 // =============================================================================
 

@@ -1,22 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useReveal from "../../hooks/useReveal";
+import { getTestimonios } from "../../api/api.js";
 import styles from '../../styles/landing/TestimonialsSection.module.css';
 
-const TESTIMONIOS = [
-  { tag: "Visa B1/B2", name: "Mariana S.", sub: "Visa aprobada · Marzo 2026" },
-  { tag: "eTA Canadá", name: "Carlos R.", sub: "Aprobado en 48 horas" },
-  { tag: "DS-160 × 4", name: "Familia López", sub: "4 visas el mismo día" },
-  { tag: "Visa B1/B2 · Renovación", name: "Andrea V.", sub: "10 años de vigencia" },
-  { tag: "Pasaporte SRE", name: "Patricia G.", sub: "Renovación sin filas" },
-  { tag: "Simulación + Visa", name: "Roberto M.", sub: "Primera visa aprobada" },
-  { tag: "eTA Canadá", name: "Lucía R.", sub: "Vacaciones familiares" },
-  { tag: "Visa B1/B2", name: "Juan P.", sub: "Viaje de negocios" },
-  { tag: "Familia · Múltiple", name: "Familia Ortiz", sub: "3 generaciones viajando" },
-];
+function IconPlay() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  );
+}
 
 export default function TestimonialsSection() {
   const [headerRef, headerIn] = useReveal();
   const [gridRef, gridIn] = useReveal();
+  const [testimonios, setTestimonios] = useState([]);
+  const [zoomImg, setZoomImg] = useState(null);
+
+  useEffect(() => {
+    let activo = true;
+    getTestimonios()
+      .then((response) => {
+        if (!activo) return;
+        const lista = response.success && Array.isArray(response.response?.testimonios) ? response.response.testimonios : [];
+        setTestimonios(lista);
+      })
+      .catch((error) => {
+        console.error('Error al obtener testimonios:', error);
+        if (activo) setTestimonios([]);
+      });
+    return () => { activo = false; };
+  }, []);
+
+  if (testimonios.length === 0) return null;
 
   return (
     <section className={styles.testimonials} id="testimonios">
@@ -31,12 +47,8 @@ export default function TestimonialsSection() {
             </p>
             <div className={styles.testimonialsStats}>
               <div>
-                <div className={styles.ts}>9</div>
+                <div className={styles.ts}>{testimonios.length}</div>
                 <div className={styles.tl}>Testimonios</div>
-              </div>
-              <div>
-                <div className={styles.ts}>4.<em>9</em></div>
-                <div className={styles.tl}>Calificación promedio</div>
               </div>
               <div>
                 <div className={styles.ts}>100<em>%</em></div>
@@ -47,17 +59,27 @@ export default function TestimonialsSection() {
         </div>
 
         <div ref={gridRef} className={`${styles.videoGrid} jas-reveal ${gridIn ? 'jas-in' : ''}`}>
-          {TESTIMONIOS.map((v) => (
-            <div key={v.name} className={styles.videoCard}>
+          {testimonios.map((t) => (
+            <div key={t.idTestimonio} className={styles.videoCard} onClick={() => setZoomImg(t.image)}>
+              <div className={styles.vtImg} style={{ backgroundImage: `url("${t.image}")` }}></div>
+              <div className={styles.videoPlay}><IconPlay /></div>
               <div className={styles.vtInfo}>
-                <span className={styles.vtTag}>{v.tag}</span>
-                <div className={styles.vtName}>{v.name}</div>
-                <div className={styles.vtSub}>{v.sub}</div>
+                <span className={styles.vtTag}>{t.tag}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {zoomImg && (
+        <div className={styles.testimonialZoomOverlay} onClick={() => setZoomImg(null)}>
+          <div className={styles.testimonialZoomHeader}>
+            <span className={styles.testimonialZoomTitle}>Testimonio</span>
+            <button className={styles.testimonialZoomClose} onClick={() => setZoomImg(null)}>&times;</button>
+          </div>
+          <img src={zoomImg} alt="Testimonio de cliente" className={styles.testimonialZoomImage} onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
     </section>
   );
 }

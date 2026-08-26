@@ -3,46 +3,28 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { getAllProcess } from './../../api/api.js';
+import { getAllProcess, getTestimonios, crearTestimonio, eliminarTestimonio } from './../../api/api.js';
 import styles from './../../styles/EmpresaPaginaPublica.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import aboutMainImg from './../../img/landing/about-main.jpg';
-import t1 from './../../img/landing/testimonial-1.jpg';
-import t2 from './../../img/landing/testimonial-2.jpg';
-import t3 from './../../img/landing/testimonial-3.jpg';
-import t4 from './../../img/landing/testimonial-4.jpg';
-import t5 from './../../img/landing/testimonial-5.jpg';
-import t6 from './../../img/landing/testimonial-6.jpg';
-import t7 from './../../img/landing/testimonial-7.jpg';
-import t8 from './../../img/landing/testimonial-8.jpg';
-import t9 from './../../img/landing/testimonial-9.jpg';
 
 // Extraído 1:1 de "13-ConfigPublica (standalone).html". La landing real
 // (src/components/Landing/*.jsx) tiene todo su contenido hardcodeado en
-// JSX/CSS — no existe backend (ni entidad Empresa, ni Faq, ni Testimonial,
-// ni Sucursal, ni redes sociales, ni horario de atención general) para
-// persistir nada de esto todavía. Por eso esta pantalla es UI 1:1 sin
-// persistencia: los campos se precargan con los valores REALES que hoy
-// están en la landing (no son datos inventados), pero "Publicar cambios"
-// no guarda nada. "Vista previa" sí es real: abre la landing pública (/)
-// en una pestaña nueva. El "servicio destacado" se calcula en la landing
-// como el primer servicio activo del arreglo (ServicesSection.jsx,
-// index === 0) — no existe una bandera "destacado" en el backend.
+// JSX/CSS — no existe backend (ni entidad Faq, ni Sucursal, ni redes
+// sociales, ni horario de atención general) para persistir nada de esto
+// todavía, EXCEPTO la pestaña Testimonios (ver TestimonioController en el
+// back), que ya lee/escribe contra la API real y se refleja en
+// TestimonialsSection.jsx de la landing. El resto de pestañas siguen siendo
+// UI 1:1 sin persistencia: los campos se precargan con los valores REALES
+// que hoy están en la landing (no son datos inventados), pero "Publicar
+// cambios" no guarda nada de ellas. "Vista previa" sí es real: abre la
+// landing pública (/) en una pestaña nueva. El "servicio destacado" se
+// calcula en la landing como el primer servicio activo del arreglo
+// (ServicesSection.jsx, index === 0) — no existe una bandera "destacado" en
+// el backend.
 
 const TAB_KEYS = ['inicio', 'servicios', 'nosotros', 'testimonios', 'faq', 'contacto'];
 const TAB_LABELS = { inicio: 'Inicio', servicios: 'Servicios', nosotros: 'Nosotros', testimonios: 'Testimonios', faq: 'FAQ', contacto: 'Contacto' };
-
-const TESTIMONIOS_INICIALES = [
-  { id: 1, img: t1, tag: 'Visa B1/B2' },
-  { id: 2, img: t2, tag: 'eTA Canadá' },
-  { id: 3, img: t3, tag: 'DS-160 × 4' },
-  { id: 4, img: t4, tag: 'Visa B1/B2 · Renovación' },
-  { id: 5, img: t5, tag: 'Pasaporte SRE' },
-  { id: 6, img: t6, tag: 'Simulación + Visa' },
-  { id: 7, img: t7, tag: 'eTA Canadá' },
-  { id: 8, img: t8, tag: 'Visa B1/B2' },
-  { id: 9, img: t9, tag: 'Familia · Múltiple' },
-];
 
 const FAQ_INICIALES = [
   { id: 1, question: '¿Cuánto tarda el proceso completo de visa americana?', answer: 'En 2026, el promedio en CDMX es de 8–14 semanas entre el llenado del DS-160 y la entrevista consular. Con JAS conseguimos la primera cita disponible y reducimos el tiempo de espera al mínimo.' },
@@ -170,8 +152,10 @@ export default function EmpresaPaginaPublica() {
   // Nosotros (real: AboutSection.jsx)
   const [imgNosotrosPreview, setImgNosotrosPreview] = useState(null);
 
-  // Testimonios (real: TestimonialsSection.jsx)
-  const [testimonios, setTestimonios] = useState(TESTIMONIOS_INICIALES);
+  // Testimonios (real: TestimonialsSection.jsx) — única pestaña con backend real
+  const [testimonios, setTestimonios] = useState([]);
+  const [testimoniosCargando, setTestimoniosCargando] = useState(true);
+  const [testimonioSubiendo, setTestimonioSubiendo] = useState(false);
 
   // FAQ (real: FAQSection.jsx)
   const [faqs, setFaqs] = useState(FAQ_INICIALES);
@@ -193,20 +177,19 @@ export default function EmpresaPaginaPublica() {
   const [horLineaLV, setHorLineaLV] = useState('8:00 – 21:00');
   const [horLineaFinde, setHorLineaFinde] = useState('9:00 – 14:00');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) { navigate('/'); return; }
+  const fetchTestimonios = async () => {
+    setTestimoniosCargando(true);
     try {
-      const decoded = jwtDecode(token);
-      if (decoded.role !== 'EMPRESA') { navigate('/'); return; }
+      const response = await getTestimonios();
+      const lista = response.success && Array.isArray(response.response.testimonios) ? response.response.testimonios : [];
+      setTestimonios(lista.map((t) => ({ id: t.idTestimonio, img: t.image, tag: t.tag })));
     } catch (error) {
-      console.error('Token inválido', error);
-      localStorage.removeItem('token');
-      navigate('/');
-      return;
+      console.error('Error al obtener testimonios:', error);
+      setTestimonios([]);
+    } finally {
+      setTestimoniosCargando(false);
     }
-    fetchServicios();
-  }, [navigate]);
+  };
 
   const fetchServicios = async () => {
     try {
@@ -220,6 +203,22 @@ export default function EmpresaPaginaPublica() {
       setServicios([]);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) { navigate('/'); return; }
+    try {
+      const decoded = jwtDecode(token);
+      if (decoded.role !== 'EMPRESA') { navigate('/'); return; }
+    } catch (error) {
+      console.error('Token inválido', error);
+      localStorage.removeItem('token');
+      navigate('/');
+      return;
+    }
+    fetchServicios();
+    fetchTestimonios();
+  }, [navigate]);
 
   const handleNavigate = (key) => { console.log('Navegar a sección de sidebar:', key); };
 
@@ -237,15 +236,41 @@ export default function EmpresaPaginaPublica() {
   const handlePickServicioImg = (file) => setImgServicioPreview(URL.createObjectURL(file));
   const handlePickNosotrosImg = (file) => setImgNosotrosPreview(URL.createObjectURL(file));
 
-  const handleEliminarTestimonio = (id) => setTestimonios((prev) => prev.filter((t) => t.id !== id));
+  const handleEliminarTestimonio = async (id) => {
+    const confirm = await Swal.fire({
+      title: '¿Eliminar testimonio?', icon: 'warning', showCancelButton: true,
+      confirmButtonText: 'Eliminar', cancelButtonText: 'Cancelar', confirmButtonColor: '#d33',
+    });
+    if (!confirm.isConfirmed) return;
+    try {
+      const response = await eliminarTestimonio(id);
+      if (!response.success) { Swal.fire('Error', response.message || 'No se pudo eliminar el testimonio', 'error'); return; }
+      setTestimonios((prev) => prev.filter((t) => t.id !== id));
+    } catch (error) {
+      console.error('Error al eliminar testimonio:', error);
+      Swal.fire('Error', 'No se pudo eliminar el testimonio', 'error');
+    }
+  };
 
   const handleSubirTestimonio = async (file) => {
     const { value: tagVal } = await Swal.fire({
       title: 'Etiqueta del testimonio', input: 'text', inputPlaceholder: 'Ej. Visa B1/B2',
       showCancelButton: true, confirmButtonText: 'Agregar', cancelButtonText: 'Cancelar',
+      inputValidator: (v) => !v.trim() && 'Escribe una etiqueta',
     });
     if (!tagVal) return;
-    setTestimonios((prev) => [...prev, { id: Date.now(), img: URL.createObjectURL(file), tag: tagVal }]);
+    setTestimonioSubiendo(true);
+    try {
+      const response = await crearTestimonio(file, tagVal.trim());
+      if (!response.success) { Swal.fire('Error', response.message || 'No se pudo subir el testimonio', 'error'); return; }
+      const nuevo = response.response.testimonio;
+      setTestimonios((prev) => [{ id: nuevo.idTestimonio, img: nuevo.image, tag: nuevo.tag }, ...prev]);
+    } catch (error) {
+      console.error('Error al subir testimonio:', error);
+      Swal.fire('Error', 'No se pudo subir el testimonio', 'error');
+    } finally {
+      setTestimonioSubiendo(false);
+    }
   };
 
   const abrirFaqModal = (item) => {
@@ -462,26 +487,30 @@ export default function EmpresaPaginaPublica() {
                   <div><div className={styles.cardTitle}>Galería de testimonios</div><div className={styles.cardSub}>Capturas y videos de clientes · {testimonios.length} visibles</div></div>
                 </div>
                 <div className={styles.cardBody}>
-                  <div className={styles.testGrid}>
-                    {testimonios.map((t) => (
-                      <div key={t.id} className={styles.testItem} style={{ backgroundImage: `url("${t.img}")` }}>
-                        <span className={styles.testTag}>{t.tag}</span>
-                        <button className={styles.testDel} title="Eliminar" onClick={() => handleEliminarTestimonio(t.id)}><IconClose size={12} /></button>
-                      </div>
-                    ))}
-                    <label className={styles.testAdd} htmlFor="upload-testimonio">
-                      <IconPlus size={20} />
-                      <span style={{ fontSize: 11, fontWeight: 600 }}>Subir</span>
-                    </label>
-                    <input
-                      id="upload-testimonio" type="file" accept="image/*" hidden
-                      onChange={async (e) => {
-                        const file = e.target.files[0];
-                        e.target.value = '';
-                        if (file) await handleSubirTestimonio(file);
-                      }}
-                    />
-                  </div>
+                  {testimoniosCargando ? (
+                    <div style={{ textAlign: 'center', padding: '30px', fontSize: 12.5, color: 'var(--muted)' }}>Cargando testimonios...</div>
+                  ) : (
+                    <div className={styles.testGrid}>
+                      {testimonios.map((t) => (
+                        <div key={t.id} className={styles.testItem} style={{ backgroundImage: `url("${t.img}")` }}>
+                          <span className={styles.testTag}>{t.tag}</span>
+                          <button className={styles.testDel} title="Eliminar" onClick={() => handleEliminarTestimonio(t.id)}><IconClose size={12} /></button>
+                        </div>
+                      ))}
+                      <label className={`${styles.testAdd} ${testimonioSubiendo ? styles.disabled : ''}`} htmlFor="upload-testimonio">
+                        <IconPlus size={20} />
+                        <span style={{ fontSize: 11, fontWeight: 600 }}>{testimonioSubiendo ? 'Subiendo...' : 'Subir'}</span>
+                      </label>
+                      <input
+                        id="upload-testimonio" type="file" accept="image/*" hidden disabled={testimonioSubiendo}
+                        onChange={async (e) => {
+                          const file = e.target.files[0];
+                          e.target.value = '';
+                          if (file) await handleSubirTestimonio(file);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
