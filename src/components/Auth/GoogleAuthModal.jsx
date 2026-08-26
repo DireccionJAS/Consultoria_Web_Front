@@ -56,7 +56,7 @@ function PhoneFieldIcon() {
 }
 
 const WHATSAPP_URL = 'https://wa.me/527772193613?text=' + encodeURIComponent('Hola, no tengo cuenta de Google y quiero continuar mi trámite con Consultoría JAS.');
-const TEL_URL = 'tel:+527773140099';
+const TEL_URL = 'tel:+527779835782';
 const FORMULARIO_URL = `${import.meta.env.VITE_API_URL}/pdf/download/formulario`;
 
 export default function GoogleAuthModal({
@@ -120,7 +120,7 @@ export default function GoogleAuthModal({
               </button>
               <button type="button" className={styles.altCard} onClick={handleLlamar}>
                 <div className={`${styles.altIc} ${styles.call}`}><CallIcon /></div>
-                <div><div className={styles.altName}>Llamar a Consultoría JAS</div><div className={styles.altSub}>777 314 0099 · L–S 9:00–18:00</div></div>
+                <div><div className={styles.altName}>Llamar a Consultoría JAS</div><div className={styles.altSub}>777 983 5782 · L–S 9:00–18:00</div></div>
                 <span className={styles.altArrow}><ExternalArrowIcon /></span>
               </button>
               <button type="button" className={styles.backLink} onClick={onBack}><BackIcon /> Volver</button>

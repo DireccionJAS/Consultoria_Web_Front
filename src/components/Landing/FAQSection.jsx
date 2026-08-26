@@ -25,7 +25,7 @@ const FAQ_DATA = [
   },
   {
     question: "¿Atienden trámites urgentes?",
-    answer: "Sí, tenemos un proceso expedito para emergencias médicas, familiares o de trabajo. Llámanos al 777 395 6677 y un consultor evalúa tu caso el mismo día."
+    answer: "Sí, tenemos un proceso expedito para emergencias médicas, familiares o de trabajo. Llámanos al 777 983 5782 y un consultor evalúa tu caso el mismo día."
   },
 ];
 

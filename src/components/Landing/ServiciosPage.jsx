@@ -383,8 +383,8 @@ export default function ServiciosPage() {
             <p>Algunos trámites requieren asesoría personalizada. Habla con un consultor sin compromiso y recibe una propuesta en menos de 24 horas.</p>
           </div>
           <div className={styles.ctaBannerActions}>
-            <a href="tel:7773956677" className="jas-btn jas-btn-light">
-              <PhoneIcon /> Llámanos: 777 395 6677
+            <a href="tel:7779835782" className="jas-btn jas-btn-light">
+              <PhoneIcon /> Llámanos: 777 983 5782
             </a>
             <a href="https://wa.me/527772193613" target="_blank" rel="noreferrer" className="jas-btn jas-btn-outline-light">
               <WhatsIcon /> Escríbenos por WhatsApp

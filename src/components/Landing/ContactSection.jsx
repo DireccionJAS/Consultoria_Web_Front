@@ -77,7 +77,7 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <div className={styles.lab}>Teléfono</div>
-                    <div className={styles.val}>777 314 0099</div>
+                    <div className={styles.val}>777 983 5782</div>
                   </div>
                 </div>
                 <div className={styles.ccc}>
@@ -86,7 +86,7 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <div className={styles.lab}>WhatsApp</div>
-                    <div className={styles.val}>777 220 7765</div>
+                    <div className={styles.val}>777 219 3613</div>
                   </div>
                 </div>
                 <div className={styles.ccc}>

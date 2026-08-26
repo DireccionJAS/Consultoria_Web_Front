@@ -151,9 +151,9 @@ export default function HeroSection() {
               Ver servicios
               <div className="jas-arrow-rev"><ArrowIcon /></div>
             </a>
-            <a href="tel:7773956677" className="jas-btn jas-btn-outline-light">
+            <a href="tel:7779835782" className="jas-btn jas-btn-outline-light">
               <PhoneIcon />
-              777 395 6677
+              777 983 5782
             </a>
           </div>
         </div>

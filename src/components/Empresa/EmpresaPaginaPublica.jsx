@@ -32,7 +32,7 @@ const FAQ_INICIALES = [
   { id: 3, question: '¿Tienen garantía de aprobación?', answer: 'La decisión consular es soberana, así que ninguna consultoría seria puede garantizar al 100%. Lo que sí garantizamos es preparar tu caso con la máxima rigurosidad — nuestra tasa de aprobación es del 96%.' },
   { id: 4, question: '¿Qué pasa si mi visa es rechazada?', answer: 'Analizamos las razones del rechazo y te asesoramos en la reapertura del caso sin costo adicional. Nuestro objetivo es que viajes — no cobrarte de nuevo.' },
   { id: 5, question: '¿Aceptan meses sin intereses?', answer: 'Sí. Aceptamos efectivo, transferencia, débito y crédito. Para algunos servicios ofrecemos hasta 3 meses sin intereses con tarjetas participantes.' },
-  { id: 6, question: '¿Atienden trámites urgentes?', answer: 'Sí, tenemos un proceso expedito para emergencias médicas, familiares o de trabajo. Llámanos al 777 395 6677 y un consultor evalúa tu caso el mismo día.' },
+  { id: 6, question: '¿Atienden trámites urgentes?', answer: 'Sí, tenemos un proceso expedito para emergencias médicas, familiares o de trabajo. Llámanos al 777 983 5782 y un consultor evalúa tu caso el mismo día.' },
 ];
 
 const UBICACIONES_INICIALES = [
@@ -114,7 +114,7 @@ export default function EmpresaPaginaPublica() {
   const [heroUbicaciones, setHeroUbicaciones] = useState(
     (heroUbicacionesGuardadas || [HERO_UBICACION_DEFAULT]).map((texto, i) => ({ id: i + 1, texto }))
   );
-  const [heroTelefono, setHeroTelefono] = useState('777 395 6677');
+  const [heroTelefono, setHeroTelefono] = useState('777 983 5782');
 
   useEffect(() => {
     localStorage.setItem(HERO_UBICACIONES_STORAGE_KEY, JSON.stringify(heroUbicaciones.map((u) => u.texto)));
@@ -167,8 +167,8 @@ export default function EmpresaPaginaPublica() {
   // Contacto (real: ContactSection.jsx)
   const [tituloLocalidad, setTituloLocalidad] = useState('Visítanos en Jiutepec o en línea');
   const [ubicaciones, setUbicaciones] = useState(UBICACIONES_INICIALES);
-  const [telContacto, setTelContacto] = useState('777 314 0099');
-  const [whatsapp, setWhatsapp] = useState('777 220 7765');
+  const [telContacto, setTelContacto] = useState('777 983 5782');
+  const [whatsapp, setWhatsapp] = useState('777 219 3613');
   const [correo, setCorreo] = useState('contacto@consultoriajas.com');
   const [fbSeguidores, setFbSeguidores] = useState('8,400');
   const [igSeguidores, setIgSeguidores] = useState('12,600');
