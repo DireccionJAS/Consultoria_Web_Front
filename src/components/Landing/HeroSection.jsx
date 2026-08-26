@@ -43,7 +43,7 @@ function PhoneIcon() {
 // (nadie abrió esa pantalla en este navegador), se cae a la ubicación real
 // de hoy.
 const HERO_UBICACIONES_STORAGE_KEY = 'empresaHeroUbicacionesConfig';
-const HERO_UBICACIONES_FALLBACK = ['Jiutepec, Morelos'];
+const HERO_UBICACIONES_FALLBACK = ['Jiutepec, Morelos', 'Taxco, Guerrero'];
 
 function cargarHeroUbicaciones() {
   try {

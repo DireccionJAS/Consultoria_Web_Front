@@ -42,10 +42,9 @@ const UBICACIONES_INICIALES = [
 // Ubicaciones del Hero: sin backend todavía (igual que el resto de esta
 // pantalla), se persisten en localStorage para que HeroSection.jsx pinte
 // un pill por cada una en la landing real. Si no hay nada guardado, tanto
-// aquí como en HeroSection.jsx se cae a "Jiutepec, Morelos" (la única que
-// existe hoy hardcodeada).
+// aquí como en HeroSection.jsx se cae a las ubicaciones reales hardcodeadas.
 export const HERO_UBICACIONES_STORAGE_KEY = 'empresaHeroUbicacionesConfig';
-const HERO_UBICACION_DEFAULT = 'Jiutepec, Morelos';
+const HERO_UBICACIONES_DEFAULT = ['Jiutepec, Morelos', 'Taxco, Guerrero'];
 
 function cargarHeroUbicacionesGuardadas() {
   try {
@@ -112,7 +111,7 @@ export default function EmpresaPaginaPublica() {
   // Inicio (real: HeroSection.jsx)
   const heroUbicacionesGuardadas = useMemo(() => cargarHeroUbicacionesGuardadas(), []);
   const [heroUbicaciones, setHeroUbicaciones] = useState(
-    (heroUbicacionesGuardadas || [HERO_UBICACION_DEFAULT]).map((texto, i) => ({ id: i + 1, texto }))
+    (heroUbicacionesGuardadas || HERO_UBICACIONES_DEFAULT).map((texto, i) => ({ id: i + 1, texto }))
   );
   const [heroTelefono, setHeroTelefono] = useState('777 983 5782');
 
