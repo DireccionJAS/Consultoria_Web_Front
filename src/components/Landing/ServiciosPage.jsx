@@ -386,7 +386,7 @@ export default function ServiciosPage() {
             <a href="tel:7773956677" className="jas-btn jas-btn-light">
               <PhoneIcon /> Llámanos: 777 395 6677
             </a>
-            <a href="https://wa.me/527771008412" target="_blank" rel="noreferrer" className="jas-btn jas-btn-outline-light">
+            <a href="https://wa.me/527772193613" target="_blank" rel="noreferrer" className="jas-btn jas-btn-outline-light">
               <WhatsIcon /> Escríbenos por WhatsApp
             </a>
           </div>

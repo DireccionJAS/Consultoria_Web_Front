@@ -24,7 +24,7 @@ const SOCIALS = [
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9a5 5 0 0 1-3-1v6.5a5.5 5.5 0 1 1-5.5-5.5V13a2.5 2.5 0 1 0 2.5 2.5V3h2.5a3 3 0 0 0 3.5 3z" /></svg>,
   },
   {
-    key: 'wa', href: 'https://wa.me/527771008412', label: 'WhatsApp', handle: '777 100 8412', stat: '·30m', statLabel: 'de respuesta',
+    key: 'wa', href: 'https://wa.me/527772193613', label: 'WhatsApp', handle: '777 219 3613', stat: '·30m', statLabel: 'de respuesta',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z" /></svg>,
   },
 ];

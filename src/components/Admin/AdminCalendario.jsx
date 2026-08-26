@@ -445,7 +445,7 @@ export default function AdminCalendario() {
 
   const handleConfirmarCambioCerca = () => {
     if (ccPayMode === 'wa') {
-      window.open('https://wa.me/527771008412', '_blank');
+      window.open('https://wa.me/527772193613', '_blank');
       return;
     }
     Swal.fire({

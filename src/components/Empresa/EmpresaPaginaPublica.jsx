@@ -147,7 +147,7 @@ export default function EmpresaPaginaPublica() {
   const [servicioDestacadoId, setServicioDestacadoId] = useState('');
   const [imgServicioPreview, setImgServicioPreview] = useState(null);
   const [tasaAprobacion, setTasaAprobacion] = useState('96');
-  const [telServicios, setTelServicios] = useState('777 100 8412');
+  const [telServicios, setTelServicios] = useState('777 219 3613');
 
   // Nosotros (real: AboutSection.jsx)
   const [imgNosotrosPreview, setImgNosotrosPreview] = useState(null);
