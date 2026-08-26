@@ -223,6 +223,15 @@ export default function EmpresaPaginaPublica() {
   const handleNavigate = (key) => { console.log('Navegar a sección de sidebar:', key); };
 
   const handlePublicar = () => {
+    if (tab === 'testimonios') {
+      Swal.fire({
+        icon: 'success',
+        title: 'Ya está publicado',
+        text: 'Los testimonios se suben y eliminan al instante — no necesitas publicar cambios en esta pestaña.',
+        confirmButtonText: 'Entendido',
+      });
+      return;
+    }
     Swal.fire({
       icon: 'info',
       title: 'Vista previa del diseño',
