@@ -1,10 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
+import { clientePorId } from './../../api/api.js';
 import styles from './../../styles/EmpresaDashboard.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
+
+const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function fechaDeHoyTexto() {
+  const hoy = new Date();
+  return `${DIAS[hoy.getDay()]} ${hoy.getDate()} de ${MESES[hoy.getMonth()]}`;
+}
 
 function SearchIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)' }}><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>; }
 function PlusIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>; }
@@ -49,19 +58,33 @@ const NAV_CARDS = [
 
 export default function EmpresaDashboard() {
   const navigate = useNavigate();
+  const [nombre, setNombre] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/'); return; }
+    let idUser;
     try {
       const decoded = jwtDecode(token);
-      if (decoded.role !== 'EMPRESA') { navigate('/'); }
+      idUser = decoded.idUser;
+      if (decoded.role !== 'EMPRESA') { navigate('/'); return; }
     } catch (error) {
       console.error('Token inválido', error);
       localStorage.removeItem('token');
       navigate('/');
+      return;
     }
+
+    clientePorId(idUser)
+      .then((response) => {
+        if (response.success && response.response.user) {
+          setNombre(response.response.user.name);
+        }
+      })
+      .catch((error) => console.error('Error al obtener datos de la empresa:', error));
   }, [navigate]);
+
+  const primerNombre = nombre ? nombre.trim().split(/\s+/)[0] : '';
 
   const handleNavigate = (key) => {
     console.log('Navegar a sección de sidebar:', key);
@@ -97,8 +120,8 @@ export default function EmpresaDashboard() {
         <div className={styles.content}>
           <div className={styles.welcomeRow}>
             <div>
-              <div className={styles.greet}>Buen día, <em>JHONNY</em>.</div>
-              <div className={styles.greetSub}>Hoy es miércoles 27 de mayo · tienes 4 citas y 5 trámites por revisar.</div>
+              <div className={styles.greet}>Buen día{primerNombre ? <>, <em>{primerNombre}</em></> : ''}.</div>
+              <div className={styles.greetSub}>Hoy es {fechaDeHoyTexto()}.</div>
             </div>
           </div>
 
