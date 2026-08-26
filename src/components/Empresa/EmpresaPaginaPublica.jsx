@@ -1,59 +1,34 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { getAllProcess, getTestimonios, crearTestimonio, eliminarTestimonio } from './../../api/api.js';
+import { getAllProcess, getTestimonios, crearTestimonio, eliminarTestimonio, getPaginaPublicaConfig, actualizarPaginaPublicaConfig } from './../../api/api.js';
 import styles from './../../styles/EmpresaPaginaPublica.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import aboutMainImg from './../../img/landing/about-main.jpg';
 
-// Extraído 1:1 de "13-ConfigPublica (standalone).html". La landing real
-// (src/components/Landing/*.jsx) tiene todo su contenido hardcodeado en
-// JSX/CSS — no existe backend (ni entidad Faq, ni Sucursal, ni redes
-// sociales, ni horario de atención general) para persistir nada de esto
-// todavía, EXCEPTO la pestaña Testimonios (ver TestimonioController en el
-// back), que ya lee/escribe contra la API real y se refleja en
-// TestimonialsSection.jsx de la landing. El resto de pestañas siguen siendo
-// UI 1:1 sin persistencia: los campos se precargan con los valores REALES
-// que hoy están en la landing (no son datos inventados), pero "Publicar
-// cambios" no guarda nada de ellas. "Vista previa" sí es real: abre la
-// landing pública (/) en una pestaña nueva. El "servicio destacado" se
-// calcula en la landing como el primer servicio activo del arreglo
-// (ServicesSection.jsx, index === 0) — no existe una bandera "destacado" en
-// el backend.
+// Extraído 1:1 de "13-ConfigPublica (standalone).html", originalmente puro
+// mockup sin persistencia. Ya no lo es: Testimonios (ver TestimonioController)
+// y el resto de pestañas (ver PaginaPublicaConfigController) leen/escriben
+// contra la API real y se reflejan en la landing pública
+// (src/components/Landing/*.jsx). Única excepción real: "Imagen del servicio
+// destacado" en la pestaña Servicios sigue sin persistir — no existe un campo
+// de imagen por servicio en el sistema (cada Transact ya tiene su propia
+// imagen real, editable en Gestión › Servicios), así que ese campo específico
+// seguiría inventando un dato sin encaje real. "Vista previa" abre la landing
+// pública (/) en una pestaña nueva.
 
 const TAB_KEYS = ['inicio', 'servicios', 'nosotros', 'testimonios', 'faq', 'contacto'];
 const TAB_LABELS = { inicio: 'Inicio', servicios: 'Servicios', nosotros: 'Nosotros', testimonios: 'Testimonios', faq: 'FAQ', contacto: 'Contacto' };
 
-const FAQ_INICIALES = [
-  { id: 1, question: '¿Cuánto tarda el proceso completo de visa americana?', answer: 'En 2026, el promedio en CDMX es de 8–14 semanas entre el llenado del DS-160 y la entrevista consular. Con JAS conseguimos la primera cita disponible y reducimos el tiempo de espera al mínimo.' },
-  { id: 2, question: '¿Qué documentos necesito para mi visa?', answer: 'Pasaporte vigente con 6 meses, comprobante de domicilio, comprobante de ingresos, foto digital 5×5 cm con fondo blanco y, si aplica, documentos de arraigo familiar y laboral. Te enviamos una lista personalizada.' },
-  { id: 3, question: '¿Tienen garantía de aprobación?', answer: 'La decisión consular es soberana, así que ninguna consultoría seria puede garantizar al 100%. Lo que sí garantizamos es preparar tu caso con la máxima rigurosidad — nuestra tasa de aprobación es del 96%.' },
-  { id: 4, question: '¿Qué pasa si mi visa es rechazada?', answer: 'Analizamos las razones del rechazo y te asesoramos en la reapertura del caso sin costo adicional. Nuestro objetivo es que viajes — no cobrarte de nuevo.' },
-  { id: 5, question: '¿Aceptan meses sin intereses?', answer: 'Sí. Aceptamos efectivo, transferencia, débito y crédito. Para algunos servicios ofrecemos hasta 3 meses sin intereses con tarjetas participantes.' },
-  { id: 6, question: '¿Atienden trámites urgentes?', answer: 'Sí, tenemos un proceso expedito para emergencias médicas, familiares o de trabajo. Llámanos al 777 983 5782 y un consultor evalúa tu caso el mismo día.' },
-];
-
-const UBICACIONES_INICIALES = [
-  { id: 1, titulo: 'Sucursal Jiutepec', direccion: 'Calle Pablo Torres 18 · Centro · 62550' },
-];
-
-// Ubicaciones del Hero: sin backend todavía (igual que el resto de esta
-// pantalla), se persisten en localStorage para que HeroSection.jsx pinte
-// un pill por cada una en la landing real. Si no hay nada guardado, tanto
-// aquí como en HeroSection.jsx se cae a las ubicaciones reales hardcodeadas.
-export const HERO_UBICACIONES_STORAGE_KEY = 'empresaHeroUbicacionesConfig';
-const HERO_UBICACIONES_DEFAULT = ['Jiutepec, Morelos', 'Taxco, Guerrero'];
-
-function cargarHeroUbicacionesGuardadas() {
-  try {
-    const raw = localStorage.getItem(HERO_UBICACIONES_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
-  } catch {
-    return null;
-  }
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 function escapeAttr(str) {
@@ -109,15 +84,8 @@ export default function EmpresaPaginaPublica() {
   const setTab = (key) => setSearchParams({ tab: key });
 
   // Inicio (real: HeroSection.jsx)
-  const heroUbicacionesGuardadas = useMemo(() => cargarHeroUbicacionesGuardadas(), []);
-  const [heroUbicaciones, setHeroUbicaciones] = useState(
-    (heroUbicacionesGuardadas || HERO_UBICACIONES_DEFAULT).map((texto, i) => ({ id: i + 1, texto }))
-  );
-  const [heroTelefono, setHeroTelefono] = useState('777 983 5782');
-
-  useEffect(() => {
-    localStorage.setItem(HERO_UBICACIONES_STORAGE_KEY, JSON.stringify(heroUbicaciones.map((u) => u.texto)));
-  }, [heroUbicaciones]);
+  const [heroUbicaciones, setHeroUbicaciones] = useState([]);
+  const [heroTelefono, setHeroTelefono] = useState('');
 
   const handleAgregarHeroUbicacion = async () => {
     const { value } = await Swal.fire({
@@ -141,12 +109,12 @@ export default function EmpresaPaginaPublica() {
 
   const handleEliminarHeroUbicacion = (id) => setHeroUbicaciones((prev) => prev.filter((u) => u.id !== id));
 
-  // Servicios (real: ServicesSection.jsx / StatsSection.jsx)
+  // Servicios (real: ServicesSection.jsx)
   const [servicios, setServicios] = useState([]);
   const [servicioDestacadoId, setServicioDestacadoId] = useState('');
   const [imgServicioPreview, setImgServicioPreview] = useState(null);
-  const [tasaAprobacion, setTasaAprobacion] = useState('96');
-  const [telServicios, setTelServicios] = useState('777 219 3613');
+  const [tasaAprobacion, setTasaAprobacion] = useState('');
+  const [telServicios, setTelServicios] = useState('');
 
   // Nosotros (real: AboutSection.jsx)
   const [imgNosotrosPreview, setImgNosotrosPreview] = useState(null);
@@ -157,24 +125,52 @@ export default function EmpresaPaginaPublica() {
   const [testimonioSubiendo, setTestimonioSubiendo] = useState(false);
 
   // FAQ (real: FAQSection.jsx)
-  const [faqs, setFaqs] = useState(FAQ_INICIALES);
+  const [faqs, setFaqs] = useState([]);
   const [faqModalAbierto, setFaqModalAbierto] = useState(false);
   const [faqEditandoId, setFaqEditandoId] = useState(null);
   const [faqDraftQuestion, setFaqDraftQuestion] = useState('');
   const [faqDraftAnswer, setFaqDraftAnswer] = useState('');
 
   // Contacto (real: ContactSection.jsx)
-  const [tituloLocalidad, setTituloLocalidad] = useState('Visítanos en Jiutepec o en línea');
-  const [ubicaciones, setUbicaciones] = useState(UBICACIONES_INICIALES);
-  const [telContacto, setTelContacto] = useState('777 983 5782');
-  const [whatsapp, setWhatsapp] = useState('777 219 3613');
-  const [correo, setCorreo] = useState('contacto@consultoriajas.com');
-  const [fbSeguidores, setFbSeguidores] = useState('8,400');
-  const [igSeguidores, setIgSeguidores] = useState('12,600');
-  const [ttSeguidores, setTtSeguidores] = useState('34,000');
-  const [horPresencialLV, setHorPresencialLV] = useState('9:00 – 18:00');
-  const [horLineaLV, setHorLineaLV] = useState('8:00 – 21:00');
-  const [horLineaFinde, setHorLineaFinde] = useState('9:00 – 14:00');
+  const [tituloLocalidad, setTituloLocalidad] = useState('');
+  const [ubicaciones, setUbicaciones] = useState([]);
+  const [telContacto, setTelContacto] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [fbSeguidores, setFbSeguidores] = useState('');
+  const [igSeguidores, setIgSeguidores] = useState('');
+  const [ttSeguidores, setTtSeguidores] = useState('');
+  const [horPresencialLV, setHorPresencialLV] = useState('');
+  const [horLineaLV, setHorLineaLV] = useState('');
+  const [horLineaFinde, setHorLineaFinde] = useState('');
+
+  const fetchConfig = async () => {
+    try {
+      const response = await getPaginaPublicaConfig();
+      if (!response.success || !response.response?.config) return;
+      const c = response.response.config;
+      setHeroUbicaciones((c.heroUbicaciones || []).map((texto, i) => ({ id: i + 1, texto })));
+      setHeroTelefono(c.heroTelefono || '');
+      if (c.servicioDestacadoId != null) setServicioDestacadoId(String(c.servicioDestacadoId));
+      setTasaAprobacion(c.tasaAprobacion || '');
+      setTelServicios(c.telServicios || '');
+      setImgNosotrosPreview(c.imgNosotros || null);
+      setFaqs((c.faqs || []).map((f, i) => ({ id: i + 1, question: f.question, answer: f.answer })));
+      setTituloLocalidad(c.tituloLocalidad || '');
+      setUbicaciones((c.ubicaciones || []).map((u, i) => ({ id: i + 1, titulo: u.titulo, direccion: u.direccion })));
+      setTelContacto(c.telContacto || '');
+      setWhatsapp(c.whatsapp || '');
+      setCorreo(c.correo || '');
+      setFbSeguidores(c.fbSeguidores || '');
+      setIgSeguidores(c.igSeguidores || '');
+      setTtSeguidores(c.ttSeguidores || '');
+      setHorPresencialLV(c.horPresencialLV || '');
+      setHorLineaLV(c.horLineaLV || '');
+      setHorLineaFinde(c.horLineaFinde || '');
+    } catch (error) {
+      console.error('Error al obtener configuración de página pública:', error);
+    }
+  };
 
   const fetchTestimonios = async () => {
     setTestimoniosCargando(true);
@@ -196,7 +192,9 @@ export default function EmpresaPaginaPublica() {
       const lista = response.success && Array.isArray(response.response.Transacts) ? response.response.Transacts : [];
       const activos = lista.filter((s) => s.status === true);
       setServicios(activos);
-      if (activos.length > 0) setServicioDestacadoId(String(activos[0].idTransact));
+      // Solo rellena un default si la config real no trajo ya una elección
+      // guardada (puede resolver antes o después que fetchConfig).
+      if (activos.length > 0) setServicioDestacadoId((prev) => prev || String(activos[0].idTransact));
     } catch (error) {
       console.error('Error al obtener servicios:', error);
       setServicios([]);
@@ -217,11 +215,14 @@ export default function EmpresaPaginaPublica() {
     }
     fetchServicios();
     fetchTestimonios();
+    fetchConfig();
   }, [navigate]);
 
   const handleNavigate = (key) => { console.log('Navegar a sección de sidebar:', key); };
 
-  const handlePublicar = () => {
+  const [publicando, setPublicando] = useState(false);
+
+  const handlePublicar = async () => {
     if (tab === 'testimonios') {
       Swal.fire({
         icon: 'success',
@@ -231,18 +232,51 @@ export default function EmpresaPaginaPublica() {
       });
       return;
     }
-    Swal.fire({
-      icon: 'info',
-      title: 'Vista previa del diseño',
-      text: 'Esta pantalla todavía no está conectada a un backend real: los cambios que hagas aquí no se guardan ni se reflejan en la página pública.',
-      confirmButtonText: 'Entendido',
-    });
+    setPublicando(true);
+    try {
+      const payload = {
+        heroTelefono,
+        heroUbicaciones: heroUbicaciones.map((u) => u.texto),
+        servicioDestacadoId: servicioDestacadoId ? Number(servicioDestacadoId) : null,
+        tasaAprobacion,
+        telServicios,
+        imgNosotros: imgNosotrosPreview || null,
+        faqs: faqs.map(({ question, answer }) => ({ question, answer })),
+        tituloLocalidad,
+        ubicaciones: ubicaciones.map(({ titulo, direccion }) => ({ titulo, direccion })),
+        telContacto,
+        whatsapp,
+        correo,
+        fbSeguidores,
+        igSeguidores,
+        ttSeguidores,
+        horPresencialLV,
+        horLineaLV,
+        horLineaFinde,
+      };
+      const response = await actualizarPaginaPublicaConfig(payload);
+      if (!response.success) {
+        Swal.fire('Error', response.message || 'No se pudo publicar la configuración', 'error');
+        return;
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Cambios publicados',
+        text: 'Ya se reflejan en la página pública.',
+        confirmButtonText: 'Entendido',
+      });
+    } catch (error) {
+      console.error('Error al publicar configuración:', error);
+      Swal.fire('Error', 'No se pudo publicar la configuración', 'error');
+    } finally {
+      setPublicando(false);
+    }
   };
 
   const handleVistaPrevia = () => window.open('/', '_blank');
 
   const handlePickServicioImg = (file) => setImgServicioPreview(URL.createObjectURL(file));
-  const handlePickNosotrosImg = (file) => setImgNosotrosPreview(URL.createObjectURL(file));
+  const handlePickNosotrosImg = async (file) => setImgNosotrosPreview(await fileToDataUrl(file));
 
   const handleEliminarTestimonio = async (id) => {
     const confirm = await Swal.fire({
@@ -355,7 +389,7 @@ export default function EmpresaPaginaPublica() {
           <div className={styles.topActions}>
             <span className={styles.liveBadge}><span className={styles.liveDot}></span>EN VIVO</span>
             <button className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`} onClick={handleVistaPrevia}><IconEye /> Vista previa</button>
-            <button className={`${styles.btn} ${styles.btnAccent}`} onClick={handlePublicar}><IconCheck /> Publicar cambios</button>
+            <button className={`${styles.btn} ${styles.btnAccent}`} onClick={handlePublicar} disabled={publicando}><IconCheck /> {publicando ? 'Publicando...' : 'Publicar cambios'}</button>
             <HeaderLogoutButton />
           </div>
         </header>
@@ -477,7 +511,7 @@ export default function EmpresaPaginaPublica() {
                     <UploadRow
                       thumbStyle={{ backgroundImage: `url("${imgNosotrosPreview || aboutMainImg}")` }}
                       title="about-main.jpg"
-                      sub="Imagen real usada hoy en la landing · ≈117 KB"
+                      sub="Se publica junto con el resto de esta pestaña"
                       onPick={handlePickNosotrosImg}
                       onClear={() => setImgNosotrosPreview(null)}
                     />
@@ -632,7 +666,7 @@ export default function EmpresaPaginaPublica() {
 
           <div className={styles.saveFoot}>
             <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => window.location.reload()}>Descartar</button>
-            <button className={`${styles.btn} ${styles.btnAccent}`} onClick={handlePublicar}><IconCheck /> Publicar cambios</button>
+            <button className={`${styles.btn} ${styles.btnAccent}`} onClick={handlePublicar} disabled={publicando}><IconCheck /> {publicando ? 'Publicando...' : 'Publicar cambios'}</button>
           </div>
         </div>
       </main>

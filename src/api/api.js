@@ -787,6 +787,30 @@ export const eliminarTestimonio = async (idTestimonio) => {
 };
 
 // =============================================================================
+// CONFIGURACIÓN DE PÁGINA PÚBLICA
+// =============================================================================
+
+export const getPaginaPublicaConfig = async () => {
+  try {
+    const response = await apiClient.get(`/pagina-publica`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la configuración de página pública', error);
+    throw error;
+  }
+};
+
+export const actualizarPaginaPublicaConfig = async (config) => {
+  try {
+    const response = await apiClient.put(`/pagina-publica`, config);
+    return response.data;
+  } catch (error) {
+    console.error('Error al actualizar la configuración de página pública', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE HORARIOS / CITAS
 // =============================================================================
 

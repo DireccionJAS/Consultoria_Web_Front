@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useReveal from "../../hooks/useReveal";
+import { getPaginaPublicaConfig } from "../../api/api.js";
 import Logo from "../../img/landing/logo.png";
 import styles from '../../styles/landing/AboutSection.module.css';
 
@@ -7,12 +8,25 @@ export default function AboutSection() {
   const [imgRef, imgIn] = useReveal();
   const [contentRef, contentIn] = useReveal();
 
+  const [imgNosotros, setImgNosotros] = useState(null);
+  useEffect(() => {
+    let activo = true;
+    getPaginaPublicaConfig()
+      .then((response) => {
+        if (!activo || !response.success) return;
+        const c = response.response?.config;
+        if (c?.imgNosotros) setImgNosotros(c.imgNosotros);
+      })
+      .catch((error) => console.error('Error al obtener configuración de página pública:', error));
+    return () => { activo = false; };
+  }, []);
+
   return (
     <section className={styles.about} id="nosotros">
       <div className="jas-container">
         <div className={styles.aboutGrid}>
           <div ref={imgRef} className={`${styles.aboutImgwrap} jas-reveal ${imgIn ? 'jas-in' : ''}`}>
-            <div className={styles.aboutImgMain}></div>
+            <div className={styles.aboutImgMain} style={imgNosotros ? { backgroundImage: `url("${imgNosotros}")` } : undefined}></div>
             <div className={styles.aboutLogoOverlay}>
               <img src={Logo} alt="Consultoría JAS" />
             </div>

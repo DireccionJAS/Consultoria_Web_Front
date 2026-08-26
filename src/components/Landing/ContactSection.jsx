@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useReveal from "../../hooks/useReveal";
+import { getPaginaPublicaConfig } from "../../api/api.js";
 import styles from '../../styles/landing/ContactSection.module.css';
 
 function ArrowIcon() {
@@ -10,43 +11,89 @@ function ArrowIcon() {
   );
 }
 
-const SOCIALS = [
+const SOCIALS_BASE = [
   {
-    key: 'fb', href: 'https://www.facebook.com/share/1C2Aw6H7vq/', label: 'Facebook', handle: '@ConsultoriaJAS', stat: '8.4k', statLabel: 'seguidores',
+    key: 'fb', href: 'https://www.facebook.com/share/1C2Aw6H7vq/', label: 'Facebook', handle: '@ConsultoriaJAS', statLabel: 'seguidores',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>,
   },
   {
-    key: 'ig', href: 'https://www.instagram.com/somosconsultoriajas', label: 'Instagram', handle: '@somosconsultoriajas', stat: '12.6k', statLabel: 'seguidores',
+    key: 'ig', href: 'https://www.instagram.com/somosconsultoriajas', label: 'Instagram', handle: '@somosconsultoriajas', statLabel: 'seguidores',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>,
   },
   {
-    key: 'tk', href: 'https://www.tiktok.com/@consultoriajas', label: 'TikTok', handle: '@consultoriajas', stat: '34k', statLabel: 'seguidores',
+    key: 'tk', href: 'https://www.tiktok.com/@consultoriajas', label: 'TikTok', handle: '@consultoriajas', statLabel: 'seguidores',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9a5 5 0 0 1-3-1v6.5a5.5 5.5 0 1 1-5.5-5.5V13a2.5 2.5 0 1 0 2.5 2.5V3h2.5a3 3 0 0 0 3.5 3z" /></svg>,
   },
   {
-    key: 'wa', href: 'https://wa.me/527772193613', label: 'WhatsApp', handle: '777 219 3613', stat: '·30m', statLabel: 'de respuesta',
+    key: 'wa', label: 'WhatsApp', statLabel: 'de respuesta',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z" /></svg>,
   },
 ];
+
+const CONTACT_FALLBACK = {
+  tituloLocalidad: 'Visítanos en Jiutepec o en línea',
+  ubicaciones: [{ titulo: 'Jiutepec', direccion: 'Calle Pablo Torres 18, Centro de Jiutepec, 62550' }],
+  telContacto: '777 983 5782',
+  whatsapp: '777 219 3613',
+  correo: 'contacto@consultoriajas.com',
+  fbSeguidores: '8.4k',
+  igSeguidores: '12.6k',
+  ttSeguidores: '34k',
+  horPresencialLV: '9:00 – 18:00',
+  horLineaLV: '8:00 – 21:00',
+  horLineaFinde: '9:00 – 14:00',
+};
 
 export default function ContactSection() {
   const [headerRef, headerIn] = useReveal();
   const [gridRef, gridIn] = useReveal();
   const [hoursRef, hoursIn] = useReveal();
 
+  const [c, setC] = useState(CONTACT_FALLBACK);
+  useEffect(() => {
+    let activo = true;
+    getPaginaPublicaConfig()
+      .then((response) => {
+        if (!activo || !response.success) return;
+        const config = response.response?.config;
+        if (!config) return;
+        setC({
+          tituloLocalidad: config.tituloLocalidad || CONTACT_FALLBACK.tituloLocalidad,
+          ubicaciones: Array.isArray(config.ubicaciones) && config.ubicaciones.length > 0 ? config.ubicaciones : CONTACT_FALLBACK.ubicaciones,
+          telContacto: config.telContacto || CONTACT_FALLBACK.telContacto,
+          whatsapp: config.whatsapp || CONTACT_FALLBACK.whatsapp,
+          correo: config.correo || CONTACT_FALLBACK.correo,
+          fbSeguidores: config.fbSeguidores || CONTACT_FALLBACK.fbSeguidores,
+          igSeguidores: config.igSeguidores || CONTACT_FALLBACK.igSeguidores,
+          ttSeguidores: config.ttSeguidores || CONTACT_FALLBACK.ttSeguidores,
+          horPresencialLV: config.horPresencialLV || CONTACT_FALLBACK.horPresencialLV,
+          horLineaLV: config.horLineaLV || CONTACT_FALLBACK.horLineaLV,
+          horLineaFinde: config.horLineaFinde || CONTACT_FALLBACK.horLineaFinde,
+        });
+      })
+      .catch((error) => console.error('Error al obtener configuración de página pública:', error));
+    return () => { activo = false; };
+  }, []);
+
+  const socials = SOCIALS_BASE.map((s) => {
+    if (s.key === 'wa') return { ...s, href: `https://wa.me/52${c.whatsapp.replace(/\s/g, '')}`, handle: c.whatsapp, stat: '·30m' };
+    if (s.key === 'fb') return { ...s, stat: c.fbSeguidores };
+    if (s.key === 'ig') return { ...s, stat: c.igSeguidores };
+    if (s.key === 'tk') return { ...s, stat: c.ttSeguidores };
+    return s;
+  });
+
   return (
     <section className={styles.contact} id="contacto">
       <div className="jas-container">
         <div ref={headerRef} className={`${styles.contactHeader} jas-reveal ${headerIn ? 'jas-in' : ''}`}>
           <div className="jas-label jas-label-tag" style={{ justifyContent: 'center', display: 'inline-flex' }}>Contacto</div>
-          <h2 className="jas-display">
-            Visítanos en<br />Jiutepec <em>o en línea.</em>
-          </h2>
-          <p>En persona en nuestra sucursal de Jiutepec, o atiéndete desde donde estés.</p>
+          <h2 className="jas-display">{c.tituloLocalidad}</h2>
         </div>
 
         <div ref={gridRef} className={`${styles.contactGrid} jas-reveal ${gridIn ? 'jas-in' : ''}`}>
-          <div className={styles.location}>
+          {c.ubicaciones.map((u, i) => (
+          <div className={styles.location} key={u.titulo + i}>
             <div className={styles.locationMap}>
               <div className={styles.mapRoads}>
                 <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
@@ -61,7 +108,7 @@ export default function ContactSection() {
             <div className={styles.locationBody}>
               <div className={styles.locationHead}>
                 <div>
-                  <h3 className={styles.locationCity}>Jiutepec</h3>
+                  <h3 className={styles.locationCity}>{u.titulo}</h3>
                   <div className={styles.openBadge}><span className={styles.dot}></span>Abierto · cierra 18:00</div>
                 </div>
                 <button className="jas-btn jas-btn-outline jas-btn-sm" style={{ padding: '8px 14px' }}>
@@ -69,7 +116,7 @@ export default function ContactSection() {
                   Cómo llegar
                 </button>
               </div>
-              <p className={styles.locationAddress} style={{ marginTop: '20px' }}>Calle Pablo Torres 18, Centro de Jiutepec, 62550</p>
+              <p className={styles.locationAddress} style={{ marginTop: '20px' }}>{u.direccion}</p>
               <div className={styles.locationContact}>
                 <div className={styles.ccc}>
                   <div className={styles.cccIcon}>
@@ -77,7 +124,7 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <div className={styles.lab}>Teléfono</div>
-                    <div className={styles.val}>777 983 5782</div>
+                    <div className={styles.val}>{c.telContacto}</div>
                   </div>
                 </div>
                 <div className={styles.ccc}>
@@ -86,7 +133,7 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <div className={styles.lab}>WhatsApp</div>
-                    <div className={styles.val}>777 219 3613</div>
+                    <div className={styles.val}>{c.whatsapp}</div>
                   </div>
                 </div>
                 <div className={styles.ccc}>
@@ -95,12 +142,13 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <div className={styles.lab}>Correo</div>
-                    <div className={styles.val}>contacto@consultoriajas.com</div>
+                    <div className={styles.val}>{c.correo}</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          ))}
 
           <div className={styles.socialSpotlight}>
             <div className={styles.socialSpotlightHead}>
@@ -109,7 +157,7 @@ export default function ContactSection() {
               <p className={styles.socialSpotlightDesc}>Contenido fresco, tips migratorios y videos de clientes que ya viajaron.</p>
             </div>
             <div className={styles.socialSpotlightGrid}>
-              {SOCIALS.map((s) => (
+              {socials.map((s) => (
                 <a key={s.key} href={s.href} className={`${styles.socialTile} ${styles[s.key]}`} aria-label={s.label}>
                   {s.icon}
                   <div className={styles.socialTileInfo}>
@@ -130,17 +178,17 @@ export default function ContactSection() {
         <div ref={hoursRef} className={`${styles.hoursStrip} jas-reveal ${hoursIn ? 'jas-in' : ''}`}>
           <div>
             <div className={styles.hLab}>Presencial L–V</div>
-            <div className={styles.hVal}>9:00 — 18:00</div>
+            <div className={styles.hVal}>{c.horPresencialLV}</div>
           </div>
           <div>
-            <div className={styles.hLab}>Presencial Sáb</div>
-            <div className={styles.hVal}>10:00 — 14:00</div>
+            <div className={styles.hLab}>En línea L–V</div>
+            <div className={styles.hVal}>{c.horLineaLV}</div>
           </div>
           <div>
-            <div className={styles.hLab}>En línea L–S</div>
-            <div className={styles.hVal}>8:00 — 21:00</div>
+            <div className={styles.hLab}>En línea Sáb–Dom</div>
+            <div className={styles.hVal}>{c.horLineaFinde}</div>
           </div>
-          <a href="mailto:contacto@consultoriajas.com" className="jas-btn jas-btn-accent">
+          <a href={`mailto:${c.correo}`} className="jas-btn jas-btn-accent">
             Escríbenos
             <div className="jas-arrow-rev"><ArrowIcon /></div>
           </a>

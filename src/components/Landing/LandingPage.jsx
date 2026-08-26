@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAllProcess, getStepById } from './../../api/api.js';
+import { getAllProcess, getStepById, getPaginaPublicaConfig } from './../../api/api.js';
 import ServiceDetailsModal from './../Cliente/Modals/ServiceDetailsModal.jsx';
 import StepsModal from './../Cliente/Modals/StepsModal.jsx';
 import PaymentModal from './../Cliente/Modals/PaymentModal.jsx';
@@ -34,6 +34,28 @@ export default function LandingPage() {
   const [faqActiveIndex, setFaqActiveIndex] = useState(0);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedServiceForPayment, setSelectedServiceForPayment] = useState(null);
+  const [servicioDestacadoId, setServicioDestacadoId] = useState(null);
+
+  // Servicio destacado: se elige en Empresa > Página pública > Servicios.
+  // No reordena `services` directamente (evita condiciones de carrera con
+  // fetchServices) — ServicesSection recibe orderedServices ya calculado.
+  useEffect(() => {
+    getPaginaPublicaConfig()
+      .then((response) => {
+        if (response.success && response.response?.config?.servicioDestacadoId != null) {
+          setServicioDestacadoId(response.response.config.servicioDestacadoId);
+        }
+      })
+      .catch((error) => console.error('Error al obtener configuración de página pública:', error));
+  }, []);
+
+  const orderedServices = servicioDestacadoId != null
+    ? [...services].sort((a, b) => {
+        if (a.idTransact === servicioDestacadoId) return -1;
+        if (b.idTransact === servicioDestacadoId) return 1;
+        return 0;
+      })
+    : services;
 
   useEffect(() => {
     fetchServices();
@@ -180,7 +202,7 @@ export default function LandingPage() {
       <MarqueeSection />
 
       <ServicesSection
-        services={services}
+        services={orderedServices}
         handleOpenDetailsModal={handleOpenDetailsModal}
         handleOpenStepsModal={handleOpenStepsModal}
         singint={handleOpenPaymentModal}
@@ -216,7 +238,7 @@ export default function LandingPage() {
         loading={stepsLoading}
         isZoomed={isZoomed}
         onToggleZoom={handleToggleZoom}
-        isFeatured={services[0]?.idTransact === selectedService?.idTransact}
+        isFeatured={orderedServices[0]?.idTransact === selectedService?.idTransact}
         onContratar={(service) => { handleCloseDetailsModal(); handleOpenPaymentModal(service); }}
       />
     )}

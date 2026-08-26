@@ -1,40 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useReveal from "../../hooks/useReveal";
+import { getPaginaPublicaConfig } from "../../api/api.js";
 import styles from '../../styles/landing/FAQSection.module.css';
-
-const FAQ_DATA = [
-  {
-    question: "¿Cuánto tarda el proceso completo de visa americana?",
-    answer: "En 2026, el promedio en CDMX es de 8–14 semanas entre el llenado del DS-160 y la entrevista consular. Con JAS conseguimos la primera cita disponible y reducimos el tiempo de espera al mínimo."
-  },
-  {
-    question: "¿Qué documentos necesito para mi visa?",
-    answer: "Pasaporte vigente con 6 meses, comprobante de domicilio, comprobante de ingresos, foto digital 5×5 cm con fondo blanco y, si aplica, documentos de arraigo familiar y laboral. Te enviamos una lista personalizada."
-  },
-  {
-    question: "¿Tienen garantía de aprobación?",
-    answer: "La decisión consular es soberana, así que ninguna consultoría seria puede garantizar al 100%. Lo que sí garantizamos es preparar tu caso con la máxima rigurosidad — nuestra tasa de aprobación es del 96%."
-  },
-  {
-    question: "¿Qué pasa si mi visa es rechazada?",
-    answer: "Analizamos las razones del rechazo y te asesoramos en la reapertura del caso sin costo adicional. Nuestro objetivo es que viajes — no cobrarte de nuevo."
-  },
-  {
-    question: "¿Aceptan meses sin intereses?",
-    answer: "Sí. Aceptamos efectivo, transferencia, débito y crédito. Para algunos servicios ofrecemos hasta 3 meses sin intereses con tarjetas participantes."
-  },
-  {
-    question: "¿Atienden trámites urgentes?",
-    answer: "Sí, tenemos un proceso expedito para emergencias médicas, familiares o de trabajo. Llámanos al 777 983 5782 y un consultor evalúa tu caso el mismo día."
-  },
-];
 
 export default function FAQSection({ faqActiveIndex, handleFaqToggle }) {
   const [introRef, introIn] = useReveal();
   const [listRef, listIn] = useReveal();
 
+  const [faqData, setFaqData] = useState([]);
+  useEffect(() => {
+    let activo = true;
+    getPaginaPublicaConfig()
+      .then((response) => {
+        if (!activo || !response.success) return;
+        const faqs = response.response?.config?.faqs;
+        if (Array.isArray(faqs) && faqs.length > 0) setFaqData(faqs);
+      })
+      .catch((error) => console.error('Error al obtener configuración de página pública:', error));
+    return () => { activo = false; };
+  }, []);
+
   return (
-    <section className={styles.faq} id="faq">
+    <section className={styles.faq} id="faq" style={faqData.length === 0 ? { display: 'none' } : undefined}>
       <div className="jas-container">
         <div className={styles.faqGrid}>
           <div ref={introRef} className={`${styles.faqIntro} jas-reveal ${introIn ? 'jas-in' : ''}`}>
@@ -57,7 +44,7 @@ export default function FAQSection({ faqActiveIndex, handleFaqToggle }) {
           </div>
 
           <ul ref={listRef} className={`${styles.faqList} jas-reveal jas-delay-1 ${listIn ? 'jas-in' : ''}`}>
-            {FAQ_DATA.map((item, index) => {
+            {faqData.map((item, index) => {
               const isOpen = faqActiveIndex === index;
               return (
                 <li

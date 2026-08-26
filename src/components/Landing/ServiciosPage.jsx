@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { getAllProcess, getStepById } from './../../api/api.js';
+import { getAllProcess, getStepById, getPaginaPublicaConfig } from './../../api/api.js';
 import { getServiceIcon, getServiceCategory } from './../../utils/serviceIcons.js';
 import ServiceDetailsModal from './../Cliente/Modals/ServiceDetailsModal.jsx';
 import StepsModal from './../Cliente/Modals/StepsModal.jsx';
@@ -90,6 +90,17 @@ function cleanDescription(text) {
 export default function ServiciosPage() {
   const [services, setServices] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [telServicios, setTelServicios] = useState('777 983 5782');
+
+  useEffect(() => {
+    getPaginaPublicaConfig()
+      .then((response) => {
+        if (response.success && response.response?.config?.telServicios) {
+          setTelServicios(response.response.config.telServicios);
+        }
+      })
+      .catch((error) => console.error('Error al obtener configuración de página pública:', error));
+  }, []);
   const [pasosCount, setPasosCount] = useState({});
   const [filtro, setFiltro] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
@@ -383,8 +394,8 @@ export default function ServiciosPage() {
             <p>Algunos trámites requieren asesoría personalizada. Habla con un consultor sin compromiso y recibe una propuesta en menos de 24 horas.</p>
           </div>
           <div className={styles.ctaBannerActions}>
-            <a href="tel:7779835782" className="jas-btn jas-btn-light">
-              <PhoneIcon /> Llámanos: 777 983 5782
+            <a href={`tel:${telServicios.replace(/\s/g, '')}`} className="jas-btn jas-btn-light">
+              <PhoneIcon /> Llámanos: {telServicios}
             </a>
             <a href="https://wa.me/527772193613" target="_blank" rel="noreferrer" className="jas-btn jas-btn-outline-light">
               <WhatsIcon /> Escríbenos por WhatsApp

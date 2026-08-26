@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import useReveal from "../../hooks/useReveal";
+import { getPaginaPublicaConfig } from "../../api/api.js";
 import styles from '../../styles/landing/HeroSection.module.css';
 
 const DESTINATIONS = [
@@ -37,23 +38,12 @@ function PhoneIcon() {
   );
 }
 
-// Ubicaciones operativas: se configuran en Empresa > Página pública > Inicio
-// (EmpresaPaginaPublica.jsx), sin backend todavía, así que viajan por
-// localStorage bajo HERO_UBICACIONES_STORAGE_KEY. Si no hay nada guardado
-// (nadie abrió esa pantalla en este navegador), se cae a la ubicación real
-// de hoy.
-const HERO_UBICACIONES_STORAGE_KEY = 'empresaHeroUbicacionesConfig';
+// Ubicaciones, teléfono y tasa de aprobación se configuran en Empresa >
+// Página pública > Inicio/Servicios (EmpresaPaginaPublica.jsx) y se leen de
+// GET /api/pagina-publica (ver PaginaPublicaConfigController en el back).
 const HERO_UBICACIONES_FALLBACK = ['Jiutepec, Morelos', 'Taxco, Guerrero'];
-
-function cargarHeroUbicaciones() {
-  try {
-    const raw = localStorage.getItem(HERO_UBICACIONES_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : HERO_UBICACIONES_FALLBACK;
-  } catch {
-    return HERO_UBICACIONES_FALLBACK;
-  }
-}
+const HERO_TELEFONO_FALLBACK = '777 983 5782';
+const HERO_TASA_APROBACION_FALLBACK = '96';
 
 export default function HeroSection() {
   const [topRowRef, topRowIn] = useReveal();
@@ -61,7 +51,23 @@ export default function HeroSection() {
   const [destinosRef, destinosIn] = useReveal();
 
   const [ubicaciones, setUbicaciones] = useState(HERO_UBICACIONES_FALLBACK);
-  useEffect(() => { setUbicaciones(cargarHeroUbicaciones()); }, []);
+  const [telefono, setTelefono] = useState(HERO_TELEFONO_FALLBACK);
+  const [tasaAprobacion, setTasaAprobacion] = useState(HERO_TASA_APROBACION_FALLBACK);
+
+  useEffect(() => {
+    let activo = true;
+    getPaginaPublicaConfig()
+      .then((response) => {
+        if (!activo || !response.success) return;
+        const c = response.response?.config;
+        if (!c) return;
+        if (Array.isArray(c.heroUbicaciones) && c.heroUbicaciones.length > 0) setUbicaciones(c.heroUbicaciones);
+        if (c.heroTelefono) setTelefono(c.heroTelefono);
+        if (c.tasaAprobacion) setTasaAprobacion(c.tasaAprobacion);
+      })
+      .catch((error) => console.error('Error al obtener configuración de página pública:', error));
+    return () => { activo = false; };
+  }, []);
 
   const [time, setTime] = useState('— —:— hrs · MX');
   useEffect(() => {
@@ -131,7 +137,7 @@ export default function HeroSection() {
             <span className={styles.heroLocatorTime}>{time}</span>
           </div>
           <div className={styles.heroLocatorTime}>
-            <span style={{ opacity: 0.7 }}>CSULT/MX</span> · <em style={{ color: 'var(--accent)', fontStyle: 'normal' }}>●</em> 96% APROBACIÓN
+            <span style={{ opacity: 0.7 }}>CSULT/MX</span> · <em style={{ color: 'var(--accent)', fontStyle: 'normal' }}>●</em> {tasaAprobacion}% APROBACIÓN
           </div>
         </div>
 
@@ -151,9 +157,9 @@ export default function HeroSection() {
               Ver servicios
               <div className="jas-arrow-rev"><ArrowIcon /></div>
             </a>
-            <a href="tel:7779835782" className="jas-btn jas-btn-outline-light">
+            <a href={`tel:${telefono.replace(/\s/g, '')}`} className="jas-btn jas-btn-outline-light">
               <PhoneIcon />
-              777 983 5782
+              {telefono}
             </a>
           </div>
         </div>
@@ -213,9 +219,9 @@ export default function HeroSection() {
               Ver servicios
               <div className="jas-arrow-rev"><ArrowIcon /></div>
             </a>
-            <a href="tel:7779835782" className="jas-btn jas-btn-outline-light">
+            <a href={`tel:${telefono.replace(/\s/g, '')}`} className="jas-btn jas-btn-outline-light">
               <PhoneIcon />
-              777 983 5782
+              {telefono}
             </a>
           </div>
         </div>
