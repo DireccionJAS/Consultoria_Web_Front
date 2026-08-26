@@ -20,7 +20,7 @@ const SOCIALS = [
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>,
   },
   {
-    key: 'tk', href: '#', label: 'TikTok', handle: '@consultoriajas', stat: '34k', statLabel: 'seguidores',
+    key: 'tk', href: 'https://www.tiktok.com/@consultoriajas', label: 'TikTok', handle: '@consultoriajas', stat: '34k', statLabel: 'seguidores',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9a5 5 0 0 1-3-1v6.5a5.5 5.5 0 1 1-5.5-5.5V13a2.5 2.5 0 1 0 2.5 2.5V3h2.5a3 3 0 0 0 3.5 3z" /></svg>,
   },
   {
