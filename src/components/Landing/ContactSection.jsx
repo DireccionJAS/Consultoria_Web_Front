@@ -111,10 +111,14 @@ export default function ContactSection() {
                   <h3 className={styles.locationCity}>{u.titulo}</h3>
                   <div className={styles.openBadge}><span className={styles.dot}></span>Abierto · cierra 18:00</div>
                 </div>
-                <button className="jas-btn jas-btn-outline jas-btn-sm" style={{ padding: '8px 14px' }}>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(u.direccion)}`}
+                  target="_blank" rel="noreferrer"
+                  className="jas-btn jas-btn-outline jas-btn-sm" style={{ padding: '8px 14px' }}
+                >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l-6 3V6l6-3M9 18l6 3M9 18V3M15 21l6-3V3l-6 3M15 21V6" /></svg>
                   Cómo llegar
-                </button>
+                </a>
               </div>
               <p className={styles.locationAddress} style={{ marginTop: '20px' }}>{u.direccion}</p>
               <div className={styles.locationContact}>
