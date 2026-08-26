@@ -32,10 +32,8 @@ export default function TestimonialsSection() {
     return () => { activo = false; };
   }, []);
 
-  if (testimonios.length === 0) return null;
-
   return (
-    <section className={styles.testimonials} id="testimonios">
+    <section className={styles.testimonials} id="testimonios" style={testimonios.length === 0 ? { display: 'none' } : undefined}>
       <div className="jas-container">
         <div ref={headerRef} className={`${styles.testimonialsHeader} jas-reveal ${headerIn ? 'jas-in' : ''}`}>
           <h2 className="jas-display jas-light">
