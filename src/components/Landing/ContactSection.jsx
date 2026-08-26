@@ -12,11 +12,11 @@ function ArrowIcon() {
 
 const SOCIALS = [
   {
-    key: 'fb', href: '#', label: 'Facebook', handle: '@ConsultoriaJAS', stat: '8.4k', statLabel: 'seguidores',
+    key: 'fb', href: 'https://www.facebook.com/share/1C2Aw6H7vq/', label: 'Facebook', handle: '@ConsultoriaJAS', stat: '8.4k', statLabel: 'seguidores',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>,
   },
   {
-    key: 'ig', href: '#', label: 'Instagram', handle: '@consultoria.jas', stat: '12.6k', statLabel: 'seguidores',
+    key: 'ig', href: 'https://www.instagram.com/somosconsultoriajas', label: 'Instagram', handle: '@somosconsultoriajas', stat: '12.6k', statLabel: 'seguidores',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>,
   },
   {
