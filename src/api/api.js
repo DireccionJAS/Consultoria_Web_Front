@@ -1105,6 +1105,10 @@ export const enviarCorreoConDatos = async (emailDestino, asunto, mensaje) => {
       }
     );
 
+    if (!response.data?.success) {
+      throw new Error(response.data?.message || 'El servidor no pudo enviar el correo');
+    }
+
     return response.data;
   } catch (error) {
     console.error('Error al mandar el correo:', error);
