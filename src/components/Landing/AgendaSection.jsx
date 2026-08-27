@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Swal from 'sweetalert2';
 import useReveal from "../../hooks/useReveal";
-import { enviarCorreoConDatos } from "../../api/api.js";
+import { enviarCorreoConDatos, crearAsesoria } from "../../api/api.js";
 import styles from '../../styles/landing/AgendaSection.module.css';
 
 const DESTINO_AGENDA = 'direcciongeneral@consultoriajas.com';
@@ -52,6 +52,11 @@ export default function AgendaSection() {
 
     try {
       await enviarCorreoConDatos(DESTINO_AGENDA, asunto, mensaje);
+      // Best-effort: si esto falla, no bloquea la solicitud — el correo de
+      // arriba ya le avisó al equipo. Registra la solicitud para que
+      // aparezca como notificación real y en el calendario de Empresa/Admin.
+      crearAsesoria({ nombre, apellido, telefono, tipoAtencion: tipoLabel, fecha, hora })
+        .catch((error) => console.error('Error al registrar la asesoría:', error));
       Swal.fire({
         icon: 'success',
         title: '¡Solicitud enviada!',

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { trasacciones, listarEncargados, actualizarTC, getHorarios } from './../../api/api.js';
+import { trasacciones, listarEncargados, actualizarTC, getHorarios, getAsesorias } from './../../api/api.js';
 import styles from './../../styles/EmpresaCalendario.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
@@ -220,6 +220,7 @@ export default function EmpresaCalendario() {
   const hoy = new Date();
   const [mesActual, setMesActual] = useState(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
   const [datos, setDatos] = useState([]);
+  const [asesorias, setAsesorias] = useState([]);
   const [encargados, setEncargados] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [filtroTramite, setFiltroTramite] = useState('');
@@ -281,6 +282,9 @@ export default function EmpresaCalendario() {
     }
     fetchServices();
     listarEncargados().then((res) => setEncargados(res.success ? res.response.users : [])).catch(() => setEncargados([]));
+    getAsesorias()
+      .then((res) => setAsesorias(res.success && Array.isArray(res.response.asesorias) ? res.response.asesorias : []))
+      .catch((error) => { console.error('Error al obtener asesorías:', error); setAsesorias([]); });
   }, [navigate]);
 
   const fetchServices = async () => {
@@ -316,8 +320,15 @@ export default function EmpresaCalendario() {
         map[fecha].push({ tipo, item, fecha, hora: extraerHora(fechaHora) });
       });
     });
+    if (!filtroTramite) {
+      asesorias.forEach((a) => {
+        if (!a.fecha) return;
+        if (!map[a.fecha]) map[a.fecha] = [];
+        map[a.fecha].push({ tipo: 'aten', item: a, fecha: a.fecha, hora: a.hora });
+      });
+    }
     return map;
-  }, [datosFiltrados]);
+  }, [datosFiltrados, asesorias, filtroTramite]);
 
   const proximaFecha = (tipo) => {
     const campo = tipo === 'cas' ? 'dateCas' : tipo === 'con' ? 'dateCon' : 'dateSimulation';
@@ -579,11 +590,11 @@ export default function EmpresaCalendario() {
                             {visibles.map((ev, j) => (
                               <div
                                 key={j}
-                                className={`${styles.calEv} ${ev.tipo === 'cas' ? styles.evCas : ev.tipo === 'con' ? styles.evCon : styles.evSim}`}
+                                className={`${styles.calEv} ${ev.tipo === 'cas' ? styles.evCas : ev.tipo === 'con' ? styles.evCon : ev.tipo === 'aten' ? styles.evAten : styles.evSim}`}
                                 onClick={() => abrirEvento(ev.tipo, ev.item, ev.fecha, ev.hora)}
                               >
                                 <span className={styles.evdot}></span>
-                                {ev.tipo === 'cas' ? 'CAS' : ev.tipo === 'con' ? 'CON' : 'Simulación'} · {(ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')}
+                                {ev.tipo === 'cas' ? 'CAS' : ev.tipo === 'con' ? 'CON' : ev.tipo === 'aten' ? 'Atención' : 'Simulación'} · {ev.tipo === 'aten' ? ev.item.nombre : (ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')}
                               </div>
                             ))}
                             {resto > 0 && <div className={styles.calMore}>+{resto} más</div>}
@@ -640,17 +651,17 @@ export default function EmpresaCalendario() {
             <div className={styles.evModal}>
               <div className={`${styles.evModalHead} ${styles[EV_META[eventoDetalle.tipo].headClass]}`}>
                 <div className={styles.evModalBadge}><span className={styles.dot}></span> {EV_META[eventoDetalle.tipo].badge}</div>
-                <div className={styles.evModalTitle}>{eventoDetalle.item.transact?.name || 'Trámite'}</div>
+                <div className={styles.evModalTitle}>{eventoDetalle.tipo === 'aten' ? 'Asesoría gratuita' : (eventoDetalle.item.transact?.name || 'Trámite')}</div>
                 <button className={styles.evModalClose} onClick={() => setEventoDetalle(null)}><IconClose /></button>
               </div>
               <div className={styles.evModalBody}>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconUser /></div>
-                  <div><div className={styles.evDetailLbl}>Cliente</div><div className={styles.evDetailVal}>{eventoDetalle.item.user?.name || 'No disponible'}</div></div>
+                  <div><div className={styles.evDetailLbl}>Cliente</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? `${eventoDetalle.item.nombre} ${eventoDetalle.item.apellido}` : (eventoDetalle.item.user?.name || 'No disponible')}</div></div>
                 </div>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconPhone /></div>
-                  <div><div className={styles.evDetailLbl}>Teléfono</div><div className={styles.evDetailVal}>{eventoDetalle.item.user?.phone || 'No disponible'}</div></div>
+                  <div><div className={styles.evDetailLbl}>Teléfono</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? eventoDetalle.item.telefono : (eventoDetalle.item.user?.phone || 'No disponible')}</div></div>
                 </div>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconCalendar /></div>
@@ -658,12 +669,21 @@ export default function EmpresaCalendario() {
                 </div>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconPin /></div>
-                  <div><div className={styles.evDetailLbl}>Ubicación</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'sim' ? 'Modalidad por confirmar' : ((eventoDetalle.tipo === 'cas' ? eventoDetalle.item.casCity : eventoDetalle.item.conCity) || 'No registrada')}</div></div>
+                  <div><div className={styles.evDetailLbl}>Ubicación</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? eventoDetalle.item.tipoAtencion : eventoDetalle.tipo === 'sim' ? 'Modalidad por confirmar' : ((eventoDetalle.tipo === 'cas' ? eventoDetalle.item.casCity : eventoDetalle.item.conCity) || 'No registrada')}</div></div>
                 </div>
-                <div className={styles.evDetail}>
-                  <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconEncargado /></div>
-                  <div><div className={styles.evDetailLbl}>Encargado asignado</div><div className={styles.evDetailVal}>{eventoDetalle.item.encargado?.name || 'Sin asignar'}</div></div>
-                </div>
+                {eventoDetalle.tipo !== 'aten' && (
+                  <div className={styles.evDetail}>
+                    <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconEncargado /></div>
+                    <div><div className={styles.evDetailLbl}>Encargado asignado</div><div className={styles.evDetailVal}>{eventoDetalle.item.encargado?.name || 'Sin asignar'}</div></div>
+                  </div>
+                )}
+                {eventoDetalle.tipo === 'aten' && (
+                  <div className={styles.evDetail}>
+                    <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconChat /></div>
+                    <div><div className={styles.evDetailLbl}>Origen</div><div className={styles.evDetailVal}>Solicitud desde la página pública — confírmala por WhatsApp/teléfono</div></div>
+                  </div>
+                )}
+                {eventoDetalle.tipo !== 'aten' && <>
                 <button className={`${styles.btn} ${styles.btnGhost}`} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={abrirCambiarCita}>
                   <IconCalSmall /> Cambiar cita
                 </button>
@@ -673,6 +693,7 @@ export default function EmpresaCalendario() {
                 <button className={`${styles.btn} ${styles.btnAccent}`} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }} onClick={() => navigate('/EmpresaTramites')}>
                   Ver trámite completo <IconExternal />
                 </button>
+                </>}
               </div>
             </div>
           </div>

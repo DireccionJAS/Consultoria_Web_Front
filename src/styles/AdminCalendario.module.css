@@ -126,6 +126,7 @@
 .evDetailIcon.cas { background: var(--c5); color: var(--c2); }
 .evDetailIcon.con { background: var(--green-soft); color: var(--green); }
 .evDetailIcon.sim { background: var(--orange-soft); color: var(--orange); }
+.evDetailIcon.aten { background: rgba(147,51,234,0.12); color: #9333EA; }
 .evDetailLbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
 .evDetailVal { font-size: 14px; font-weight: 600; margin-top: 1px; }
 

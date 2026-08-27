@@ -811,6 +811,30 @@ export const actualizarPaginaPublicaConfig = async (config) => {
 };
 
 // =============================================================================
+// ASESORÍAS GRATUITAS (agenda pública, sin cuenta)
+// =============================================================================
+
+export const crearAsesoria = async (data) => {
+  try {
+    const response = await apiClient.post(`/asesorias`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear la asesoría', error);
+    throw error;
+  }
+};
+
+export const getAsesorias = async () => {
+  try {
+    const response = await apiClient.get(`/asesorias`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las asesorías', error);
+    throw error;
+  }
+};
+
+// =============================================================================
 // GESTIÓN DE HORARIOS / CITAS
 // =============================================================================
 
