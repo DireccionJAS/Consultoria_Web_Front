@@ -271,6 +271,40 @@ export default function AdminCalendario() {
   const [ccPayMethod, setCcPayMethod] = useState('stripe');
   const [ccGuardando, setCcGuardando] = useState(false);
 
+  // Simulación sí tiene un backend real de disponibilidad (validarDisponibilidadSimulacion
+  // en el backend ya valida día/hora configurados). Antes el selector de Admin no lo
+  // consultaba y dejaba elegir cualquier fecha/hora libre; ahora se marcan como
+  // ocupadas/no disponibles usando la misma fuente (GET /api/horarios) y las citas
+  // de Simulación ya agendadas (datos), igual que hace "Cita externa" para ATENCION_REMOTA.
+  const [simHorario, setSimHorario] = useState(null);
+
+  useEffect(() => {
+    if (!nuevaCitaAbierta && !(ccAbierta && ccContext?.tipo === 'sim')) return;
+    getHorarios()
+      .then((response) => setSimHorario(response?.response?.horarios?.SIMULACION || null))
+      .catch((error) => console.error('Error al obtener horarios de simulación:', error));
+  }, [nuevaCitaAbierta, ccAbierta, ccContext?.tipo]);
+
+  const simDiasValidos = simHorario?.dias || [];
+  const simHorasValidas = useMemo(() => {
+    if (simHorario?.horas?.length) return simHorario.horas;
+    return CC_HORAS_LEJOS;
+  }, [simHorario]);
+
+  const simHorasTomadas = (fecha, excludeIdTransactProgress) => {
+    if (!fecha) return [];
+    return datos
+      .filter((d) => d.idTransactProgress !== excludeIdTransactProgress && extraerFecha(d.dateSimulation) === fecha)
+      .map((d) => extraerHora(d.dateSimulation))
+      .filter(Boolean);
+  };
+
+  const fechaDiaValido = (fecha) => {
+    if (!fecha || simDiasValidos.length === 0) return true;
+    const dow = new Date(`${fecha}T00:00:00`).getDay();
+    return simDiasValidos.includes(dow);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/'); return; }
@@ -812,15 +846,29 @@ export default function AdminCalendario() {
                   <label className={styles.ccFieldLabel}>Nuevo día <span className={styles.ccReq}>*</span></label>
                   <div className={styles.ccInpWrap}>
                     <span className={styles.ccInpIcon}><IconCalSmall /></span>
-                    <input className={styles.ccInp} type="date" value={ccFecha} onChange={(e) => setCcFecha(e.target.value)} />
+                    <input className={styles.ccInp} type="date" value={ccFecha} onChange={(e) => { setCcFecha(e.target.value); setCcHora(''); }} />
                   </div>
+                  {ccContext.tipo === 'sim' && ccFecha && !fechaDiaValido(ccFecha) && (
+                    <div className={styles.ccWarnText} style={{ marginTop: 6, color: 'var(--danger, #d33)' }}>
+                      Ese día no está configurado para Simulación.
+                    </div>
+                  )}
                 </div>
                 <div className={styles.ccField}>
                   <label className={styles.ccFieldLabel}>Nueva hora <span className={styles.ccReq}>*</span></label>
                   <div className={styles.ccTimePills}>
-                    {(ccEsUrgente ? CC_HORAS_CERCA : CC_HORAS_LEJOS).map((h) => (
-                      <div key={h} className={`${styles.ccTimePill} ${ccHora === h ? styles.sel : ''}`} onClick={() => setCcHora(h)}>{h}</div>
-                    ))}
+                    {(ccContext.tipo === 'sim' ? simHorasValidas : (ccEsUrgente ? CC_HORAS_CERCA : CC_HORAS_LEJOS)).map((h) => {
+                      const ocupada = ccContext.tipo === 'sim' && simHorasTomadas(ccFecha, ccContext.item.idTransactProgress).includes(h);
+                      return (
+                        <div
+                          key={h}
+                          className={`${styles.ccTimePill} ${ccHora === h ? styles.sel : ''} ${ocupada ? styles.disabled : ''}`}
+                          onClick={() => !ocupada && setCcHora(h)}
+                        >
+                          {h}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -914,16 +962,38 @@ export default function AdminCalendario() {
                   <div className={styles.ncField}>
                     <div className={styles.ncFieldLabel}>Fecha <span className={styles.req}>*</span></div>
                     <div className={styles.ncInpWrap}>
-                      <input type="date" value={ncFecha} onChange={(e) => setNcFecha(e.target.value)} />
+                      <input type="date" value={ncFecha} onChange={(e) => { setNcFecha(e.target.value); setNcHora(''); }} />
                       <IconCalSmall />
                     </div>
+                    {ncTipo === 'sim' && ncFecha && !fechaDiaValido(ncFecha) && (
+                      <div className={styles.ccWarnText} style={{ marginTop: 6, color: 'var(--danger, #d33)' }}>
+                        Ese día no está configurado para Simulación.
+                      </div>
+                    )}
                   </div>
                   <div className={styles.ncField}>
                     <div className={styles.ncFieldLabel}>Hora <span className={styles.req}>*</span></div>
-                    <div className={styles.ncInpWrap}>
-                      <input type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} />
-                      <IconClockOutline />
-                    </div>
+                    {ncTipo === 'sim' ? (
+                      <div className={styles.ccTimePills}>
+                        {simHorasValidas.map((h) => {
+                          const ocupada = simHorasTomadas(ncFecha).includes(h);
+                          return (
+                            <div
+                              key={h}
+                              className={`${styles.ccTimePill} ${ncHora === h ? styles.sel : ''} ${ocupada ? styles.disabled : ''}`}
+                              onClick={() => !ocupada && setNcHora(h)}
+                            >
+                              {h}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className={styles.ncInpWrap}>
+                        <input type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} />
+                        <IconClockOutline />
+                      </div>
+                    )}
                   </div>
                 </div>
 

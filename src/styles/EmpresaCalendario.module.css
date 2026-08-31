@@ -285,6 +285,8 @@
 .ccTimePill { padding: 9px; border: 1.5px solid var(--cc-line-2); border-radius: 10px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 12px; font-weight: 600; font-family: var(--mono); }
 .ccTimePill:hover { border-color: var(--cc-primary); }
 .ccTimePill.sel { border-color: var(--cc-primary); background: var(--cc-primary) !important; color: #fff; }
+.ccTimePill.disabled { color: #C7CDD3; text-decoration: line-through; cursor: not-allowed; }
+.ccTimePill.disabled:hover { border-color: var(--cc-line-2); }
 
 .ccWarn { padding: 14px 16px; background: var(--cc-rose-soft); border: 1px solid rgba(183,62,62,0.25); border-radius: 14px; margin: 6px 0 16px; }
 .ccWarnTop { display: flex; gap: 10px; }
