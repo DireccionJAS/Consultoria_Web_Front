@@ -75,21 +75,26 @@ const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalSt
               }
 
 
-              const response = await apiClient.post(`/payment`, paymentData);
-
+              // El registro de Payment se crea DESPUÉS de que todos los
+              // trámites se hayan creado con éxito (no antes): mismo fix
+              // que ya se hizo en CheckoutForm.jsx/Stripe — si se crea el
+              // Payment primero y luego falla un trámite, queda un cobro
+              // ya aprobado por PayPal sin ningún trámite asociado.
               for (let i = 0; i < paymentData.quantity; i++) {
-                await createProcessWithPayment(paymentData);
+                const progressResult = await createProcessWithPayment(paymentData);
+                if (!progressResult?.success) {
+                  throw new Error(progressResult?.message || 'No se pudo registrar el trámite.');
+                }
               }
 
-              if (response.data.success) {
-                if (onSuccess) onSuccess(details);
-              } else {
-                console.error('Error al registrar en backend:', response.data.error);
-                if (onSuccess) onSuccess(details);
+              const response = await apiClient.post(`/payment`, paymentData);
+              if (!response.data.success) {
+                throw new Error(response.data.message || 'No se pudo registrar el pago.');
               }
+              if (onSuccess) onSuccess(details);
             } catch (error) {
               console.error('Error al procesar registro:', error);
-              if (onSuccess) onSuccess(details);
+              if (onError) onError(error);
             }
           } else {
             console.warn('Pago no completado. Status:', details.status);
