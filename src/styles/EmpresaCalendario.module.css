@@ -83,6 +83,10 @@
 .evSim .evdot { background: var(--orange); }
 .evAten { background: rgba(147,51,234,0.12); color: #9333EA; }
 .evAten .evdot { background: #9333EA; }
+.evCitaSim { background: rgba(14,159,140,0.12); color: #0E9F8C; }
+.evCitaSim .evdot { background: #0E9F8C; }
+.evCitaAten { background: rgba(219,39,119,0.12); color: #DB2777; }
+.evCitaAten .evdot { background: #DB2777; }
 .calMore { font-size: 10px; color: var(--muted); font-weight: 600; padding: 1px 7px; }
 
 /* legend */
@@ -114,6 +118,8 @@
 .evModalHead.con { background: linear-gradient(135deg, #28A052, #1B6B3A); }
 .evModalHead.sim { background: linear-gradient(135deg, #D9722E, #b85d22); }
 .evModalHead.aten { background: linear-gradient(135deg, #9333EA, #7526b8); }
+.evModalHead.citaSim { background: linear-gradient(135deg, #0E9F8C, #0b7d6f); }
+.evModalHead.citaAten { background: linear-gradient(135deg, #DB2777, #b01d61); }
 .evModalHead::after { content: ""; position: absolute; top: -55px; right: -45px; width: 170px; height: 170px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%); }
 .evModalBadge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; background: rgba(255,255,255,0.2); border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; position: relative; margin-bottom: 13px; }
 .evModalBadge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--white); }
@@ -129,6 +135,8 @@
 .evDetailIcon.con { background: var(--green-soft); color: var(--green); }
 .evDetailIcon.sim { background: var(--orange-soft); color: var(--orange); }
 .evDetailIcon.aten { background: rgba(147,51,234,0.12); color: #9333EA; }
+.evDetailIcon.citaSim { background: rgba(14,159,140,0.12); color: #0E9F8C; }
+.evDetailIcon.citaAten { background: rgba(219,39,119,0.12); color: #DB2777; }
 .evDetailLbl { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
 .evDetailVal { font-size: 14px; font-weight: 600; margin-top: 1px; }
 

@@ -858,6 +858,16 @@ export const guardarHorario = async (tipo, data) => {
   }
 };
 
+export const getAllCitas = async () => {
+  try {
+    const response = await apiClient.get(`/citas`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener todas las citas', error);
+    throw error;
+  }
+};
+
 export const getMisCitas = async (idUser) => {
   try {
     const response = await apiClient.get(`/citas/user/${idUser}`);

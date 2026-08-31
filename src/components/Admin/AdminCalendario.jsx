@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import AdminSidebar from './AdminSidebar.jsx';
-import { trasacciones, listarEncargados, actualizarTC, getHorarios, getAsesorias } from './../../api/api.js';
+import { trasacciones, listarEncargados, actualizarTC, getHorarios, getAsesorias, getAllCitas, eliminarCita } from './../../api/api.js';
 import styles from './../../styles/AdminCalendario.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
@@ -16,6 +16,8 @@ const EV_META = {
   con: { headClass: 'con', type: 'Cita Consular · Entrevista en el Consulado', badge: 'CON' },
   sim: { headClass: 'sim', type: 'Simulación · Práctica de entrevista 1:1', badge: 'Simulación' },
   aten: { headClass: 'aten', type: 'Atención a cliente · Vía Zoom', badge: 'Atención a cliente' },
+  citaSim: { headClass: 'citaSim', type: 'Simulación (autoservicio) · Agendada por el cliente', badge: 'Simulación · Cliente' },
+  citaAten: { headClass: 'citaAten', type: 'Atención (autoservicio) · Agendada por el cliente', badge: 'Atención · Cliente' },
 };
 
 // "Cita externa" (Atención al cliente) no tiene entidad propia de citas, pero
@@ -221,6 +223,7 @@ export default function AdminCalendario() {
   const [mesActual, setMesActual] = useState(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
   const [datos, setDatos] = useState([]);
   const [asesorias, setAsesorias] = useState([]);
+  const [citasReales, setCitasReales] = useState([]);
   const [encargados, setEncargados] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [filtroTramite, setFiltroTramite] = useState('');
@@ -285,7 +288,18 @@ export default function AdminCalendario() {
     getAsesorias()
       .then((res) => setAsesorias(res.success && Array.isArray(res.response.asesorias) ? res.response.asesorias : []))
       .catch((error) => { console.error('Error al obtener asesorías:', error); setAsesorias([]); });
+    fetchCitasReales();
   }, [navigate]);
+
+  const fetchCitasReales = async () => {
+    try {
+      const res = await getAllCitas();
+      setCitasReales(res.success && Array.isArray(res.response.citas) ? res.response.citas : []);
+    } catch (error) {
+      console.error('Error al obtener las citas de autoservicio:', error);
+      setCitasReales([]);
+    }
+  };
 
   const fetchServices = async () => {
     try {
@@ -326,9 +340,15 @@ export default function AdminCalendario() {
         if (!map[a.fecha]) map[a.fecha] = [];
         map[a.fecha].push({ tipo: 'aten', item: a, fecha: a.fecha, hora: a.hora });
       });
+      citasReales.forEach((c) => {
+        if (!c.fecha) return;
+        if (!map[c.fecha]) map[c.fecha] = [];
+        const tipo = c.tipo === 'SIMULACION' ? 'citaSim' : 'citaAten';
+        map[c.fecha].push({ tipo, item: c, fecha: c.fecha, hora: c.hora });
+      });
     }
     return map;
-  }, [datosFiltrados, asesorias, filtroTramite]);
+  }, [datosFiltrados, asesorias, citasReales, filtroTramite]);
 
   const proximaFecha = (tipo) => {
     const campo = tipo === 'cas' ? 'dateCas' : tipo === 'con' ? 'dateCon' : 'dateSimulation';
@@ -343,7 +363,7 @@ export default function AdminCalendario() {
   };
 
   const citasDelMes = useMemo(() => {
-    const counts = { cas: 0, con: 0, sim: 0, aten: 0 };
+    const counts = { cas: 0, con: 0, sim: 0, aten: 0, citaSim: 0, citaAten: 0 };
     Object.values(eventosPorFecha).forEach((evs) => {
       evs.forEach((ev) => {
         const d = new Date(ev.fecha + 'T00:00:00');
@@ -355,7 +375,7 @@ export default function AdminCalendario() {
     return counts;
   }, [eventosPorFecha, mesActual]);
 
-  const totalCitasMes = citasDelMes.cas + citasDelMes.con + citasDelMes.sim + citasDelMes.aten;
+  const totalCitasMes = citasDelMes.cas + citasDelMes.con + citasDelMes.sim + citasDelMes.aten + citasDelMes.citaSim + citasDelMes.citaAten;
 
   const irAMes = (fecha) => {
     if (!fecha) return;
@@ -405,6 +425,28 @@ export default function AdminCalendario() {
   const ccEsUrgente = ccContext?.fecha && ccContext?.hora
     ? (new Date(`${ccContext.fecha}T${ccContext.hora}:00`) - new Date()) < 24 * 60 * 60 * 1000
     : false;
+
+  const handleCancelarCitaReal = async () => {
+    if (!eventoDetalle) return;
+    const confirm = await Swal.fire({
+      icon: 'warning',
+      title: '¿Cancelar esta cita?',
+      text: 'Se eliminará la cita agendada por el cliente en su portal.',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+    });
+    if (!confirm.isConfirmed) return;
+    try {
+      const res = await eliminarCita(eventoDetalle.item.idCita);
+      if (!res?.success) throw new Error(res?.message || 'No se pudo cancelar la cita');
+      await fetchCitasReales();
+      setEventoDetalle(null);
+      Swal.fire({ icon: 'success', title: 'Cita cancelada', text: 'La cita fue eliminada correctamente.' });
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: 'No se pudo cancelar', text: error.message || 'Ocurrió un error al cancelar la cita.' });
+    }
+  };
 
   const handleCancelarCita = async () => {
     if (!eventoDetalle) return;
@@ -505,6 +547,8 @@ export default function AdminCalendario() {
     console.log('Navegar a sección de sidebar:', key);
   };
 
+  const esCitaCliente = eventoDetalle?.tipo === 'citaSim' || eventoDetalle?.tipo === 'citaAten';
+
   const cells = getCalendarCells(mesActual.getFullYear(), mesActual.getMonth());
   const hoyStr = toDateStr(hoy);
 
@@ -590,11 +634,29 @@ export default function AdminCalendario() {
                             {visibles.map((ev, j) => (
                               <div
                                 key={j}
-                                className={`${styles.calEv} ${ev.tipo === 'cas' ? styles.evCas : ev.tipo === 'con' ? styles.evCon : ev.tipo === 'aten' ? styles.evAten : styles.evSim}`}
+                                className={`${styles.calEv} ${
+                                  ev.tipo === 'cas' ? styles.evCas :
+                                  ev.tipo === 'con' ? styles.evCon :
+                                  ev.tipo === 'aten' ? styles.evAten :
+                                  ev.tipo === 'citaSim' ? styles.evCitaSim :
+                                  ev.tipo === 'citaAten' ? styles.evCitaAten :
+                                  styles.evSim
+                                }`}
                                 onClick={() => abrirEvento(ev.tipo, ev.item, ev.fecha, ev.hora)}
                               >
                                 <span className={styles.evdot}></span>
-                                {ev.tipo === 'cas' ? 'CAS' : ev.tipo === 'con' ? 'CON' : ev.tipo === 'aten' ? 'Atención' : 'Simulación'} · {ev.tipo === 'aten' ? ev.item.nombre : (ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')}
+                                {
+                                  ev.tipo === 'cas' ? 'CAS' :
+                                  ev.tipo === 'con' ? 'CON' :
+                                  ev.tipo === 'aten' ? 'Atención' :
+                                  ev.tipo === 'citaSim' ? 'Simulación' :
+                                  ev.tipo === 'citaAten' ? 'Atención' :
+                                  'Simulación'
+                                } · {
+                                  ev.tipo === 'aten' ? ev.item.nombre :
+                                  (ev.tipo === 'citaSim' || ev.tipo === 'citaAten') ? (ev.item.nombreUsuario || '').split(' ').slice(0, 2).join(' ') :
+                                  (ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')
+                                }
                               </div>
                             ))}
                             {resto > 0 && <div className={styles.calMore}>+{resto} más</div>}
@@ -610,6 +672,8 @@ export default function AdminCalendario() {
                   <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--green)' }}></span> CON — Consulado</div>
                   <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--orange)' }}></span> Simulación</div>
                   <div className={styles.legItem}><span className={styles.legDot} style={{ background: '#9333EA' }}></span> Atención a cliente</div>
+                  <div className={styles.legItem}><span className={styles.legDot} style={{ background: '#0E9F8C' }}></span> Simulación (autoservicio)</div>
+                  <div className={styles.legItem}><span className={styles.legDot} style={{ background: '#DB2777' }}></span> Atención (autoservicio)</div>
                 </div>
               </div>
             </div>
@@ -640,6 +704,16 @@ export default function AdminCalendario() {
                   <div className={styles.resInfo}><div className={styles.resName}>Atención a cliente</div><div className={styles.resMeta}>Vía Zoom</div></div>
                   <div className={styles.resCount} style={{ color: '#9333EA' }}>{citasDelMes.aten}</div>
                 </div>
+                <div className={styles.resRow}>
+                  <div className={styles.resIcon} style={{ background: 'rgba(14,159,140,0.12)', color: '#0E9F8C' }}><IconMonitor /></div>
+                  <div className={styles.resInfo}><div className={styles.resName}>Simulación (autoservicio)</div><div className={styles.resMeta}>Agendada por el cliente</div></div>
+                  <div className={styles.resCount} style={{ color: '#0E9F8C' }}>{citasDelMes.citaSim}</div>
+                </div>
+                <div className={styles.resRow}>
+                  <div className={styles.resIcon} style={{ background: 'rgba(219,39,119,0.12)', color: '#DB2777' }}><IconChat /></div>
+                  <div className={styles.resInfo}><div className={styles.resName}>Atención (autoservicio)</div><div className={styles.resMeta}>Agendada por el cliente</div></div>
+                  <div className={styles.resCount} style={{ color: '#DB2777' }}>{citasDelMes.citaAten}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -651,17 +725,17 @@ export default function AdminCalendario() {
             <div className={styles.evModal}>
               <div className={`${styles.evModalHead} ${styles[EV_META[eventoDetalle.tipo].headClass]}`}>
                 <div className={styles.evModalBadge}><span className={styles.dot}></span> {EV_META[eventoDetalle.tipo].badge}</div>
-                <div className={styles.evModalTitle}>{eventoDetalle.tipo === 'aten' ? 'Asesoría gratuita' : (eventoDetalle.item.transact?.name || 'Trámite')}</div>
+                <div className={styles.evModalTitle}>{eventoDetalle.tipo === 'aten' ? 'Asesoría gratuita' : esCitaCliente ? (eventoDetalle.item.nombreTramite || 'Cita de autoservicio') : (eventoDetalle.item.transact?.name || 'Trámite')}</div>
                 <button className={styles.evModalClose} onClick={() => setEventoDetalle(null)}><IconClose /></button>
               </div>
               <div className={styles.evModalBody}>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconUser /></div>
-                  <div><div className={styles.evDetailLbl}>Cliente</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? `${eventoDetalle.item.nombre} ${eventoDetalle.item.apellido}` : (eventoDetalle.item.user?.name || 'No disponible')}</div></div>
+                  <div><div className={styles.evDetailLbl}>Cliente</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? `${eventoDetalle.item.nombre} ${eventoDetalle.item.apellido}` : esCitaCliente ? (eventoDetalle.item.nombreUsuario || 'No disponible') : (eventoDetalle.item.user?.name || 'No disponible')}</div></div>
                 </div>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconPhone /></div>
-                  <div><div className={styles.evDetailLbl}>Teléfono</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? eventoDetalle.item.telefono : (eventoDetalle.item.user?.phone || 'No disponible')}</div></div>
+                  <div><div className={styles.evDetailLbl}>Teléfono</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? eventoDetalle.item.telefono : esCitaCliente ? (eventoDetalle.item.telefono || 'No disponible') : (eventoDetalle.item.user?.phone || 'No disponible')}</div></div>
                 </div>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconCalendar /></div>
@@ -669,9 +743,9 @@ export default function AdminCalendario() {
                 </div>
                 <div className={styles.evDetail}>
                   <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconPin /></div>
-                  <div><div className={styles.evDetailLbl}>Ubicación</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? eventoDetalle.item.tipoAtencion : eventoDetalle.tipo === 'sim' ? 'Modalidad por confirmar' : ((eventoDetalle.tipo === 'cas' ? eventoDetalle.item.casCity : eventoDetalle.item.conCity) || 'No registrada')}</div></div>
+                  <div><div className={styles.evDetailLbl}>Ubicación</div><div className={styles.evDetailVal}>{eventoDetalle.tipo === 'aten' ? eventoDetalle.item.tipoAtencion : esCitaCliente ? 'Modalidad por confirmar' : eventoDetalle.tipo === 'sim' ? 'Modalidad por confirmar' : ((eventoDetalle.tipo === 'cas' ? eventoDetalle.item.casCity : eventoDetalle.item.conCity) || 'No registrada')}</div></div>
                 </div>
-                {eventoDetalle.tipo !== 'aten' && (
+                {eventoDetalle.tipo !== 'aten' && !esCitaCliente && (
                   <div className={styles.evDetail}>
                     <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconEncargado /></div>
                     <div><div className={styles.evDetailLbl}>Encargado asignado</div><div className={styles.evDetailVal}>{eventoDetalle.item.encargado?.name || 'Sin asignar'}</div></div>
@@ -683,7 +757,13 @@ export default function AdminCalendario() {
                     <div><div className={styles.evDetailLbl}>Origen</div><div className={styles.evDetailVal}>Solicitud desde la página pública — confírmala por WhatsApp/teléfono</div></div>
                   </div>
                 )}
-                {eventoDetalle.tipo !== 'aten' && <>
+                {esCitaCliente && (
+                  <div className={styles.evDetail}>
+                    <div className={`${styles.evDetailIcon} ${styles[eventoDetalle.tipo]}`}><IconChat /></div>
+                    <div><div className={styles.evDetailLbl}>Origen</div><div className={styles.evDetailVal}>Cita de autoservicio agendada por el cliente en su portal</div></div>
+                  </div>
+                )}
+                {eventoDetalle.tipo !== 'aten' && !esCitaCliente && <>
                 <button className={`${styles.btn} ${styles.btnGhost}`} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={abrirCambiarCita}>
                   <IconCalSmall /> Cambiar cita
                 </button>
@@ -694,6 +774,11 @@ export default function AdminCalendario() {
                   Ver trámite completo <IconExternal />
                 </button>
                 </>}
+                {esCitaCliente && (
+                  <button className={`${styles.btn} ${styles.btnDanger}`} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }} onClick={handleCancelarCitaReal}>
+                    <IconClose size={13} /> Cancelar cita
+                  </button>
+                )}
               </div>
             </div>
           </div>
