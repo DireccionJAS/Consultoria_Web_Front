@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { trasacciones, listarEncargados, actualizarTC, getHorarios, getAsesorias, getAllCitas, eliminarCita } from './../../api/api.js';
+import { trasacciones, listarEncargados, actualizarTC, getHorarios, getAsesorias, crearAsesoria, getAllCitas, eliminarCita } from './../../api/api.js';
 import styles from './../../styles/EmpresaCalendario.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
@@ -25,12 +25,6 @@ const EV_META = {
 // GET /api/horarios (tipo ATENCION_REMOTA), la misma fuente que usa
 // Empresa > Horarios. Si todavía no hay nada configurado, se cae a un
 // fallback con los mismos datos de demo de antes.
-const EXT_DIAS_FALLBACK = [
-  { d: '16', m: 'JUN' },
-  { d: '23', m: 'MAR' },
-  { d: '25', m: 'JUN' },
-  { d: '30', m: 'MAR' },
-];
 const EXT_HORAS_FALLBACK = [
   { hora: '09:00' },
   { hora: '10:00' },
@@ -55,7 +49,11 @@ function calcularExtDias(diasActivos, cantidad = 4) {
   let guard = 0;
   while (fechas.length < cantidad && guard < 60) {
     if (dowsActivos.includes(cursor.getDay())) {
-      fechas.push({ d: String(cursor.getDate()).padStart(2, '0'), m: MESES_CORTOS[cursor.getMonth()].slice(0, 3).toUpperCase() });
+      fechas.push({
+        d: String(cursor.getDate()).padStart(2, '0'),
+        m: MESES_CORTOS[cursor.getMonth()].slice(0, 3).toUpperCase(),
+        iso: toDateStr(cursor),
+      });
     }
     cursor.setDate(cursor.getDate() + 1);
     guard++;
@@ -243,6 +241,10 @@ export default function EmpresaCalendario() {
   const [extDia, setExtDia] = useState(0);
   const [extHora, setExtHora] = useState('10:00');
   const [extAtencion, setExtAtencion] = useState('zoom');
+  const [extNombre, setExtNombre] = useState('');
+  const [extApellido, setExtApellido] = useState('');
+  const [extTelefono, setExtTelefono] = useState('');
+  const [extGuardando, setExtGuardando] = useState(false);
   const [horarioRemoto, setHorarioRemoto] = useState(null);
 
   useEffect(() => {
@@ -256,7 +258,11 @@ export default function EmpresaCalendario() {
     const diasObj = {};
     DIAS_SEMANA_EXT.forEach((d) => { diasObj[d.key] = (horarioRemoto?.dias || []).includes(d.dow); });
     const dias = calcularExtDias(diasObj);
-    return dias.length > 0 ? dias : EXT_DIAS_FALLBACK;
+    if (dias.length > 0) return dias;
+    // Sin horario configurado todavía: se ofrecen los próximos días hábiles
+    // (lunes a sábado) en vez de fechas de relleno sin fecha ISO real, para
+    // que "Cita externa" siempre pueda guardar una fecha válida.
+    return calcularExtDias({ lunes: true, martes: true, miercoles: true, jueves: true, viernes: true, sabado: true });
   }, [horarioRemoto]);
   const extHoras = useMemo(() => {
     if (!horarioRemoto?.horas?.length) return EXT_HORAS_FALLBACK;
@@ -319,11 +325,19 @@ export default function EmpresaCalendario() {
     }
     fetchServices();
     listarEncargados().then((res) => setEncargados(res.success ? res.response.users : [])).catch(() => setEncargados([]));
-    getAsesorias()
-      .then((res) => setAsesorias(res.success && Array.isArray(res.response.asesorias) ? res.response.asesorias : []))
-      .catch((error) => { console.error('Error al obtener asesorías:', error); setAsesorias([]); });
+    fetchAsesorias();
     fetchCitasReales();
   }, [navigate]);
+
+  const fetchAsesorias = async () => {
+    try {
+      const res = await getAsesorias();
+      setAsesorias(res.success && Array.isArray(res.response.asesorias) ? res.response.asesorias : []);
+    } catch (error) {
+      console.error('Error al obtener asesorías:', error);
+      setAsesorias([]);
+    }
+  };
 
   const fetchCitasReales = async () => {
     try {
@@ -433,16 +447,44 @@ export default function EmpresaCalendario() {
     setExtDia(0);
     setExtHora('10:00');
     setExtAtencion('zoom');
+    setExtNombre('');
+    setExtApellido('');
+    setExtTelefono('');
     setNuevaCitaAbierta(false);
     setExtAbierta(true);
   };
 
-  const handleGuardarExterna = () => {
-    Swal.fire({
-      icon: 'info',
-      title: 'Cita externa no conectada',
-      text: 'Esta función aún no tiene un backend real donde guardar la cita (no existe entidad ni sistema de disponibilidad para "Atención al cliente").',
-    });
+  const ATENCION_LABELS = { zoom: 'Zoom', videollamada: 'Videollamada', presencial: 'Presencial' };
+
+  const handleGuardarExterna = async () => {
+    if (!extNombre.trim() || !extApellido.trim() || !extTelefono.trim() || !extHora) {
+      Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Nombre, apellido, teléfono y horario son obligatorios.' });
+      return;
+    }
+    const fechaSeleccionada = extDias[extDia]?.iso;
+    if (!fechaSeleccionada) {
+      Swal.fire({ icon: 'error', title: 'Sin fecha disponible', text: 'No hay un día válido seleccionado.' });
+      return;
+    }
+    setExtGuardando(true);
+    try {
+      const res = await crearAsesoria({
+        nombre: extNombre.trim(),
+        apellido: extApellido.trim(),
+        telefono: extTelefono.trim(),
+        tipoAtencion: ATENCION_LABELS[extAtencion] || extAtencion,
+        fecha: fechaSeleccionada,
+        hora: extHora,
+      });
+      if (!res?.success) throw new Error(res?.message || 'No se pudo guardar la cita externa');
+      await fetchAsesorias();
+      setExtAbierta(false);
+      Swal.fire({ icon: 'success', title: 'Cita externa guardada', text: 'Ya aparece en el calendario.' });
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: 'No se pudo guardar', text: error.message || 'Ocurrió un error al guardar la cita externa.' });
+    } finally {
+      setExtGuardando(false);
+    }
   };
 
   const abrirCambiarCita = () => {
@@ -1060,6 +1102,28 @@ export default function EmpresaCalendario() {
                   <div className={styles.extClientSub}>Asesoría general</div>
                 </div>
 
+                <div className={styles.ncRow2}>
+                  <div className={styles.ncField}>
+                    <div className={styles.ncFieldLabel}>Nombre <span className={styles.req}>*</span></div>
+                    <div className={styles.ncInpWrap}>
+                      <input value={extNombre} onChange={(e) => setExtNombre(e.target.value)} placeholder="Nombre" />
+                    </div>
+                  </div>
+                  <div className={styles.ncField}>
+                    <div className={styles.ncFieldLabel}>Apellido <span className={styles.req}>*</span></div>
+                    <div className={styles.ncInpWrap}>
+                      <input value={extApellido} onChange={(e) => setExtApellido(e.target.value)} placeholder="Apellido" />
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.ncField}>
+                  <div className={styles.ncFieldLabel}>Teléfono <span className={styles.req}>*</span></div>
+                  <div className={styles.ncInpWrap}>
+                    <input value={extTelefono} onChange={(e) => setExtTelefono(e.target.value)} placeholder="Ej. 777 123 4567" />
+                    <IconPhone />
+                  </div>
+                </div>
+
                 <div className={styles.ncFieldLabel}>Día disponible</div>
                 <div className={styles.extDayGrid}>
                   {extDias.map((dia, i) => (
@@ -1102,8 +1166,8 @@ export default function EmpresaCalendario() {
               </div>
               <div className={styles.ncFoot}>
                 <button className={`${styles.ncBtn} ${styles.ncBtnGhost}`} onClick={() => setExtAbierta(false)}>Cancelar</button>
-                <button className={`${styles.ncBtn} ${styles.ncBtnDark}`} onClick={handleGuardarExterna}>
-                  <IconCheck /> Guardar cita
+                <button className={`${styles.ncBtn} ${styles.ncBtnDark}`} disabled={extGuardando} onClick={handleGuardarExterna}>
+                  <IconCheck /> {extGuardando ? 'Guardando…' : 'Guardar cita'}
                 </button>
               </div>
             </div>
