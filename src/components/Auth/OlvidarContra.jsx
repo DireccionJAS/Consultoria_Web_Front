@@ -132,14 +132,21 @@ export default function OlvidarContra() {
       return;
     }
     try {
-      await actualizarContra(userId, nuevaPassword);
+      const res = await actualizarContra(userId, nuevaPassword);
+      if (!res?.success) {
+        // El backend responde 200 con success:false (no un error HTTP) para
+        // casos como "la contraseña no puede ser igual a la anterior" — sin
+        // este check el flujo seguía a la pantalla de éxito sin haber
+        // cambiado nada.
+        throw new Error(res?.message || 'No se pudo actualizar la contraseña.');
+      }
       setPaso(4);
     } catch (error) {
       console.error('Error actualizando contraseña:', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Ocurrió un error al actualizar la contraseña, por favor contacta a soporte.',
+        text: error.message || 'Ocurrió un error al actualizar la contraseña, por favor contacta a soporte.',
       });
     }
   };
