@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { createProcessWithPayment, payDS160, envioCorreo, createPersona } from './../api/api.js';
+import { createProcessWithPayment, payDS160, envioCorreo, createPersona, getSimulacionOcupados } from './../api/api.js';
 import { buildDs160Link } from './../utils/ds160.js';
 import apiClient from './../api/apiClient.js';
 
@@ -71,6 +71,26 @@ export default function CheckoutForm({
       return;
     }
 
+    // Revalidación de último momento antes de cobrar: CalendarBooking ya
+    // marca horarios ocupados al elegir, pero pudieron ocuparse entre que
+    // el cliente eligió y que le dio "Pagar" (el backend rechaza esto de
+    // todas formas al crear el trámite, pero DESPUÉS de cobrar en Stripe —
+    // esto evita cobrarle por un horario que ya sabemos que va a fallar).
+    if (service?.isDateService && selectedDate) {
+      try {
+        const disponibilidad = await getSimulacionOcupados();
+        const ocupados = disponibilidad.success && Array.isArray(disponibilidad.response?.ocupados) ? disponibilidad.response.ocupados : [];
+        if (ocupados.includes(selectedDate)) {
+          setMessage('Ese horario acaba de ser reservado por alguien más. Elige otro horario para continuar.');
+          setLoading(false);
+          onError && onError({ message: 'Horario ya no disponible' });
+          return;
+        }
+      } catch (error) {
+        console.error('Error al revalidar disponibilidad antes de cobrar:', error);
+      }
+    }
+
     try {
       const { data } = await apiClient.post(`/pay/payint`, {
         amount: (amount * 100)* quantity, 
@@ -121,10 +141,10 @@ export default function CheckoutForm({
             idTransact: parseInt(idProductoTransaccion)
           };
 
-
-
-          await apiClient.post(`/payment`, paymentData);
-
+          // El registro de Payment se crea DESPUÉS de que todos los trámites
+          // se hayan creado con éxito (no antes): si createProcessWithPayment
+          // rechaza la fecha por traslape (validarDisponibilidadSimulacion),
+          // antes quedaba un Payment ya cobrado sin ningún trámite asociado.
           // Crear los procesos
           for (let i = 0; i < paymentData.quantity; i++) {
 
@@ -139,6 +159,12 @@ export default function CheckoutForm({
               personName: (names[i] || '').trim() || null,
             };
             const progressResult = await createProcessWithPayment(processPaymentData);
+            if (!progressResult?.success) {
+              // El backend responde 200 con success:false (no lanza error
+              // HTTP) cuando rechaza la fecha por traslape — sin este check
+              // el flujo seguía de largo como si hubiera funcionado.
+              throw new Error(progressResult?.message || 'No se pudo registrar el trámite.');
+            }
             await envioCorreo(userEmail,customer,serviceName);
 
             // El módulo de Formularios (link DS-160 por persona) solo aplica a
@@ -159,6 +185,9 @@ export default function CheckoutForm({
               }
             }
           }
+
+          await apiClient.post(`/payment`, paymentData);
+
           // Enviar correo DS-160 si aplica
           if (serviceName) {
             const serviceNameLower = serviceName.trim().toLowerCase();
@@ -179,7 +208,8 @@ export default function CheckoutForm({
         } catch (dbError) {
           console.error("Error al guardar el pago en la base de datos:", dbError);
           console.error("Detalles del error:", dbError.response?.data || dbError.message);
-          setMessage(`Pago en Stripe exitoso, pero hubo un problema al guardar su registro. Por favor, contacte a soporte.`);
+          const detalle = dbError.response?.data?.message || dbError.message;
+          setMessage(`Pago en Stripe exitoso, pero hubo un problema al guardar su registro${detalle ? `: ${detalle}` : ''}. Por favor, contacte a soporte.`);
         }
       }
     } catch (err) {

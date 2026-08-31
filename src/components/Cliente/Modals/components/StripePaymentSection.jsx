@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import CheckoutForm from './../../../CheckoutForm.jsx';
 import PaymentOptions from './PaymentOption.jsx';
 import InfoBox from './InfoBox.jsx'; // Asegúrate de que esté en la misma carpeta
 import CalendarBooking from './CalendarBooking.jsx'; // Asegúrate de importar el nuevo componente
+import { getSimulacionOcupados } from './../../../../api/api.js';
 import stylesModal from './../../../../styles/StripePaymentSection.module.css';
 
 
@@ -30,6 +31,19 @@ const StripePaymentSection = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [extraFee, setExtraFee] = useState(0);
+  const [ocupados, setOcupados] = useState([]);
+
+  // Antes CalendarBooking no marcaba horarios ya ocupados por otros trámites:
+  // el cliente podía pagar y que el cobro se completara en Stripe antes de
+  // que el backend rechazara la fecha por traslape (createProgressWithPayment
+  // valida esto, pero después del cobro). Se consulta aquí para que el
+  // selector ya no ofrezca horarios que sabemos que van a fallar.
+  useEffect(() => {
+    if (!service?.isDateService) return;
+    getSimulacionOcupados()
+      .then((res) => setOcupados(res.success && Array.isArray(res.response?.ocupados) ? res.response.ocupados : []))
+      .catch((error) => { console.error('Error al obtener horarios ocupados:', error); setOcupados([]); });
+  }, [service?.isDateService]);
   const showSinglePayment = service?.cashAdvance !== undefined && service?.cost !== undefined && Number(service.cashAdvance) === Number(service.cost);
 
   // Detectar si es adelanto de cita visa americana
@@ -82,7 +96,7 @@ const StripePaymentSection = ({
                 Agendar cita
               </h4>
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <CalendarBooking onDateSelected={handleDateSelected} />
+                <CalendarBooking onDateSelected={handleDateSelected} disabledDates={ocupados} />
               </div>
               {!selectedDate && (
                 <div className={stylesModal.alerta}>
@@ -146,7 +160,7 @@ const StripePaymentSection = ({
                 Agendar cita
               </h4>
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <CalendarBooking onDateSelected={handleDateSelected} />
+                <CalendarBooking onDateSelected={handleDateSelected} disabledDates={ocupados} />
               </div>
               {!selectedDate && (
                 <div className={stylesModal.alerta}>
