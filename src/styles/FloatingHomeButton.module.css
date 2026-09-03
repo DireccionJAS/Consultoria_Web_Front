@@ -1,0 +1,25 @@
+.floatBack {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .floatBack {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #1B2A4A;
+    color: #E4ECF0;
+    box-shadow: 0 12px 28px -8px rgba(15, 26, 48, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    z-index: 80;
+    text-decoration: none;
+  }
+  .floatBack:active {
+    background: #2D6CDF;
+  }
+}
