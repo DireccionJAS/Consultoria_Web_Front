@@ -34,8 +34,8 @@
 .mhIcon { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .mhEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(228,244,251,0.65); margin-bottom: 4px; }
 .mhTitle { font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -0.02em; }
-.mhClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.18); color: var(--white); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-.mhClose:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+.mhClose { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.18) !important; color: var(--white) !important; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.mhClose:hover { background: rgba(255,255,255,0.3) !important; transform: rotate(90deg); }
 
 /* read-only rows */
 .roRow { display: flex; align-items: center; gap: 12px; padding: 13px 15px; background: #F4F8FB; border-radius: 12px; margin-bottom: 11px; }
@@ -65,10 +65,10 @@
 .modalFoot { padding: 16px 24px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 11px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-.btnPrimary { background: var(--primary); color: #fff; }
-.btnPrimary:hover:not(:disabled) { background: var(--hover); transform: translateY(-1px); }
-.btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
-.btnGhost:hover { background: #F4F8FB; }
+.btnPrimary { background: var(--primary) !important; color: #fff !important; }
+.btnPrimary:hover:not(:disabled) { background: var(--hover) !important; transform: translateY(-1px); }
+.btnGhost { background: transparent !important; color: var(--c1) !important; border: 1px solid var(--line-2) !important; }
+.btnGhost:hover { background: #F4F8FB !important; }
 
 /* detalle: resumen + tabla */
 .detSummary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }

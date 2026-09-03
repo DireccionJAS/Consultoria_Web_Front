@@ -84,11 +84,11 @@
 .brandTop { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
 .backBtn {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 9px 16px 9px 12px; background: rgba(228, 236, 240, 0.08);
-  border: 1px solid rgba(228, 236, 240, 0.15); border-radius: 999px;
-  font-size: 12px; font-weight: 500; color: var(--c5); transition: all 0.2s;
+  padding: 9px 16px 9px 12px; background: rgba(228, 236, 240, 0.08) !important;
+  border: 1px solid rgba(228, 236, 240, 0.15) !important; border-radius: 999px;
+  font-size: 12px; font-weight: 500; color: var(--c5) !important; transition: all 0.2s;
 }
-.backBtn:hover { background: rgba(228, 236, 240, 0.15); transform: translateX(-3px); }
+.backBtn:hover { background: rgba(228, 236, 240, 0.15) !important; transform: translateX(-3px); }
 .brandMark { display: flex; align-items: center; gap: 14px; }
 .brandMark img { width: 44px; height: 50px; object-fit: contain; filter: brightness(0) invert(1); }
 .brandMarkText { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -0.02em; line-height: 1.1; }
@@ -199,8 +199,8 @@
   padding: 13px 12px 13px 2px; font-size: 13.5px; color: var(--c1); min-width: 0;
 }
 .fieldInput::placeholder { color: var(--muted); }
-.inputToggle { padding: 0 14px; color: var(--muted); display: flex; align-items: center; transition: color 0.2s; }
-.inputToggle:hover { color: var(--c2); }
+.inputToggle { padding: 0 14px; color: var(--muted) !important; display: flex; align-items: center; transition: color 0.2s; }
+.inputToggle:hover { color: var(--c2) !important; }
 .fieldMsg { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 5px; }
 .fieldMsg.error { color: var(--rose); }
 .fieldMsg.ok { color: var(--green); }
@@ -259,10 +259,10 @@
   transition: all 0.25s; cursor: pointer;
 }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.btnPrimary { background: var(--c1); color: var(--c5); flex: 1; }
-.btnPrimary:hover { background: var(--c2); transform: translateY(-1px); }
-.btnGhost { background: transparent; color: var(--c1); border: 1px solid var(--line-2); }
-.btnGhost:hover { background: var(--white); }
+.btnPrimary { background: var(--c1) !important; color: var(--c5) !important; flex: 1; }
+.btnPrimary:hover { background: var(--c2) !important; transform: translateY(-1px); }
+.btnGhost { background: transparent !important; color: var(--c1) !important; border: 1px solid var(--line-2) !important; }
+.btnGhost:hover { background: var(--white) !important; }
 .arrowRev {
   width: 24px; height: 24px; border-radius: 50%;
   background: rgba(228, 236, 240, 0.15); display: flex; align-items: center;

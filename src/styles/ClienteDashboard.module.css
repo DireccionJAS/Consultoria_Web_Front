@@ -50,10 +50,10 @@
 .greetSub { font-size: 12.5px; color: var(--muted); margin-top: 5px; }
 .topUser { display: flex; align-items: center; gap: 12px; }
 .topBell {
-  width: 40px; height: 40px; border-radius: 50%; background: #F4F8FB;
+  width: 40px; height: 40px; border-radius: 50%; background: #F4F8FB !important;
   display: flex; align-items: center; justify-content: center; position: relative; transition: background 0.2s;
 }
-.topBell:hover { background: var(--light); }
+.topBell:hover { background: var(--light) !important; }
 .dot { position: absolute; top: 9px; right: 11px; width: 8px; height: 8px; background: var(--primary); border: 2px solid var(--white); border-radius: 50%; }
 .topAvatar {
   width: 42px; height: 42px; border-radius: 50%;
@@ -104,7 +104,7 @@
 .tagProceso { background: var(--light); color: var(--hover); }
 .tagTerminado { background: var(--green-soft); color: var(--green); }
 .tagEspera { background: var(--amber-soft); color: var(--amber); }
-.cardLink { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 12px; background: none; border: 0; padding: 0; cursor: pointer; }
+.cardLink { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--primary) !important; margin-top: 12px; background: none; border: 0; padding: 0; cursor: pointer; }
 
 /* accesos directos */
 .sectionTitle { font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -0.02em; margin-bottom: 4px; }
