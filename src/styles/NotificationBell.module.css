@@ -29,18 +29,18 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #F4F6F8;
+  background: #F4F6F8 !important;
   border: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--c1);
+  color: var(--c1) !important;
   transition: background 0.2s;
   position: relative;
 }
 .trigger:hover {
-  background: #E4ECF0;
+  background: #E4ECF0 !important;
 }
 .triggerBadge {
   position: absolute;
@@ -92,6 +92,19 @@
   }
 }
 
+.backdrop {
+  display: none;
+}
+@media (max-width: 640px) {
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 26, 48, 0.45);
+    z-index: 99;
+  }
+}
+
 .panelHeader {
   display: flex;
   align-items: center;
@@ -99,6 +112,29 @@
   gap: 16px;
   padding: 18px 20px;
   border-bottom: 1px solid var(--line);
+}
+.panelHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.closeBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #F4F6F8 !important;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c1) !important;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.closeBtn:hover {
+  background: #E4ECF0 !important;
 }
 .panelTitleWrap {
   display: flex;
@@ -122,7 +158,7 @@
 .markAllBtn {
   font-size: 11px;
   font-weight: 600;
-  color: var(--sky);
+  color: var(--sky) !important;
   background: none;
   border: 0;
   cursor: pointer;
@@ -133,7 +169,7 @@
   text-decoration: underline;
 }
 .markAllBtn:disabled {
-  color: rgba(0, 0, 42, 0.3);
+  color: rgba(0, 0, 42, 0.3) !important;
   cursor: default;
 }
 

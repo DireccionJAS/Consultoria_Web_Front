@@ -46,6 +46,14 @@ function IconCalendar() {
   );
 }
 
+function IconClose() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M18 6 6 18M6 6l12 12"></path>
+    </svg>
+  );
+}
+
 function IconWarning() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -128,6 +136,8 @@ export default function NotificationBell() {
         {noLeidas > 0 && <span className={styles.triggerBadge}>{noLeidas}</span>}
       </button>
 
+      {open && <div className={styles.backdrop} onClick={() => setOpen(false)} />}
+
       {open && (
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
@@ -135,9 +145,14 @@ export default function NotificationBell() {
               <div className={styles.panelTitle}>Notificaciones</div>
               {noLeidas > 0 && <span className={styles.panelBadge}>{noLeidas} nuevas</span>}
             </div>
-            <button className={styles.markAllBtn} onClick={marcarTodasLeidas} disabled={noLeidas === 0}>
-              Marcar todas como leídas
-            </button>
+            <div className={styles.panelHeaderActions}>
+              <button className={styles.markAllBtn} onClick={marcarTodasLeidas} disabled={noLeidas === 0}>
+                Marcar todas como leídas
+              </button>
+              <button className={styles.closeBtn} aria-label="Cerrar notificaciones" onClick={() => setOpen(false)}>
+                <IconClose />
+              </button>
+            </div>
           </div>
 
           <div className={styles.list}>
