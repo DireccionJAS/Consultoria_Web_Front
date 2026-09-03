@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import MobileNavMenu from './MobileNavMenu.jsx';
+import FloatingHomeButton from './FloatingHomeButton.jsx';
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const token = localStorage.getItem('token');
@@ -21,6 +22,7 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
       <>
         {children}
         <MobileNavMenu role={decoded.role} />
+        <FloatingHomeButton role={decoded.role} />
       </>
     );
   } catch (error) {
