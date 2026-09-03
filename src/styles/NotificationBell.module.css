@@ -74,6 +74,24 @@
   z-index: 100;
 }
 
+/* En móvil el header puede envolver (flex-wrap) y mover el trigger fuera de
+   su posición de escritorio, así que anclar el panel a él con right:0 lo
+   deja fuera de pantalla. Se ancla a la ventana en su lugar. */
+@media (max-width: 640px) {
+  .panel {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: calc(100vh - 84px);
+  }
+  .list {
+    max-height: calc(100vh - 220px);
+  }
+}
+
 .panelHeader {
   display: flex;
   align-items: center;
