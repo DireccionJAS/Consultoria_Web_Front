@@ -728,11 +728,15 @@ export default function EmpresaCalendario() {
                                   ev.tipo === 'citaSim' ? 'Simulación' :
                                   ev.tipo === 'citaAten' ? 'Atención' :
                                   'Simulación'
-                                } · {
-                                  ev.tipo === 'aten' ? ev.item.nombre :
-                                  (ev.tipo === 'citaSim' || ev.tipo === 'citaAten') ? (ev.item.nombreUsuario || '').split(' ').slice(0, 2).join(' ') :
-                                  (ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')
                                 }
+                                <span className={styles.evName}>
+                                  {' · '}
+                                  {
+                                    ev.tipo === 'aten' ? ev.item.nombre :
+                                    (ev.tipo === 'citaSim' || ev.tipo === 'citaAten') ? (ev.item.nombreUsuario || '').split(' ').slice(0, 2).join(' ') :
+                                    (ev.item.user?.name || '').split(' ').slice(0, 2).join(' ')
+                                  }
+                                </span>
                               </div>
                             ))}
                             {resto > 0 && <div className={styles.calMore}>+{resto} más</div>}
