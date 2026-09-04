@@ -97,6 +97,13 @@
   .calEv { padding: 2px 4px; font-size: 9px; gap: 3px; }
   .evName { display: none; }
   .calMore { font-size: 9px; padding: 1px 4px; }
+
+  /* .topActions (logout + filtro + "Nueva cita") no tenia flex-wrap: los
+     3 elementos se comprimian a la fuerza en una sola fila, partiendo el
+     texto del boton y empujandolo fuera de la pantalla. */
+  .topbar { flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
+  .topActions { flex-wrap: wrap; width: 100%; justify-content: flex-end; }
+  .btn { white-space: nowrap; }
 }
 
 /* legend */
