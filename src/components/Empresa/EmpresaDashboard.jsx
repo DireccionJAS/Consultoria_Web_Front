@@ -143,6 +143,10 @@ export default function EmpresaDashboard() {
                     onClick={() => {
                       if (card.key === 'tramites') navigate('/EmpresaTramites');
                       if (card.key === 'clientes') navigate('/EmpresaClientes');
+                      if (card.key === 'servicios') navigate('/EmpresaServicios');
+                      if (card.key === 'pagos') navigate('/EmpresaPagos');
+                      if (card.key === 'calendario') navigate('/EmpresaCalendario');
+                      if (card.key === 'documentos') navigate('/EmpresaLegalidad');
                     }}
                   >
                     <div className={styles.navCardTop}>
