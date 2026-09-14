@@ -90,15 +90,6 @@ export default function MisTramites() {
   const [tramiteSeleccionado, setTramiteSeleccionado] = useState(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) navigate('/MisTramites-sm');
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [navigate]);
-
-  useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/'); return; }
     try {
