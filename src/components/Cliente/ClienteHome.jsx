@@ -39,16 +39,6 @@ export default function ClienteHome() {
   const [totalPasos, setTotalPasos] = useState(null);
   const [tramitesCount, setTramitesCount] = useState(null);
 
-  // Efecto para manejar el cambio de tamaño de pantalla
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) navigate('/ClienteHome-sm');
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [navigate]);
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/'); return; }
