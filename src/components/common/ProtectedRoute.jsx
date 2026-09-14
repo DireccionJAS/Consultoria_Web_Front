@@ -3,6 +3,8 @@ import { Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import MobileNavMenu from './MobileNavMenu.jsx';
 import FloatingHomeButton from './FloatingHomeButton.jsx';
+import NotificationBell from './NotificationBell.jsx';
+import styles from './../../styles/ProtectedRoute.module.css';
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const token = localStorage.getItem('token');
@@ -23,6 +25,11 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
         {children}
         <MobileNavMenu role={decoded.role} />
         <FloatingHomeButton role={decoded.role} />
+        {decoded.role === 'USER' && (
+          <div className={styles.clienteBellWrap}>
+            <NotificationBell />
+          </div>
+        )}
       </>
     );
   } catch (error) {

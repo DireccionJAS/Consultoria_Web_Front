@@ -1,0 +1,16 @@
+/* NotificationBell del Portal Cliente: en escritorio cada pantalla ya tiene
+   su propio header (sin campanita todavía, fuera de alcance rediseñarlos
+   uno por uno), así que aquí solo se muestra flotando en móvil, mismo
+   breakpoint que MobileNavMenu/FloatingHomeButton. */
+.clienteBellWrap {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 45;
+}
+
+@media (min-width: 992px) {
+  .clienteBellWrap {
+    display: none;
+  }
+}
