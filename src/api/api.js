@@ -1177,8 +1177,8 @@ export const olvidarContraSin = async (email) => {
     }
 
     const body = {
-      subject: "Verificación de contraseña",
-      message: "Hola, aquí tienes tu código de verificacion de parte del equipo de Consultoría JAS: ",
+      subject: "Creación de cuenta",
+      message: "Hola, favor de ingresar el siguiente código de verificación para finalizar la verificación de tu cuenta de nuestra página web en Consultoría JAS.",
     };
 
     const response = await axios.post(
