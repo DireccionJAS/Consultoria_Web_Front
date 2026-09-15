@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
-import { RegistrarCliente, olvidarContraSin, enviarCorreoConDatos } from '../../api/api.js';
+import { RegistrarCliente, olvidarContraSin, enviarCorreoConDatos, obtenerUsuarioPorCorreo } from '../../api/api.js';
 import styles from './../../styles/Signin.module.css';
 import { MdClose, MdOpenInNew, MdDownload } from 'react-icons/md';
 import Logo from './../../img/logo_letras_negras.png';
@@ -392,6 +392,24 @@ export default function Signin({ onCancel }) {
         customClass: { popup: 'swal-popup-custom' },
       });
       return;
+    }
+
+    try {
+      const resExistente = await obtenerUsuarioPorCorreo(data.email.trim().toLowerCase());
+      if (resExistente?.success) {
+        await Swal.fire({
+          title: 'Este correo ya tiene una cuenta',
+          text: 'Ya existe una cuenta registrada con este correo. Inicia sesión o recupera tu contraseña si la olvidaste.',
+          icon: 'warning',
+          confirmButtonText: 'Entendido',
+          customClass: { popup: 'swal-popup-custom' },
+        });
+        return;
+      }
+    } catch (error) {
+      // 404/"Usuario no encontrado" es el camino esperado (correo libre para
+      // registrar) — obtenerUsuarioPorCorreo lanza en ese caso, no es un
+      // error real que deba bloquear el registro.
     }
 
     try {
