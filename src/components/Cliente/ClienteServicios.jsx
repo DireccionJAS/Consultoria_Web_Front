@@ -19,7 +19,6 @@ function ArrowIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="curre
 function PlusIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>; }
 function CheckIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12l5 5L20 7" /></svg>; }
 function CartIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>; }
-function BellIcon() { return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>; }
 
 // Servicios elegibles para el carrito (pagar 2+ en un solo cobro): solo
 // servicios "simples" de precio fijo. Se excluyen Visa Americana, traslados
@@ -204,7 +203,6 @@ export default function ClienteServicios() {
             <div className={styles.pageTitleH}>Servicios disponibles</div>
           </div>
           <div className={styles.topUser}>
-            <button className={styles.topBell}><BellIcon /><span className={styles.dot}></span></button>
             <div className={styles.topAvatar}>{(nombre.trim().charAt(0) || 'C').toUpperCase()}</div>
             <HeaderLogoutButton />
           </div>

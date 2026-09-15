@@ -9,7 +9,6 @@ import styles from './../../styles/ClienteMisTramites.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
 function ArrowIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>; }
-function BellIcon() { return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>; }
 
 const STATUS_META = {
   1: { label: 'En proceso', cls: 'tagProceso' },
@@ -162,7 +161,6 @@ export default function MisTramites() {
             <div className={styles.pageTitleH}>Mis trámites</div>
           </div>
           <div className={styles.topUser}>
-            <button className={styles.topBell}><BellIcon /><span className={styles.dot}></span></button>
             <div className={styles.topAvatar}>{(nombre.trim().charAt(0) || 'C').toUpperCase()}</div>
             <HeaderLogoutButton />
           </div>

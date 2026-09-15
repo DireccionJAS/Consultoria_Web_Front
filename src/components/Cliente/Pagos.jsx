@@ -15,7 +15,6 @@ function EyeIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill
 function CloseIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 6l12 12M6 18L18 6" /></svg>; }
 function CasIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>; }
 function ConIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg>; }
-function BellIcon() { return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>; }
 
 const STATUS_META = {
   1: { label: 'En proceso' }, 2: { label: 'En espera' }, 3: { label: 'Falta de pago' },
@@ -126,7 +125,6 @@ export default function Pagos() {
             <div className={styles.pageTitleH}>Mis pagos</div>
           </div>
           <div className={styles.topUser}>
-            <button className={styles.topBell}><BellIcon /><span className={styles.dot}></span></button>
             <div className={styles.topAvatar}>{(nombre.trim().charAt(0) || 'C').toUpperCase()}</div>
             <HeaderLogoutButton />
           </div>
