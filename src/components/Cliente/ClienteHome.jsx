@@ -6,6 +6,7 @@ import ClienteSidebar from './ClienteSidebar.jsx';
 import { clientePorId, tramitesPorId, getStepById } from './../../api/api.js';
 import styles from './../../styles/ClienteDashboard.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
+import NotificationBell from './../common/NotificationBell.jsx';
 
 function ArrowIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10" /></svg>; }
 function TramiteIcon() { return <svg width="22" height="22" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="6" y="4" width="20" height="28" rx="2" /><circle cx="16" cy="14" r="3.5" /><path d="M10 22h12M10 26h8" /></svg>; }
@@ -97,6 +98,7 @@ export default function ClienteHome() {
             <div className={styles.greetSub}>Bienvenido de vuelta a tu portal de Consultoría JAS</div>
           </div>
           <div className={styles.topUser}>
+            <NotificationBell />
             <div className={styles.topAvatar}>{(primerNombre[0] || 'C').toUpperCase()}</div>
             <HeaderLogoutButton />
           </div>

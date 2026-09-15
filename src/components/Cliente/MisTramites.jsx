@@ -7,6 +7,7 @@ import ModalActualizarTramite from './ActualizarMiTramite.jsx';
 import { clientePorId, tramitesPorId, getStepById } from './../../api/api.js';
 import styles from './../../styles/ClienteMisTramites.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
+import NotificationBell from './../common/NotificationBell.jsx';
 
 function ArrowIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>; }
 
@@ -161,6 +162,7 @@ export default function MisTramites() {
             <div className={styles.pageTitleH}>Mis trámites</div>
           </div>
           <div className={styles.topUser}>
+            <NotificationBell />
             <div className={styles.topAvatar}>{(nombre.trim().charAt(0) || 'C').toUpperCase()}</div>
             <HeaderLogoutButton />
           </div>

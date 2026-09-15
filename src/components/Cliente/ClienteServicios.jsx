@@ -13,6 +13,7 @@ import CartPaymentModal from './Modals/CartPaymentModal.jsx';
 
 import styles from './../../styles/ClienteServiciosGrid.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
+import NotificationBell from './../common/NotificationBell.jsx';
 
 function ListIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M8 6h13M8 12h13M8 18h13" /><circle cx="3.5" cy="6" r="1.2" /><circle cx="3.5" cy="12" r="1.2" /><circle cx="3.5" cy="18" r="1.2" /></svg>; }
 function ArrowIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>; }
@@ -203,6 +204,7 @@ export default function ClienteServicios() {
             <div className={styles.pageTitleH}>Servicios disponibles</div>
           </div>
           <div className={styles.topUser}>
+            <NotificationBell />
             <div className={styles.topAvatar}>{(nombre.trim().charAt(0) || 'C').toUpperCase()}</div>
             <HeaderLogoutButton />
           </div>
