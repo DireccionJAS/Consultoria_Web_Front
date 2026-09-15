@@ -57,6 +57,7 @@ export default function StatsSection() {
   const [tip, setTip] = useState(null);
   const [mapaPresencia, setMapaPresencia] = useState(null);
   const [mapaZonas, setMapaZonas] = useState(null);
+  const [tasaAprobacion, setTasaAprobacion] = useState('96');
 
   useEffect(() => {
     let activo = true;
@@ -66,10 +67,15 @@ export default function StatsSection() {
         const c = response.response.config;
         setMapaPresencia(c.mapaPresencia || null);
         setMapaZonas(c.mapaZonas || null);
+        if (c.tasaAprobacion) setTasaAprobacion(c.tasaAprobacion);
       })
       .catch((error) => console.error('Error al obtener configuración de página pública:', error));
     return () => { activo = false; };
   }, []);
+
+  const pctAprobacion = Number(tasaAprobacion) || 96;
+  const pctRevision = Math.max(0, 100 - pctAprobacion);
+  const donutDashoffset = 446 * (pctRevision / 100);
 
   return (
     <section className={styles.datavis} id="numeros">
@@ -95,10 +101,10 @@ export default function StatsSection() {
               <div className={styles.donut}>
                 <svg width="180" height="180" viewBox="0 0 180 180">
                   <circle cx="90" cy="90" r="74" fill="none" stroke="rgba(228,236,240,0.12)" strokeWidth="20" />
-                  <circle cx="90" cy="90" r="74" fill="none" stroke="var(--accent)" strokeWidth="20" strokeLinecap="round" strokeDasharray="446" strokeDashoffset="18" />
+                  <circle cx="90" cy="90" r="74" fill="none" stroke="var(--accent)" strokeWidth="20" strokeLinecap="round" strokeDasharray="446" strokeDashoffset={donutDashoffset} />
                 </svg>
                 <div className={styles.donutCenter}>
-                  <div className={styles.donutPct}>96<small>%</small></div>
+                  <div className={styles.donutPct}>{pctAprobacion}<small>%</small></div>
                   <div className={styles.donutSub}>aprobadas</div>
                 </div>
               </div>
@@ -107,14 +113,14 @@ export default function StatsSection() {
                   <span className={styles.dlegDot} style={{ background: 'var(--accent)' }}></span>
                   <div className={styles.dlegText}>
                     <div className={styles.dlegName}>Visas aprobadas</div>
-                    <div className={styles.dlegVal}>96% · 1,247 trámites</div>
+                    <div className={styles.dlegVal}>{pctAprobacion}% · 1,247 trámites</div>
                   </div>
                 </div>
                 <div className={styles.dlegItem}>
                   <span className={styles.dlegDot} style={{ background: 'rgba(228,236,240,0.20)' }}></span>
                   <div className={styles.dlegText}>
                     <div className={styles.dlegName}>En revisión / reapertura</div>
-                    <div className={styles.dlegVal}>4% · 52 trámites</div>
+                    <div className={styles.dlegVal}>{pctRevision}% · 52 trámites</div>
                   </div>
                 </div>
               </div>
