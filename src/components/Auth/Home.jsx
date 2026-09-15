@@ -247,17 +247,9 @@ export default function Home() {
 
       {/* RIGHT FORM PANEL */}
       <section className={styles.formPanel}>
-        <div className={styles.formTop}>
-          <span>¿Aún no tienes cuenta?</span>
-          <button type="button" onClick={singint} className={styles.signupBtn}>
-            Crear cuenta
-            <ArrowIcon />
-          </button>
-        </div>
-
         <div className={styles.formCard}>
           <div className={styles.formEyebrow}>Iniciar sesión</div>
-          <h2 className={styles.formTitle}>Bienvenido<br />de <em>vuelta.</em></h2>
+          <h2 className={styles.formTitle}>Bienvenido a<br /><em>Consultoría JAS</em></h2>
           <p className={styles.formSub}>
             Accede a tu portal con tu correo y contraseña. Si es tu primera vez, créate una cuenta gratis.
           </p>
@@ -327,17 +319,17 @@ export default function Home() {
             </button>
           </form>
 
-          <div className={styles.orDivider}>o</div>
+          <button type="button" className={styles.btnSignup} onClick={singint}>
+            Crear cuenta gratis
+            <ArrowIcon />
+          </button>
+
+          <div className={styles.orDivider}>o continúa con</div>
 
           <button type="button" className={styles.gsign} onClick={handleOpenGoogleModal} disabled={googleSubmitting}>
             <GoogleGIcon />
             {googleSubmitting ? 'Conectando…' : 'Iniciar sesión con Google'}
           </button>
-          <button type="button" className={styles.nolink} onClick={handleOpenGoogleModal}>¿No tienes cuenta de Google?</button>
-
-          <div className={styles.signupCta}>
-            ¿Es tu primera vez en JAS? <a href="#" onClick={(e) => { e.preventDefault(); singint(); }}>Crea tu cuenta gratis →</a>
-          </div>
 
           <div className={styles.formFoot}>
             <span className={styles.copy}>© 2026 · Consultoría JAS</span>
