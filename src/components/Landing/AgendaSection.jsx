@@ -6,6 +6,13 @@ import styles from '../../styles/landing/AgendaSection.module.css';
 
 const DESTINO_AGENDA = 'direcciongeneral@consultoriajas.com';
 
+function fechaLocalISO(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function formatearHora12h(hora) {
   const [hStr, mStr] = hora.split(':');
   const h = parseInt(hStr, 10);
@@ -153,7 +160,7 @@ export default function AgendaSection() {
                   <input
                     className={`${styles.agInp} ${styles.agInpNoLeadIcon}`}
                     type="date"
-                    min={new Date().toISOString().slice(0, 10)}
+                    min={fechaLocalISO()}
                     value={fecha}
                     onChange={(e) => setFecha(e.target.value)}
                     required
