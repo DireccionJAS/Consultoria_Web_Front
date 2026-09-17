@@ -4,10 +4,11 @@ import { createService, updateService } from './../../api/api.js';
 import { ICONOS, iconDataUri } from './../../utils/serviceIcons.js';
 import styles from './../../styles/ModalesServicio.module.css';
 
-// Extraído 1:1 de "15-ModalesServicio (standalone) (1).html". "Categoría",
-// "Duración" y "Tasa de éxito" no existen en Transact — el usuario pidió
-// (2026-07-17) mantenerlos como campos UI-only (se ven pero no se envían
-// al guardar), en vez de omitirlos. El slot "Ícono" del mockup era un
+// Extraído 1:1 de "15-ModalesServicio (standalone) (1).html". "Categoría" y
+// "Tasa de éxito" no existen en Transact — el usuario pidió (2026-07-17)
+// mantenerlos como campos UI-only (se ven pero no se envían al guardar).
+// "Duración" sí se guarda de verdad desde 2026-09-17 (duracionValor +
+// duracionUnidad en Transact). El slot "Ícono" del mockup era un
 // upload; a pedido del usuario se reemplazó por un combobox con un ícono
 // fijo por tipo de trámite (visa/pasaporte/formulario/entrevista/citas/
 // asesoría). El ícono elegido se guarda como SVG (data URI) en
@@ -156,6 +157,7 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
   const [campos, setCampos] = useState(CAMPOS_INICIALES);
   const [categoria, setCategoria] = useState(CATEGORIAS[0]);
   const [duracion, setDuracion] = useState('');
+  const [duracionUnidad, setDuracionUnidad] = useState('Semanas');
   const [tasaExito, setTasaExito] = useState('');
   const [iconoId, setIconoId] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -173,7 +175,8 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
   useEffect(() => {
     if (!show) return;
     setCategoria(CATEGORIAS[0]);
-    setDuracion('');
+    setDuracion(servicio?.duracionValor || '');
+    setDuracionUnidad(servicio?.duracionUnidad || 'Semanas');
     setTasaExito('');
     if (servicio) {
       setCampos({
@@ -260,6 +263,8 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
         optionCost,
         isDateService,
         status,
+        duracionValor: duracion || null,
+        duracionUnidad: duracion ? duracionUnidad : null,
       };
 
       const res = esEdicion ? await updateService(servicio.idTransact, payload) : await createService(payload);
@@ -330,7 +335,14 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
               </div>
               <div className={styles.field}>
                 <label className={styles.fieldLabel}>Duración</label>
-                <div className={styles.pctWrap}><input placeholder="Ej. 8-14" value={duracion} onChange={(e) => setDuracion(e.target.value)} /><span className={styles.pctSuffix}>semanas</span></div>
+                <div className={styles.pctWrap}>
+                  <input placeholder="Ej. 8-14" value={duracion} onChange={(e) => setDuracion(e.target.value)} />
+                  <select className={styles.pctSuffixSelect} value={duracionUnidad} onChange={(e) => setDuracionUnidad(e.target.value)}>
+                    <option value="Días">días</option>
+                    <option value="Semanas">semanas</option>
+                    <option value="Meses">meses</option>
+                  </select>
+                </div>
               </div>
               <div className={styles.field}>
                 <label className={styles.fieldLabel}>Tasa de éxito</label>

@@ -15,6 +15,8 @@ function ArrowIcon() {
   return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>;
 }
 
+const UNIDAD_ABREV = { Días: 'días', Semanas: 'sem', Meses: 'mes' };
+
 const StepsModal = ({
   show,
   onHide,
@@ -51,7 +53,10 @@ const StepsModal = ({
                   <span className={styles.ssLab}>Pasos</span>
                 </div>
                 <div className={styles.ssItem}>
-                  <span className={styles.ssVal}>4-8<small style={{ fontSize: 10 }}> sem</small></span>
+                  <span className={styles.ssVal}>
+                    {service?.duracionValor || '—'}
+                    {service?.duracionValor && <small style={{ fontSize: 10 }}> {UNIDAD_ABREV[service.duracionUnidad] || 'sem'}</small>}
+                  </span>
                   <span className={styles.ssLab}>Duración</span>
                 </div>
                 <div className={styles.ssItem}>

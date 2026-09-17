@@ -240,7 +240,9 @@ export const createService = async (serviceData) => {
       cost: serviceData.cost,
       nameOption: serviceData.nameOption,
       costOption: serviceData.costOption,
-      isDateService: serviceData.isDateService ?? false
+      isDateService: serviceData.isDateService ?? false,
+      duracionValor: serviceData.duracionValor,
+      duracionUnidad: serviceData.duracionUnidad,
     };
 
     const response = await apiClient.post(`/transaction/web`, payload, {
@@ -299,6 +301,8 @@ export const updateService = async (id, serviceData) => {
       description: serviceData.description,
       isDateService: serviceData.isDateService ?? false,
       image: serviceData.image, // Base64 string
+      duracionValor: serviceData.duracionValor,
+      duracionUnidad: serviceData.duracionUnidad,
     };
 
     const response = await apiClient.put(`/transaction/web/update/${serviceId}`, payload, {

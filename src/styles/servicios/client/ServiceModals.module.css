@@ -10,10 +10,11 @@
   país, "¿Qué incluye?" (lista de bullets específica por servicio, no existe
   en Transact), tiempos por paso ("Día 0", "Semana 1") y el estado
   completado/en-proceso por paso (StepTransact no tiene progreso por
-  usuario a este nivel, solo nombre+descripción+número). Duración
-  ("4-8 semanas") y % Aprobación (96%) se mantienen como texto fijo,
-  igual que en ServiciosPage.jsx, por la misma decisión del usuario
-  (2026-07-17) de conservar la densidad visual del diseño.
+  usuario a este nivel, solo nombre+descripción+número). % Aprobación
+  (96%) se mantiene como texto fijo, igual que en ServiciosPage.jsx, por
+  la misma decisión del usuario (2026-07-17) de conservar la densidad
+  visual del diseño. Duración es real por servicio desde 2026-09-17
+  (duracionValor/duracionUnidad, "—" si aún no se ha capturado).
 */
 
 .modalDialog {

@@ -11,11 +11,13 @@ import styles from './../../styles/landing/ServiciosPage.module.css';
 // Extraído 1:1 de "Servicios (standalone).html" (catálogo público). El ícono
 // por tarjeta y la categoría de los filtros/pills SÍ son reales: se derivan
 // del ícono elegido en el modal de servicio (ver utils/serviceIcons.js) —
-// Transact no tiene un campo de categoría. Duración ("4-8 semanas"),
-// "Destacado" (solo la 1a tarjeta) y los stats 8 Destinos / 96% Aprobación
-// del header son texto fijo igual que en el mockup (2026-07-17, el usuario
-// pidió mantener la densidad visual del diseño en vez de omitirlos) — no
-// son datos reales por servicio, Transact no los tiene. La bandera de país
+// Transact no tiene un campo de categoría. "Destacado" (solo la 1a tarjeta)
+// y los stats 8 Destinos / 96% Aprobación del header son texto fijo igual
+// que en el mockup (2026-07-17, el usuario pidió mantener la densidad
+// visual del diseño en vez de omitirlos) — no son datos reales, Transact
+// no los tiene. Duración SÍ es real por servicio desde 2026-09-17
+// (duracionValor/duracionUnidad); "Consultar" es el fallback para
+// servicios que aún no tienen ese dato capturado. La bandera de país
 // por servicio SÍ se omitió: a diferencia de duración/aprobación, no hay un
 // valor genérico razonable (mostrar 🇺🇸 en un trámite que es de Canadá sería
 // activamente incorrecto). El footer no estaba en este export standalone
@@ -85,6 +87,10 @@ function formatCost(cost) {
 function cleanDescription(text) {
   if (!text) return text;
   return text.replace(/•/g, '').replace(/\s{2,}/g, ' ').trim();
+}
+function formatDuracion(service) {
+  if (!service.duracionValor) return 'Consultar';
+  return `${service.duracionValor} ${(service.duracionUnidad || 'Semanas').toLowerCase()}`;
 }
 
 export default function ServiciosPage() {
@@ -324,7 +330,7 @@ export default function ServiciosPage() {
                       <div className={styles.svcMeta}>
                         <span className={styles.svcMetaItem}>
                           <ClockIcon />
-                          4-8 semanas
+                          {formatDuracion(service)}
                         </span>
                         <span className={styles.svcMetaItem}>
                           <StepsIcon />

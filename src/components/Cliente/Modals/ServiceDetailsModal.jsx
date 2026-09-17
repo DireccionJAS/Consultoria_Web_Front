@@ -21,6 +21,8 @@ function ArrowIcon() {
   return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>;
 }
 
+const UNIDAD_ABREV = { Días: 'días', Semanas: 'sem', Meses: 'mes' };
+
 const ServiceDetailsModal = ({
   show,
   onHide,
@@ -56,7 +58,12 @@ const ServiceDetailsModal = ({
           <div className={styles.metaGrid}>
             <div className={styles.metaCard}>
               <div className={styles.metaIcon}><ClockIcon /></div>
-              <div className={styles.metaVal}>4-8<small style={{ fontSize: 11, fontFamily: 'var(--mono)', fontWeight: 500, color: 'var(--muted)' }}> sem</small></div>
+              <div className={styles.metaVal}>
+                {service.duracionValor || '—'}
+                {service.duracionValor && (
+                  <small style={{ fontSize: 11, fontFamily: 'var(--mono)', fontWeight: 500, color: 'var(--muted)' }}> {UNIDAD_ABREV[service.duracionUnidad] || 'sem'}</small>
+                )}
+              </div>
               <div className={styles.metaLab}>Duración</div>
             </div>
             <div className={styles.metaCard}>
