@@ -200,7 +200,7 @@ const schema = yup.object().shape({
 });
 
 const MAX_INTENTOS = 3;
-const TIEMPO_ESPERA = 60;
+const TIEMPO_ESPERA = 5 * 60;
 
 export default function Signin({ onCancel }) {
   const navigate = useNavigate();
