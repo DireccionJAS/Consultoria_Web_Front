@@ -108,6 +108,14 @@ export default function EmpresaServicios() {
   const abrirModalPasos = (service) => { setServicioPasos(service); setModalPasosAbierto(true); };
 
   const handleToggleStatus = async (service) => {
+    const nuevoStatus = !service.status;
+
+    // Actualización optimista: cambia el estado en pantalla al instante en
+    // vez de llamar a fetchServices() (que ponía cargando=true y recargaba
+    // toda la lista — provocaba que las tarjetas parpadearan al
+    // activar/desactivar un solo servicio). Si el guardado falla, se revierte.
+    setServices((prev) => prev.map((s) => (s.idTransact === service.idTransact ? { ...s, status: nuevoStatus } : s)));
+
     const payload = {
       name: service.name,
       description: service.description,
@@ -117,7 +125,7 @@ export default function EmpresaServicios() {
       cas: service.cas,
       con: service.con,
       totalPayment: service.totalPayment,
-      status: !service.status,
+      status: nuevoStatus,
       cashAdvance: service.cashAdvance,
       cost: service.cost,
       nameOption: service.nameOption,
@@ -127,8 +135,8 @@ export default function EmpresaServicios() {
     try {
       const res = await updateService(service.idTransact, payload);
       if (!res?.success) throw new Error(res?.message || 'No se pudo actualizar el servicio');
-      await fetchServices();
     } catch (error) {
+      setServices((prev) => prev.map((s) => (s.idTransact === service.idTransact ? { ...s, status: service.status } : s)));
       Swal.fire({ icon: 'error', title: 'No se pudo cambiar el estado', text: error.message || 'Ocurrió un error al actualizar el servicio.' });
     }
   };
