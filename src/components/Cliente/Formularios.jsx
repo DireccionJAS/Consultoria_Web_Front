@@ -68,9 +68,11 @@ export default function Formularios() {
         const actual = [...(activos.length ? activos : items)].sort((a, b) => b.idTransactProgress - a.idTransactProgress)[0];
         setTramite(actual || null);
         if (!actual) return;
-        const pendiente = (actual.paidAll || 0) - (actual.paid || 0);
+        // Los formularios se habilitan con el pago INICIAL (anticipo) cubierto,
+        // no con el trámite pagado al 100% — ver TransactProgress.advance,
+        // el mismo flag que ya usa el backend para permitir agendar Simulación.
         const aplica = actual.transact?.cas || actual.transact?.con;
-        if (pendiente <= 0 && aplica) {
+        if (actual.advance && aplica) {
           const personasResponse = await getPersonasByProgress(actual.idTransactProgress);
           setPersonas(personasResponse?.response?.personas || []);
         }
@@ -79,9 +81,9 @@ export default function Formularios() {
       .finally(() => setCargando(false));
   }, [navigate]);
 
-  const pendiente = tramite ? Math.max((tramite.paidAll || 0) - (tramite.paid || 0), 0) : 0;
+  const anticipoRequerido = tramite?.transact?.cashAdvance ?? null;
   const aplica = !!(tramite?.transact?.cas || tramite?.transact?.con);
-  const bloqueado = !tramite || pendiente > 0;
+  const bloqueado = !tramite || !tramite.advance;
 
   const copiarLink = (persona) => {
     if (persona.ds160Link) navigator.clipboard?.writeText(persona.ds160Link);
@@ -110,10 +112,10 @@ export default function Formularios() {
           {cargando ? null : bloqueado ? (
             <div className={styles.locked}>
               <div className={styles.lockedIcon}><LockIcon /></div>
-              <div className={styles.lockedTitle}>{tramite ? 'Completa tu pago para acceder a los formularios' : 'No tienes un trámite activo'}</div>
+              <div className={styles.lockedTitle}>{tramite ? 'Completa tu pago inicial para acceder a los formularios' : 'No tienes un trámite activo'}</div>
               <div className={styles.lockedSub}>
                 {tramite
-                  ? <>Tus formularios se desbloquearán automáticamente una vez que registremos tu pago. Tienes un saldo pendiente de <strong>${pendiente.toLocaleString('es-MX')} MXN</strong>.</>
+                  ? <>Tus formularios se desbloquearán automáticamente una vez que registremos tu pago inicial{anticipoRequerido != null ? <> de <strong>${anticipoRequerido.toLocaleString('es-MX')} MXN</strong></> : null}.</>
                   : 'Cuando tu asesor registre tu trámite, aquí verás tus formularios.'}
               </div>
               {tramite && (
