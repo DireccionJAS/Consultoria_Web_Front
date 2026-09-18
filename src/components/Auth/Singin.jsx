@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { RegistrarCliente, olvidarContraSin, enviarCorreoConDatos, obtenerUsuarioPorCorreo } from '../../api/api.js';
+import { isEducationalEmail, EDU_EMAIL_MESSAGE } from '../../utils/emailValidation.js';
 import styles from './../../styles/Signin.module.css';
 import { MdClose, MdOpenInNew, MdDownload } from 'react-icons/md';
 import Logo from './../../img/logo_letras_negras.png';
@@ -376,6 +377,16 @@ export default function Signin({ onCancel }) {
       await Swal.fire({
         title: 'Debes aceptar los términos',
         text: 'Por favor, acepta los Términos y Condiciones y la Política de Privacidad para continuar.',
+        icon: 'warning',
+        customClass: { popup: 'swal-popup-custom' },
+      });
+      return;
+    }
+
+    if (isEducationalEmail(data.email)) {
+      await Swal.fire({
+        title: 'Correo institucional no permitido',
+        text: EDU_EMAIL_MESSAGE,
         icon: 'warning',
         customClass: { popup: 'swal-popup-custom' },
       });

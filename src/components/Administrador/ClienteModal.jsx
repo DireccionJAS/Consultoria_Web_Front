@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { RegistrarCliente as registrarClienteAPI, actualizar as actualizarClienteAPI, getEmpresas } from './../../api/api.js';
+import { isEducationalEmail, EDU_EMAIL_MESSAGE } from './../../utils/emailValidation.js';
 import styles from './../../styles/ClienteModal.module.css';
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -214,17 +215,23 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
       return;
     }
 
+    if (!esEdicion && isEducationalEmail(campos.email)) {
+      Swal.fire({ icon: 'warning', title: 'Correo institucional no permitido', text: EDU_EMAIL_MESSAGE });
+      return;
+    }
+
     setGuardando(true);
     try {
+      let res;
       if (esEdicion) {
-        await actualizarClienteAPI(cliente.idUser, {
+        res = await actualizarClienteAPI(cliente.idUser, {
           name: campos.name,
           email: campos.email,
           phone: campos.phone,
           status,
         });
       } else {
-        await registrarClienteAPI({
+        res = await registrarClienteAPI({
           name: campos.name,
           email: campos.email,
           phone: campos.phone,
@@ -232,6 +239,12 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
           status,
           ...(puedeElegirEmpresa && empresa ? { idEmpresa: empresa } : {}),
         });
+      }
+      // El endpoint siempre regresa HTTP 200/201 aunque el backend rechace
+      // por validación (ej. correo educativo o duplicado) — hay que revisar
+      // el campo success explícitamente, axios no lo detecta como error.
+      if (!res?.success) {
+        throw new Error(res?.message || 'No se pudo guardar el cliente.');
       }
       Swal.fire({
         toast: true,
@@ -246,7 +259,7 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
       onHide();
     } catch (error) {
       console.error('Error al guardar el cliente', error);
-      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar el cliente.' });
+      Swal.fire({ icon: 'error', title: 'Error', text: error?.response?.data?.message || error?.message || 'No se pudo guardar el cliente.' });
     } finally {
       setGuardando(false);
     }
