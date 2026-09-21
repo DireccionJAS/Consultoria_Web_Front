@@ -3,7 +3,7 @@ import { createProcessWithPayment } from '../../api/api.js';
 import apiClient from '../../api/apiClient.js';
 import { useState } from 'react';
 
-const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalStatus, quantity =1 , costoTotal }) => {
+const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalStatus, quantity =1 , costoTotal, skipRecordCreation = false }) => {
   const paypalRef = useRef();
   const [paymentStatus, setPaymentStatus] = useState(null);
 
@@ -41,6 +41,15 @@ const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalSt
           }
 
           if (details.status === "COMPLETED") {
+            // Flujos que ya registran el pago ellos mismos (p. ej. liquidar
+            // saldo pendiente de un trámite existente): este botón solo cobra,
+            // no crea trámite ni Payment — evita duplicar el registro y evita
+            // el error de "idTransact no encontrado" cuando `service` no es
+            // el objeto completo del trámite (p. ej. "hora_extra").
+            if (skipRecordCreation) {
+              if (onSuccess) onSuccess(details);
+              return;
+            }
             try {
 
               let idTransact;

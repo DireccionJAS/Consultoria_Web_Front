@@ -64,14 +64,10 @@ export default function Checkout({
       } else if (result.paymentIntent.status === 'succeeded') {
         setMessage('¡Pago exitoso!');
 
-        // Registrar pago en DB
-        await apiClient.post(`/payment`, {
-          total: amount,
-          status: 1,
-          idUser: parseInt(customer),
-          idTransact: parseInt(idProductoTransaccion, 10)
-        });
-
+        // El registro del pago (POST /payment) lo hace el componente padre
+        // (Liquidacion.jsx) al recibir onSuccess — Checkout.jsx solo cobra.
+        // Antes lo creaban los dos, y cada liquidación quedaba con un
+        // Payment duplicado.
         onSuccess && onSuccess(result.paymentIntent);
       }
     } catch (err) {

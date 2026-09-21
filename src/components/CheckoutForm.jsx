@@ -101,6 +101,7 @@ export default function CheckoutForm({
       });
 
       const clientSecret = data.clientSecret;
+      const paymentIntentId = clientSecret.split('_secret_')[0];
       const cardElement = elements.getElement(CardElement);
 
       if (!cardElement) {
@@ -138,7 +139,8 @@ export default function CheckoutForm({
             status: 1,
             idUser: parseInt(customer),
             quantity: parseInt(quantity) || 1,
-            idTransact: parseInt(idProductoTransaccion)
+            idTransact: parseInt(idProductoTransaccion),
+            externalChargeRef: paymentIntentId,
           };
 
           // El registro de Payment se crea DESPUÉS de que todos los trámites

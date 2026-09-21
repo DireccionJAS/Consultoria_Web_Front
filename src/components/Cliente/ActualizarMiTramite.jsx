@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import '../../styles/ActualizarTramite.css';
 import { FaCreditCard } from 'react-icons/fa';
 import { actualizarTC, actualizarTCS, obtenerLosPasos, cancelarCita, getAllDates } from './../../api/api.js';
+import apiClient from './../../api/apiClient.js';
 import CheckoutForm from '../Pagos.jsx';
 import PayPalScriptLoader from '../PayPal/PayPalScriptLoader.jsx';
 import PayPalButton from '../PayPal/BottonTest.jsx';
@@ -79,9 +80,10 @@ const StripePaymentModal = ({ show, onHide, onPaymentSuccess, amount = 99, clien
         setIsProcessing(false);
         onHide();
 
-        // Solo pasamos la información del pago exitoso al componente padre
+        // Pasamos también el idUser: el componente padre no tiene el token
+        // decodificado, y lo necesita para registrar el Payment del cobro extra.
         if (onPaymentSuccess) {
-            onPaymentSuccess(paymentResult, pendingDateTime);
+            onPaymentSuccess(paymentResult, pendingDateTime, decoded.idUser);
         }
     };
 
@@ -146,7 +148,7 @@ const StripePaymentModal = ({ show, onHide, onPaymentSuccess, amount = 99, clien
                             onSuccess={handlePaymentSuccess}
                             onError={handlePaymentError}
                             userId={decoded.idUser || 'N/A'}
-                            service="hora_extra"
+                            skipRecordCreation
                         />
                     </PayPalScriptLoader>
                 </div>
@@ -551,7 +553,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
     };
 
     // FUNCIÓN CORREGIDA: Actualizar trámite después del pago exitoso
-    const handlePaymentSuccess = async (paymentResult, confirmedDateTime) => {
+    const handlePaymentSuccess = async (paymentResult, confirmedDateTime, idUser) => {
         try {
             // Actualizar el formulario con la nueva fecha
             if (confirmedDateTime) {
@@ -593,6 +595,18 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
 
 
             if (response.success) {
+                // El cobro extra ($99 por cita después de las 21:00) se cobraba en
+                // Stripe/PayPal pero nunca quedaba registrado como Payment — se
+                // registra aquí, después de que el trámite ya se actualizó con éxito.
+                const externalChargeRef = paymentResult?.paymentIntent?.id || paymentResult?.id || null;
+                await apiClient.post('/payment', {
+                    total: 99,
+                    status: 1,
+                    idUser: parseInt(idUser),
+                    idTransact: parseInt(cliente?.transact?.idTransact),
+                    externalChargeRef,
+                });
+
                 // Resetear estados de pago
                 setIsPaymentRequired(false);
                 setPendingDateTime(null);

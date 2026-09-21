@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Modal } from 'react-bootstrap';
@@ -42,12 +42,10 @@ const ShieldSVG = () => (
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripeKey);
 
-export default function Liquidacion({ show, onHide, service, userEmail, userId, onSuccess, onError, COMPLETED }) {
-    const [paypalStatus, setPaypalStatus] = useState(null);
-
+export default function Liquidacion({ show, onHide, service, userEmail, userId, onSuccess, onError }) {
     const montoRestante = service ? service.paidAll - service.paid : 0;
 
-    const executePaymentRequests = async () => {
+    const executePaymentRequests = async (externalChargeRef) => {
         try {
      
 
@@ -78,6 +76,7 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                 status: 1,
                 idUser: parseInt(userId),
                 idTransact: idTransact,
+                externalChargeRef: externalChargeRef || null,
             };
 
             await apiClient.post(`/payment`, paymentData);
@@ -91,7 +90,8 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
 
     const handleStripeSuccess = async (...args) => {
         try {
-            await executePaymentRequests();
+            const paymentIntent = args[0];
+            await executePaymentRequests(paymentIntent?.id);
             if (onSuccess) onSuccess(...args);
         } catch (error) {
             console.error('Error actualizando TC:', error);
@@ -101,25 +101,14 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
 
     const handlePayPalSuccess = async (...args) => {
         try {
-            await executePaymentRequests();
+            const details = args[0];
+            await executePaymentRequests(details?.id);
             if (onSuccess) onSuccess(...args);
         } catch (error) {
             console.error('Error actualizando TC:', error);
             if (onError) onError(error);
         }
     };
-
-    useEffect(() => {
-        if (paypalStatus === "COMPLETED") {
-            handlePayPalSuccess();
-        }
-    }, [paypalStatus]);
-
-    useEffect(() => {
-        if (COMPLETED === "COMPLETED") {
-            handlePayPalSuccess();
-        }
-    }, [COMPLETED]);
 
     if (!show || !service) return null;
 
@@ -200,8 +189,7 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                             onSuccess={handlePayPalSuccess}
                             onError={onError}
                             userId={userId || 'N/A'}
-                            service="hora_extra"
-                            setPaypalStatus={setPaypalStatus}
+                            skipRecordCreation
                         />
                     </PayPalScriptLoader>
                 </div>
