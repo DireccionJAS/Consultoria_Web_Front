@@ -1,21 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { createService, updateService } from './../../api/api.js';
-import { ICONOS, iconDataUri } from './../../utils/serviceIcons.js';
+import { ICONOS } from './../../utils/serviceIcons.js';
 import styles from './../../styles/ModalesServicio.module.css';
 
 // Extraído 1:1 de "15-ModalesServicio (standalone) (1).html". "Categoría" y
 // "Tasa de éxito" no existen en Transact — el usuario pidió (2026-07-17)
 // mantenerlos como campos UI-only (se ven pero no se envían al guardar).
 // "Duración" sí se guarda de verdad desde 2026-09-17 (duracionValor +
-// duracionUnidad en Transact). El slot "Ícono" del mockup era un
-// upload; a pedido del usuario se reemplazó por un combobox con un ícono
-// fijo por tipo de trámite (visa/pasaporte/formulario/entrevista/citas/
-// asesoría). El ícono elegido se guarda como SVG (data URI) en
-// imageDetail — el único campo de imagen secundaria que existe en
-// Transact — así que no requiere cambios de backend. El catálogo de
-// íconos vive en utils/serviceIcons.js porque ServiciosPage.jsx (catálogo
-// público) también lo usa para derivar la categoría de cada servicio.
+// duracionUnidad en Transact). El slot "Ícono" del mockup era un upload;
+// a pedido del usuario se reemplazó por un combobox con un ícono fijo por
+// tipo de trámite (visa/pasaporte/formulario/entrevista/citas/asesoría).
+// El catálogo de íconos vive en utils/serviceIcons.js porque
+// ServiciosPage.jsx (catálogo público) también lo usa para derivar la
+// categoría de cada servicio.
+//
+// 2026-07-17→2026-09-21 el ícono elegido se guardó como SVG (data URI) en
+// `imageDetail` para evitar tocar el backend — pero `imageDetail` YA era
+// (y sigue siendo) el campo real de "Imagen de detalle de costos" que
+// Cliente/Modals/ServiceDetailsModal.jsx y Administrador/ServicePreviewModal.jsx
+// muestran a clientes reales bajo "Detalle de costos". Eso pisaba esa
+// funcionalidad: en vez de una foto de costos, el cliente veía el glifo
+// del ícono gigante. Corregido 2026-09-21: el ícono ahora vive en su
+// propia columna (`Transact.iconId`), y `imageDetail` volvió a ser una
+// foto subida de verdad (campo opcional "Imagen de detalle de costos").
 
 const CATEGORIAS = ['Visa de no inmigrante', 'Visa de turista', 'Pasaporte', 'Formulario', 'Asesoría'];
 
@@ -122,11 +130,11 @@ function IconoSelect({ value, onChange }) {
   );
 }
 
-function UploadField({ label, preview, meta, onPick, onClear }) {
+function UploadField({ label, preview, meta, onPick, onClear, required = true }) {
   const inputId = `upload-${label.replace(/\s/g, '')}`;
   return (
     <div>
-      <label className={styles.fieldLabel}>{label} <span className={styles.req}>*</span></label>
+      <label className={styles.fieldLabel}>{label} {required && <span className={styles.req}>*</span>}</label>
       <input id={inputId} type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && onPick(e.target.files[0])} />
       {preview ? (
         <div className={styles.preview}>
@@ -163,6 +171,9 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imageMeta, setImageMeta] = useState(null);
+  const [detailPreview, setDetailPreview] = useState(null);
+  const [detailFile, setDetailFile] = useState(null);
+  const [detailMeta, setDetailMeta] = useState(null);
   const [tieneAnticipo, setTieneAnticipo] = useState(false);
   const [tieneOtroCosto, setTieneOtroCosto] = useState(false);
   const [isDateService, setIsDateService] = useState(false);
@@ -184,8 +195,7 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
         cost: servicio.cost ?? '', cashAdvance: servicio.cashAdvance ?? '',
         nameOption: servicio.nameOption || '', optionCost: servicio.optionCost ?? '',
       });
-      const iconoActual = ICONOS.find((ic) => servicio.imageDetail === iconDataUri(ic.svg));
-      setIconoId(iconoActual ? iconoActual.id : null);
+      setIconoId(servicio.iconId || null);
       setImagePreview(servicio.image || null);
       setImageFile(null);
       setImageMeta(null);
@@ -193,6 +203,15 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
         getImageDimensions(servicio.image).then((dim) => {
           if (!dim) return;
           setImageMeta({ ...dim, bytes: dataUriBytes(servicio.image) });
+        });
+      }
+      setDetailPreview(servicio.imageDetail || null);
+      setDetailFile(null);
+      setDetailMeta(null);
+      if (servicio.imageDetail) {
+        getImageDimensions(servicio.imageDetail).then((dim) => {
+          if (!dim) return;
+          setDetailMeta({ ...dim, bytes: dataUriBytes(servicio.imageDetail) });
         });
       }
       setTieneAnticipo(servicio.cashAdvance != null && Number(servicio.cashAdvance) !== Number(servicio.cost));
@@ -208,6 +227,9 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
       setImagePreview(null);
       setImageFile(null);
       setImageMeta(null);
+      setDetailPreview(null);
+      setDetailFile(null);
+      setDetailMeta(null);
       setTieneAnticipo(false);
       setTieneOtroCosto(false);
       setIsDateService(false);
@@ -230,6 +252,14 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
   };
   const handleClearImage = () => { setImageFile(null); setImagePreview(null); setImageMeta(null); };
 
+  const handlePickDetail = (file) => {
+    setDetailFile(file);
+    const url = URL.createObjectURL(file);
+    setDetailPreview(url);
+    getImageDimensions(url).then((dim) => setDetailMeta(dim ? { ...dim, bytes: file.size } : null));
+  };
+  const handleClearDetail = () => { setDetailFile(null); setDetailPreview(null); setDetailMeta(null); };
+
   const handleGuardar = async () => {
     if (!campos.name || !campos.description || campos.cost === '' || (!esEdicion && (!imageFile || !iconoId))) {
       Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Completa los campos obligatorios: nombre, descripción, ícono, precio e imagen principal.' });
@@ -244,14 +274,14 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
       const optionCost = tieneOtroCosto && campos.optionCost !== '' ? parseFloat(campos.optionCost) : null;
 
       const image = imageFile ? await toBase64(imageFile) : servicio?.image;
-      const iconoSeleccionado = ICONOS.find((ic) => ic.id === iconoId);
-      const imageDetail = iconoSeleccionado ? iconDataUri(iconoSeleccionado.svg) : servicio?.imageDetail;
+      const imageDetail = detailFile ? await toBase64(detailFile) : (detailPreview ? servicio?.imageDetail : null);
 
       const payload = {
         name: campos.name,
         description: campos.description,
         image,
         imageDetail,
+        iconId: iconoId,
         simulation: !isDateService && simulation,
         cas: !isDateService && cas,
         con: !isDateService && con,
@@ -323,6 +353,14 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
             <div className={styles.uploadsGrid}>
               <IconoSelect value={iconoId} onChange={setIconoId} />
               <UploadField label="Imagen principal" preview={imagePreview} meta={imageMeta} onPick={handlePickImage} onClear={handleClearImage} />
+              <UploadField
+                label="Imagen de detalle de costos"
+                preview={detailPreview}
+                meta={detailMeta}
+                onPick={handlePickDetail}
+                onClear={handleClearDetail}
+                required={false}
+              />
             </div>
           </div>
 

@@ -1,6 +1,9 @@
 // Compartido entre ModalServicio.jsx (combobox de ícono al crear/editar) y
 // ServiciosPage.jsx (catálogo público, deriva la categoría de cada servicio
 // del ícono elegido ya que Transact no tiene un campo real de categoría).
+// El ícono elegido se guarda en Transact.iconId (columna propia, ver
+// migración 2026-09-21) — separado de `imageDetail`, que es la foto real de
+// "Detalle de costos" mostrada en ServiceDetailsModal.jsx/ServicePreviewModal.jsx.
 
 export const ICONOS = [
   { id: 'visa', label: 'Visa', svg: '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>' },
@@ -20,8 +23,8 @@ export function iconDataUri(svgInner) {
 }
 
 export function getServiceIcon(service) {
-  if (!service?.imageDetail) return null;
-  return ICONOS.find((ic) => service.imageDetail === iconDataUri(ic.svg)) || null;
+  if (!service?.iconId) return null;
+  return ICONOS.find((ic) => ic.id === service.iconId) || null;
 }
 
 // Agrupa el ícono real (6 tipos) en las 5 categorías que muestra el

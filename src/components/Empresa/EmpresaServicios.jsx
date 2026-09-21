@@ -121,6 +121,7 @@ export default function EmpresaServicios() {
       description: service.description,
       image: service.image,
       imageDetail: service.imageDetail,
+      iconId: service.iconId,
       simulation: service.simulation,
       cas: service.cas,
       con: service.con,

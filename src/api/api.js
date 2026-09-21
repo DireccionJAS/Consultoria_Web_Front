@@ -232,6 +232,7 @@ export const createService = async (serviceData) => {
       description: serviceData.description,
       image: serviceData.image, // Base64 string
       imageDetail: serviceData.imageDetail, // Base64 string
+      iconId: serviceData.iconId,
       simulation: serviceData.simulation,
       cas: serviceData.cas,
       con: serviceData.con,
@@ -294,6 +295,7 @@ export const updateService = async (id, serviceData) => {
       cas: serviceData.cas,
       con: serviceData.con,
       imageDetail: serviceData.imageDetail, // Base64 string
+      iconId: serviceData.iconId,
       cashAdvance: serviceData.cashAdvance,
       cost: serviceData.cost ?? null,
       nameOption: serviceData.nameOption ?? null,
