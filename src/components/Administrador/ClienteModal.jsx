@@ -368,7 +368,7 @@ export default function ClienteModal({ show, onHide, cliente, onGuardado }) {
                     value={campos.password}
                     onChange={handleChange('password')}
                   />
-                  <button className={styles.inpToggle} onClick={() => setShowPw((v) => !v)}><IconEye /></button>
+                  <button type="button" className={styles.inpToggle} onClick={() => setShowPw((v) => !v)}><IconEye /></button>
                 </div>
                 <div className={styles.pwStrength}></div>
               </div>

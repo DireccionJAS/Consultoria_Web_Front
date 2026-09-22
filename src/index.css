@@ -605,6 +605,13 @@ img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
 
+/* Edge (y viejas versiones de IE) dibujan su propio ícono de "mostrar
+   contraseña" dentro de cada <input type="password">, justo donde cae
+   nuestro botón de ojo personalizado — absorbía el clic y el botón
+   propio parecía no hacer nada. */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear { display: none; }
+
 /* ============ TYPOGRAPHY ============ */
 /* Prefixed with jas- to avoid colliding with Bootstrap's global .display/.container/.btn* etc,
    which is imported globally for the whole app (not just the landing page). */
