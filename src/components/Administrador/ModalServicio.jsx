@@ -376,6 +376,8 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
                 <div className={styles.pctWrap}>
                   <input placeholder="Ej. 8-14" value={duracion} onChange={(e) => setDuracion(e.target.value)} />
                   <select className={styles.pctSuffixSelect} value={duracionUnidad} onChange={(e) => setDuracionUnidad(e.target.value)}>
+                    <option value="Minutos">minutos</option>
+                    <option value="Horas">horas</option>
                     <option value="Días">días</option>
                     <option value="Semanas">semanas</option>
                     <option value="Meses">meses</option>
