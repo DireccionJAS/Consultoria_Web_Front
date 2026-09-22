@@ -42,7 +42,7 @@ function PhoneIcon() {
 // Página pública > Inicio/Servicios (EmpresaPaginaPublica.jsx) y se leen de
 // GET /api/pagina-publica (ver PaginaPublicaConfigController en el back).
 const HERO_UBICACIONES_FALLBACK = ['Jiutepec, Morelos', 'Taxco, Guerrero'];
-const HERO_TELEFONO_FALLBACK = '777 983 5782';
+const HERO_TELEFONO_FALLBACK = '777 219 3613';
 const HERO_TASA_APROBACION_FALLBACK = '96';
 
 export default function HeroSection({ onDestinoClick }) {

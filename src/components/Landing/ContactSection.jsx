@@ -33,7 +33,7 @@ const SOCIALS_BASE = [
 const CONTACT_FALLBACK = {
   tituloLocalidad: 'Visítanos en Jiutepec o en línea',
   ubicaciones: [{ titulo: 'Jiutepec', direccion: 'Calle Pablo Torres 18, Centro de Jiutepec, 62550' }],
-  telContacto: '777 983 5782',
+  telContacto: '777 219 3613',
   whatsapp: '777 219 3613',
   correo: 'contacto@consultoriajas.com',
   fbSeguidores: '8.4k',

@@ -96,7 +96,7 @@ function formatDuracion(service) {
 export default function ServiciosPage() {
   const [services, setServices] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [telServicios, setTelServicios] = useState('777 983 5782');
+  const [telServicios, setTelServicios] = useState('777 219 3613');
 
   useEffect(() => {
     getPaginaPublicaConfig()
