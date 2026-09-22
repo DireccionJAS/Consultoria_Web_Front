@@ -182,7 +182,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
 
     setSubmitting(true);
     try {
-      await registrarTransaccionAPI({
+      const res = await registrarTransaccionAPI({
         idUser: selectedUser.idUser,
         idTransact: selectedService.idTransact,
         paid: pagoInicial,
@@ -191,6 +191,12 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
         stepProgress: 6,
         advance: false,
       });
+      // El backend responde 200 con success:false (no un error HTTP) cuando
+      // el guardado falla internamente — sin este check el modal mostraba
+      // "registrado con éxito" aunque no se haya creado nada.
+      if (!res?.success) {
+        throw new Error(res?.message || 'No se pudo registrar el trámite.');
+      }
 
       await envioCorreo(selectedUser.email, selectedUser.name, selectedService.description);
 

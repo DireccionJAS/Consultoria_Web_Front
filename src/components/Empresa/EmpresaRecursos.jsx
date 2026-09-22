@@ -102,6 +102,16 @@ export default function EmpresaRecursos() {
   };
   const handleAddChartRow = () => setChartRows((prev) => [...prev, { id: Date.now(), mes: '', total: '', otraAgencia: '' }]);
   const handleDelChartRow = (id) => setChartRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== id) : prev));
+  // Esta tabla todavía no tiene backend (ver comentario al inicio del
+  // archivo) — antes el botón no hacía nada y el admin podía creer que
+  // guardó los números reales de "Nuestros números" en la landing.
+  const handleGuardarChartInfo = () => {
+    Swal.fire({
+      icon: 'info',
+      title: 'Vista previa, no se guarda todavía',
+      text: 'Esta tabla y su gráfica son solo una vista previa de diseño — los números reales que ve el público en "Nuestros números" no se actualizan desde aquí. Contacta a soporte si necesitas conectarla.',
+    });
+  };
 
   const handlePickImagen = async (file, setter) => {
     if (file.size > MAX_IMG_BYTES) {
@@ -192,7 +202,7 @@ export default function EmpresaRecursos() {
                 </div>
               </div>
             </div>
-            <div className={styles.secFoot}><button className={`${styles.btn} ${styles.btnPrimary}`}><IconCheck /> Guardar cambios</button></div>
+            <div className={styles.secFoot}><button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardarChartInfo}><IconCheck /> Guardar cambios</button></div>
           </div>
 
           {/* EDITOR 2 — IMAGEN MAPA PRESENCIA */}

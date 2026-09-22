@@ -185,7 +185,13 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
         paidAll: parseMoney(form.paidAll),
       };
 
-      await actualizarTC(cliente.idTransactProgress, payload);
+      const res = await actualizarTC(cliente.idTransactProgress, payload);
+      // El backend responde 200 con success:false (no un error HTTP) cuando
+      // el guardado falla internamente — sin este check se mostraba "Datos
+      // guardados" aunque no se haya actualizado nada.
+      if (!res?.success) {
+        throw new Error(res?.message || 'No se pudo actualizar el trámite.');
+      }
       await envioCorreoActualizacion(cliente?.user?.email, cliente?.user?.name, cliente?.transact?.name);
 
       Swal.fire({ icon: 'success', title: 'Datos guardados y correo enviado', showConfirmButton: false, timer: 2500, timerProgressBar: true });
@@ -194,7 +200,7 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
       onHide();
     } catch (error) {
       console.error(error);
-      Swal.fire({ icon: 'error', title: 'Error al actualizar', text: 'Error al actualizar' });
+      Swal.fire({ icon: 'error', title: 'Error al actualizar', text: error.message || 'Error al actualizar' });
     } finally {
       setSubmitting(false);
     }
