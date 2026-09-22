@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { olvidarContra, actualizarContra, obtenerUsuarioPorCorreo } from './../../api/api.js';
+import { olvidarContra, actualizarContra, obtenerUsuarioPorCorreo, verificarCodigoRecuperacion } from './../../api/api.js';
 import styles from './../../styles/OlvidarContra.module.css';
 import logo from './../../img/logo_letras_negras.png';
 
@@ -22,8 +22,8 @@ export default function OlvidarContra() {
   const navigate = useNavigate();
   const [paso, setPaso] = useState(1);
   const [email, setEmail] = useState('');
-  const [codigo, setCodigo] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [verificando, setVerificando] = useState(false);
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [otpError, setOtpError] = useState(false);
   const [nuevaPassword, setNuevaPassword] = useState('');
@@ -67,11 +67,10 @@ export default function OlvidarContra() {
     if (!user?.idUser) throw new Error('Usuario no encontrado.');
     setUserId(user.idUser);
 
-    const res = await olvidarContra(correo);
-    const code = res?.response?.code;
-    if (!code) throw new Error('No se recibió el código del backend.');
-    setCodigo(code);
-    return code;
+    // El código ya no viaja en la respuesta (antes permitía tomar cualquier
+    // cuenta sin acceso al correo real) — solo se manda por email, y se
+    // valida contra el backend en handleVerificarCodigo.
+    await olvidarContra(correo);
   };
 
   const handleEnviarCodigo = async (e) => {
@@ -109,16 +108,30 @@ export default function OlvidarContra() {
     }
   };
 
-  const handleVerificarCodigo = (e) => {
+  const handleVerificarCodigo = async (e) => {
     e.preventDefault();
     const codigoIngresado = otpDigits.join('');
-    if (codigoIngresado.length < 6 || codigoIngresado.trim() !== String(codigo).trim()) {
+    if (codigoIngresado.length < 6) {
       setOtpError(true);
-      Swal.fire('Error', 'El código ingresado es incorrecto.', 'error');
+      Swal.fire('Error', 'Ingresa los 6 dígitos del código.', 'error');
       return;
     }
-    setOtpError(false);
-    setPaso(3);
+    setVerificando(true);
+    try {
+      const res = await verificarCodigoRecuperacion(userId, codigoIngresado);
+      if (!res?.success) {
+        setOtpError(true);
+        Swal.fire('Error', res?.message || 'El código ingresado es incorrecto.', 'error');
+        return;
+      }
+      setOtpError(false);
+      setPaso(3);
+    } catch (error) {
+      console.error('Error al verificar el código:', error);
+      Swal.fire('Error', 'No se pudo verificar el código, intenta de nuevo.', 'error');
+    } finally {
+      setVerificando(false);
+    }
   };
 
   const handleActualizarPassword = async (e) => {
@@ -132,7 +145,8 @@ export default function OlvidarContra() {
       return;
     }
     try {
-      const res = await actualizarContra(userId, nuevaPassword);
+      const codigoIngresado = otpDigits.join('');
+      const res = await actualizarContra(userId, nuevaPassword, codigoIngresado);
       if (!res?.success) {
         // El backend responde 200 con success:false (no un error HTTP) para
         // casos como "la contraseña no puede ser igual a la anterior" — sin
@@ -332,8 +346,8 @@ export default function OlvidarContra() {
                   <BackIcon />
                   Volver
                 </button>
-                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
-                  Verificar código
+                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={verificando}>
+                  {verificando ? 'Verificando…' : 'Verificar código'}
                   <div className={styles.arrowRev}><ArrowIcon /></div>
                 </button>
               </div>

@@ -75,12 +75,25 @@ export const obtenerUsuarioPorCorreo = async (email) => {
   }
 };
 
-export const actualizarContra = async (id_user, data) => {
+export const actualizarContra = async (id_user, data, code = null) => {
   try {
-    const response = await apiClient.put(`/users/password/${id_user}`, { password: data });
+    // `code` solo aplica al flujo de "olvidé mi contraseña" (sin sesión) —
+    // el backend lo exige ahí; en el cambio de contraseña ya logueado
+    // (Mi Perfil) se ignora porque el usuario ya se identifica con su JWT.
+    const response = await apiClient.put(`/users/password/${id_user}`, { password: data, code });
     return response.data;
   } catch (error) {
     console.error('Error al actualizar contraseña', error);
+    throw error;
+  }
+};
+
+export const verificarCodigoRecuperacion = async (id_user, code) => {
+  try {
+    const response = await apiClient.post(`/users/password/verify-code`, { idUser: id_user, code });
+    return response.data;
+  } catch (error) {
+    console.error('Error al verificar el código de recuperación', error);
     throw error;
   }
 };
