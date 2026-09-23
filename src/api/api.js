@@ -250,7 +250,6 @@ export const createService = async (serviceData) => {
       cas: serviceData.cas,
       con: serviceData.con,
       cashAdvance: serviceData.cashAdvance,
-      status: true,
       cost: serviceData.cost,
       nameOption: serviceData.nameOption,
       costOption: serviceData.costOption,
