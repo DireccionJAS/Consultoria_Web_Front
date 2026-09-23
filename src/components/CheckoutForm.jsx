@@ -27,6 +27,13 @@ export default function CheckoutForm({
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [names, setNames] = useState(['']);
+  const [quantityInput, setQuantityInput] = useState(String(quantity));
+
+  // Mantiene el texto del input de cantidad en sync si el padre cambia el
+  // valor por otra via, sin pisar lo que el usuario esta escribiendo.
+  useEffect(() => {
+    setQuantityInput(String(quantity));
+  }, [quantity]);
 
   // Mantiene un campo de nombre por cada unidad de "cantidad"
   useEffect(() => {
@@ -290,8 +297,21 @@ export default function CheckoutForm({
               type="number"
               min="1"
               max="15"
-              value={quantity}
-              onChange={(e) => onQuantityChange(parseInt(e.target.value) || 1)}
+              value={quantityInput}
+              onChange={(e) => {
+                const raw = e.target.value;
+                setQuantityInput(raw);
+                const parsed = parseInt(raw, 10);
+                if (!isNaN(parsed) && parsed >= 1 && parsed <= 15) {
+                  onQuantityChange(parsed);
+                }
+              }}
+              onBlur={() => {
+                const parsed = parseInt(quantityInput, 10);
+                const clamped = isNaN(parsed) ? 1 : Math.min(15, Math.max(1, parsed));
+                setQuantityInput(String(clamped));
+                onQuantityChange(clamped);
+              }}
               style={{
                 width: '100px',
                 padding: '10px 12px',
