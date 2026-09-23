@@ -298,6 +298,8 @@ export default function CheckoutForm({
               min="1"
               max="15"
               value={quantityInput}
+              onFocus={(e) => e.target.select()}
+              onClick={(e) => e.target.select()}
               onChange={(e) => {
                 const raw = e.target.value;
                 setQuantityInput(raw);
