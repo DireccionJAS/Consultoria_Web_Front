@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { getAllPayments, clientePorId, getNameService, statusPayments } from './../../api/api.js';
+import { getAllPayments, clientePorId, getNameService, statusPayments, trasacciones } from './../../api/api.js';
 import ModalDetallePago from '../Administrador/ModalDetallePago.jsx';
 import ModalConfirmarPagoEfectivo from '../Administrador/ModalConfirmarPagoEfectivo.jsx';
 import styles from './../../styles/EmpresaPagos.module.css';
@@ -124,6 +124,7 @@ export default function EmpresaPagos() {
   const [pagoDetalle, setPagoDetalle] = useState(null);
   const [modalEfectivoAbierto, setModalEfectivoAbierto] = useState(false);
   const [pagoContextoEfectivo, setPagoContextoEfectivo] = useState(null);
+  const [adeudos, setAdeudos] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -138,6 +139,7 @@ export default function EmpresaPagos() {
       return;
     }
     fetchServices();
+    fetchAdeudos();
   }, [navigate]);
 
   useEffect(() => {
@@ -173,6 +175,34 @@ export default function EmpresaPagos() {
       setDatos([]);
     } finally {
       setCargando(false);
+    }
+  };
+
+  // "Adeudo pendiente" es un concepto distinto de los pagos ya cobrados de
+  // arriba: viene de TransactProgress.paidAll/paid (lo que el cliente debe
+  // en total por su tramite), no de la tabla Payment (cargos ya liquidados).
+  // Reusa el mismo endpoint que ya consume EmpresaTramites.jsx, ya viene
+  // filtrado por companyId del lado del backend.
+  const fetchAdeudos = async () => {
+    try {
+      const response = await trasacciones();
+      const lista = response?.response?.transactProgresses || [];
+      const pendientes = lista
+        .map((t) => ({
+          idTransactProgress: t.idTransactProgress,
+          cliente: t.user?.name || 'No disponible',
+          correo: t.user?.email || 'N/A',
+          servicio: t.transact?.name || 'No disponible',
+          debe: t.paidAll || 0,
+          pagado: t.paid || 0,
+          pendiente: (t.paidAll || 0) - (t.paid || 0),
+        }))
+        .filter((t) => t.pendiente > 0)
+        .sort((a, b) => b.pendiente - a.pendiente);
+      setAdeudos(pendientes);
+    } catch (error) {
+      console.error('Error al obtener los adeudos pendientes', error);
+      setAdeudos([]);
     }
   };
 
@@ -239,6 +269,41 @@ export default function EmpresaPagos() {
         </header>
 
         <div className={styles.content}>
+          {adeudos.length > 0 && (
+            <div className={styles.tableCard} style={{ marginBottom: 20 }}>
+              <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--c1)' }}>Adeudos pendientes</span>
+                <span style={{ background: 'var(--rose-soft)', color: 'var(--rose)', borderRadius: 999, padding: '2px 9px', fontSize: 12, fontWeight: 700 }}>{adeudos.length}</span>
+              </div>
+              <div className={styles.tableScroll}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Correo</th>
+                      <th>Servicio</th>
+                      <th>Debe</th>
+                      <th>Pagado</th>
+                      <th>Pendiente</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adeudos.map((a) => (
+                      <tr key={a.idTransactProgress}>
+                        <td><div className={styles.clientName}>{a.cliente}</div></td>
+                        <td><a href="#" style={{ color: 'var(--c2)' }}>{a.correo}</a></td>
+                        <td>{a.servicio}</td>
+                        <td>${a.debe.toLocaleString('es-MX')}</td>
+                        <td>${a.pagado.toLocaleString('es-MX')}</td>
+                        <td style={{ color: 'var(--rose)', fontWeight: 700 }}>${a.pendiente.toLocaleString('es-MX')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
           <div className={styles.toolbar}>
             <div className={styles.searchBar}>
               <IconSearch />
@@ -378,7 +443,7 @@ export default function EmpresaPagos() {
         show={modalEfectivoAbierto}
         onHide={() => setModalEfectivoAbierto(false)}
         pago={pagoContextoEfectivo}
-        onConfirmado={fetchServices}
+        onConfirmado={() => { fetchServices(); fetchAdeudos(); }}
       />
     </div>
   );
