@@ -1029,9 +1029,16 @@ export default function AdminCalendario() {
                         })}
                       </div>
                     ) : (
-                      <div className={styles.ncInpWrap}>
-                        <input type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} />
-                        <IconClockOutline />
+                      <div className={styles.ccTimePills}>
+                        {CC_HORAS_LEJOS.map((h) => (
+                          <div
+                            key={h}
+                            className={`${styles.ccTimePill} ${ncHora === h ? styles.sel : ''}`}
+                            onClick={() => setNcHora(h)}
+                          >
+                            {h}
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

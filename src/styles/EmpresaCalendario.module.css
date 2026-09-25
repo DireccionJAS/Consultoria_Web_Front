@@ -298,6 +298,7 @@
 .ccReq { color: var(--cc-primary); }
 .ccInpWrap { display: flex; align-items: center; background: #fff; border: 1px solid var(--cc-line-2); border-radius: 11px; transition: all 0.2s; }
 .ccInpWrap:focus-within { border-color: var(--cc-primary); box-shadow: 0 0 0 4px rgba(31,160,209,0.1); }
+.ccInpWrap input::-webkit-calendar-picker-indicator { display: none; -webkit-appearance: none; }
 .ccInpIcon { padding: 0 9px 0 13px; color: var(--cc-muted); display: flex; }
 .ccInp { flex: 1; border: 0; outline: 0; background: transparent; padding: 12px 13px 12px 2px; font-size: 13.5px; color: var(--c1); min-width: 0; cursor: text; }
 .ccTimePills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
