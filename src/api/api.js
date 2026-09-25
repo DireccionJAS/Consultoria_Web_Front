@@ -923,9 +923,9 @@ export const actualizarPaginaPublicaConfig = async (config) => {
   }
 };
 
-export const actualizarMapasRecursos = async ({ mapaPresencia, mapaZonas }) => {
+export const actualizarMapasRecursos = async ({ mapaPresencia, mapaZonas, tramitesPorMes }) => {
   try {
-    const response = await apiClient.put(`/pagina-publica/mapas`, { mapaPresencia, mapaZonas });
+    const response = await apiClient.put(`/pagina-publica/mapas`, { mapaPresencia, mapaZonas, tramitesPorMes });
     return response.data;
   } catch (error) {
     console.error('Error al actualizar los mapas', error);

@@ -58,6 +58,7 @@ export default function StatsSection() {
   const [mapaPresencia, setMapaPresencia] = useState(null);
   const [mapaZonas, setMapaZonas] = useState(null);
   const [tasaAprobacion, setTasaAprobacion] = useState('96');
+  const [tramitesPorMes, setTramitesPorMes] = useState([]);
 
   useEffect(() => {
     let activo = true;
@@ -68,10 +69,41 @@ export default function StatsSection() {
         setMapaPresencia(c.mapaPresencia || null);
         setMapaZonas(c.mapaZonas || null);
         if (c.tasaAprobacion) setTasaAprobacion(c.tasaAprobacion);
+        if (Array.isArray(c.tramitesPorMes) && c.tramitesPorMes.length > 0) {
+          setTramitesPorMes(c.tramitesPorMes);
+        }
       })
       .catch((error) => console.error('Error al obtener configuración de página pública:', error));
     return () => { activo = false; };
   }, []);
+
+  // Convierte [{mes,total,otraAgencia}] en puntos de un viewBox 0 0 440 200,
+  // mismo área/lineas que el SVG hardcodeado que reemplaza. null si no hay
+  // datos reales todavía (Empresa > Recursos nunca guardó nada) — en ese
+  // caso se sigue mostrando el SVG de ejemplo, mismo criterio que
+  // mapaPresencia/mapaZonas.
+  const lineChart = React.useMemo(() => {
+    if (!tramitesPorMes.length) return null;
+    const n = tramitesPorMes.length;
+    const totales = tramitesPorMes.map((d) => Number(d.total) || 0);
+    const otras = tramitesPorMes.map((d) => Number(d.otraAgencia) || 0);
+    const maxVal = Math.max(1, ...totales, ...otras);
+    const topY = 20;
+    const baseY = 180;
+    const stepX = n > 1 ? 440 / (n - 1) : 0;
+    const x = (i) => (n > 1 ? i * stepX : 220);
+    const y = (v) => baseY - (v / maxVal) * (baseY - topY);
+    const toPath = (vals) => vals.map((v, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    const totalLine = toPath(totales);
+    return {
+      totalLine,
+      otraLine: toPath(otras),
+      areaFill: `${totalLine} L440,200 L0,200 Z`,
+      lastTotal: [x(n - 1), y(totales[n - 1])],
+      lastOtra: [x(n - 1), y(otras[n - 1])],
+      labels: tramitesPorMes.map((d, i) => ({ x: Math.min(415, x(i)), text: (d.mes || '').slice(0, 3).toUpperCase() })),
+    };
+  }, [tramitesPorMes]);
 
   const pctAprobacion = Number(tasaAprobacion) || 96;
   const pctRevision = Math.max(0, 100 - pctAprobacion);
@@ -140,24 +172,46 @@ export default function StatsSection() {
               <span className={styles.dvBadge}>+38% anual</span>
             </div>
             <div className={styles.linechart}>
-              <svg viewBox="0 0 440 200" preserveAspectRatio="none">
-                <line x1="0" y1="40" x2="440" y2="40" stroke="var(--line)" strokeWidth="1" />
-                <line x1="0" y1="90" x2="440" y2="90" stroke="var(--line)" strokeWidth="1" />
-                <line x1="0" y1="140" x2="440" y2="140" stroke="var(--line)" strokeWidth="1" />
-                <path d="M0,150 L73,130 L146,138 L220,100 L293,108 L366,70 L440,55 L440,200 L0,200 Z" fill="rgba(45,108,223,0.10)" />
-                <path d="M0,150 L73,130 L146,138 L220,100 L293,108 L366,70 L440,55" fill="none" stroke="var(--c2)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M0,178 L73,170 L146,172 L220,155 L293,150 L366,138 L440,128" fill="none" stroke="var(--c3)" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" />
-                <circle cx="440" cy="55" r="4" fill="var(--white)" stroke="var(--c2)" strokeWidth="2.5" />
-                <circle cx="366" cy="70" r="3" fill="var(--c2)" />
-                <circle cx="440" cy="128" r="4" fill="var(--white)" stroke="var(--c3)" strokeWidth="2.5" />
-              </svg>
-              <svg viewBox="0 0 440 16" style={{ height: '16px', marginTop: '6px' }}>
-                <text x="0" y="11" className={styles.lcAxis}>ENE</text>
-                <text x="110" y="11" className={styles.lcAxis}>MAR</text>
-                <text x="215" y="11" className={styles.lcAxis}>MAY</text>
-                <text x="320" y="11" className={styles.lcAxis}>SEP</text>
-                <text x="415" y="11" className={styles.lcAxis}>DIC</text>
-              </svg>
+              {lineChart ? (
+                <>
+                  <svg viewBox="0 0 440 200" preserveAspectRatio="none">
+                    <line x1="0" y1="40" x2="440" y2="40" stroke="var(--line)" strokeWidth="1" />
+                    <line x1="0" y1="90" x2="440" y2="90" stroke="var(--line)" strokeWidth="1" />
+                    <line x1="0" y1="140" x2="440" y2="140" stroke="var(--line)" strokeWidth="1" />
+                    <path d={lineChart.areaFill} fill="rgba(45,108,223,0.10)" />
+                    <path d={lineChart.totalLine} fill="none" stroke="var(--c2)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d={lineChart.otraLine} fill="none" stroke="var(--c3)" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" />
+                    <circle cx={lineChart.lastTotal[0]} cy={lineChart.lastTotal[1]} r="4" fill="var(--white)" stroke="var(--c2)" strokeWidth="2.5" />
+                    <circle cx={lineChart.lastOtra[0]} cy={lineChart.lastOtra[1]} r="4" fill="var(--white)" stroke="var(--c3)" strokeWidth="2.5" />
+                  </svg>
+                  <svg viewBox="0 0 440 16" style={{ height: '16px', marginTop: '6px' }}>
+                    {lineChart.labels.map((l, i) => (
+                      <text key={i} x={l.x} y="11" className={styles.lcAxis}>{l.text}</text>
+                    ))}
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <svg viewBox="0 0 440 200" preserveAspectRatio="none">
+                    <line x1="0" y1="40" x2="440" y2="40" stroke="var(--line)" strokeWidth="1" />
+                    <line x1="0" y1="90" x2="440" y2="90" stroke="var(--line)" strokeWidth="1" />
+                    <line x1="0" y1="140" x2="440" y2="140" stroke="var(--line)" strokeWidth="1" />
+                    <path d="M0,150 L73,130 L146,138 L220,100 L293,108 L366,70 L440,55 L440,200 L0,200 Z" fill="rgba(45,108,223,0.10)" />
+                    <path d="M0,150 L73,130 L146,138 L220,100 L293,108 L366,70 L440,55" fill="none" stroke="var(--c2)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M0,178 L73,170 L146,172 L220,155 L293,150 L366,138 L440,128" fill="none" stroke="var(--c3)" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" />
+                    <circle cx="440" cy="55" r="4" fill="var(--white)" stroke="var(--c2)" strokeWidth="2.5" />
+                    <circle cx="366" cy="70" r="3" fill="var(--c2)" />
+                    <circle cx="440" cy="128" r="4" fill="var(--white)" stroke="var(--c3)" strokeWidth="2.5" />
+                  </svg>
+                  <svg viewBox="0 0 440 16" style={{ height: '16px', marginTop: '6px' }}>
+                    <text x="0" y="11" className={styles.lcAxis}>ENE</text>
+                    <text x="110" y="11" className={styles.lcAxis}>MAR</text>
+                    <text x="215" y="11" className={styles.lcAxis}>MAY</text>
+                    <text x="320" y="11" className={styles.lcAxis}>SEP</text>
+                    <text x="415" y="11" className={styles.lcAxis}>DIC</text>
+                  </svg>
+                </>
+              )}
             </div>
             <div className={styles.lcLegend}>
               <div className={styles.lcLeg}><span className={styles.ln} style={{ background: 'var(--c2)' }}></span> Total de servicios brindados</div>

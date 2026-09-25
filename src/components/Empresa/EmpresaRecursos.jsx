@@ -7,14 +7,13 @@ import styles from './../../styles/EmpresaRecursos.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import { getPaginaPublicaConfig, actualizarMapasRecursos } from './../../api/api.js';
 
-// Extraído 1:1 de "18-Recursos (standalone).html". El editor de gráfica
-// (tabla de trámites por mes) sigue siendo UI sin persistencia — no hay
-// backend para esa tabla/gráfica todavía. Los 2 mapas interactivos de
-// México (que sí tenían esa limitación) se reemplazaron por un campo real
-// de subir imagen: se guardan en PaginaPublicaConfig.mapaPresencia/
-// mapaZonas (mismo patrón que imgNosotros) y esas mismas imágenes son las
-// que muestra la landing pública en "Nuestros números"
-// (Landing/StatsSection.jsx) en vez del SVG hardcodeado.
+// Extraído 1:1 de "18-Recursos (standalone).html". Las 3 tarjetas ya son
+// reales: la tabla de trámites por mes se guarda en
+// PaginaPublicaConfig.tramitesPorMes (JSON) y alimenta el line chart real
+// de Landing/StatsSection.jsx (antes hardcodeado); los 2 mapas de México se
+// reemplazaron por un campo real de subir imagen, guardados en
+// mapaPresencia/mapaZonas (mismo patrón que imgNosotros) y son los que
+// muestra esa misma sección pública en vez del SVG hardcodeado.
 
 const MAX_IMG_BYTES = 5 * 1024 * 1024;
 
@@ -70,6 +69,7 @@ export default function EmpresaRecursos() {
   const [mapaZonas, setMapaZonas] = useState(null);
   const [guardandoPresencia, setGuardandoPresencia] = useState(false);
   const [guardandoZonas, setGuardandoZonas] = useState(false);
+  const [guardandoChart, setGuardandoChart] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -91,6 +91,14 @@ export default function EmpresaRecursos() {
         const c = response.response.config;
         setMapaPresencia(c.mapaPresencia || null);
         setMapaZonas(c.mapaZonas || null);
+        if (Array.isArray(c.tramitesPorMes) && c.tramitesPorMes.length > 0) {
+          setChartRows(c.tramitesPorMes.map((r, i) => ({
+            id: i + 1,
+            mes: r.mes || '',
+            total: r.total || '',
+            otraAgencia: r.otraAgencia || '',
+          })));
+        }
       })
       .catch((error) => console.error('Error al obtener configuración de página pública:', error));
   }, []);
@@ -102,15 +110,25 @@ export default function EmpresaRecursos() {
   };
   const handleAddChartRow = () => setChartRows((prev) => [...prev, { id: Date.now(), mes: '', total: '', otraAgencia: '' }]);
   const handleDelChartRow = (id) => setChartRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== id) : prev));
-  // Esta tabla todavía no tiene backend (ver comentario al inicio del
-  // archivo) — antes el botón no hacía nada y el admin podía creer que
-  // guardó los números reales de "Nuestros números" en la landing.
-  const handleGuardarChartInfo = () => {
-    Swal.fire({
-      icon: 'info',
-      title: 'Vista previa, no se guarda todavía',
-      text: 'Esta tabla y su gráfica son solo una vista previa de diseño — los números reales que ve el público en "Nuestros números" no se actualizan desde aquí. Contacta a soporte si necesitas conectarla.',
-    });
+  const handleGuardarChartInfo = async () => {
+    setGuardandoChart(true);
+    try {
+      const response = await actualizarMapasRecursos({
+        mapaPresencia,
+        mapaZonas,
+        tramitesPorMes: chartRows.map(({ mes, total, otraAgencia }) => ({ mes, total, otraAgencia })),
+      });
+      if (!response.success) {
+        Swal.fire({ icon: 'error', title: 'Error', text: response.message || 'No se pudo guardar la tabla.' });
+        return;
+      }
+      Swal.fire({ icon: 'success', title: 'Datos actualizados', text: 'La gráfica pública ya refleja estos números.', showConfirmButton: false, timer: 2500, timerProgressBar: true });
+    } catch (error) {
+      console.error('Error al guardar los trámites por mes:', error);
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron guardar los datos.' });
+    } finally {
+      setGuardandoChart(false);
+    }
   };
 
   const handlePickImagen = async (file, setter) => {
@@ -125,7 +143,11 @@ export default function EmpresaRecursos() {
   const guardarMapas = async (setGuardando) => {
     setGuardando(true);
     try {
-      const response = await actualizarMapasRecursos({ mapaPresencia, mapaZonas });
+      const response = await actualizarMapasRecursos({
+        mapaPresencia,
+        mapaZonas,
+        tramitesPorMes: chartRows.map(({ mes, total, otraAgencia }) => ({ mes, total, otraAgencia })),
+      });
       if (!response.success) {
         Swal.fire({ icon: 'error', title: 'Error', text: response.message || 'No se pudieron guardar los mapas.' });
         return;
@@ -202,7 +224,11 @@ export default function EmpresaRecursos() {
                 </div>
               </div>
             </div>
-            <div className={styles.secFoot}><button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardarChartInfo}><IconCheck /> Guardar cambios</button></div>
+            <div className={styles.secFoot}>
+              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleGuardarChartInfo} disabled={guardandoChart}>
+                <IconCheck /> {guardandoChart ? 'Guardando...' : 'Guardar cambios'}
+              </button>
+            </div>
           </div>
 
           {/* EDITOR 2 — IMAGEN MAPA PRESENCIA */}
