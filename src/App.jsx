@@ -1,59 +1,61 @@
+import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 
-import Home from "./components/Auth/Home.jsx";
-import AdminDashboard from "./components/Admin/AdminDashboard.jsx";
-import AdminTramites from "./components/Admin/AdminTramites.jsx";
-import AdminClientes from "./components/Admin/AdminClientes.jsx";
-import AdminPagos from "./components/Admin/AdminPagos.jsx";
-import AdminCalendario from "./components/Admin/AdminCalendario.jsx";
-import AdminPerfil from "./components/Admin/AdminPerfil.jsx";
-import EmpresaDashboard from "./components/Empresa/EmpresaDashboard.jsx";
-import EmpresaTramites from "./components/Empresa/EmpresaTramites.jsx";
-import EmpresaClientes from "./components/Empresa/EmpresaClientes.jsx";
-import EmpresaPagos from "./components/Empresa/EmpresaPagos.jsx";
-import EmpresaCalendario from "./components/Empresa/EmpresaCalendario.jsx";
-import EmpresaHorarios from "./components/Empresa/EmpresaHorarios.jsx";
-import EmpresaServicios from "./components/Empresa/EmpresaServicios.jsx";
-import EmpresaAdmins from "./components/Empresa/EmpresaAdmins.jsx";
-import EmpresaPaginaPublica from "./components/Empresa/EmpresaPaginaPublica.jsx";
-import EmpresaPracticas from "./components/Empresa/EmpresaPracticas.jsx";
-import EmpresaRecursos from "./components/Empresa/EmpresaRecursos.jsx";
-import EmpresaLegalidad from "./components/Empresa/EmpresaLegalidad.jsx";
-import EmpresaPerfil from "./components/Empresa/EmpresaPerfil.jsx";
-import AdministradorServicios from "./components/Admin/AdministradorServicios";
-import RegistrarTramite from "./components/Administrador/RegistrarTramite";
-import RegistrarCliente from './components/Administrador/RegistrarCliente'
-import ClienteHome from "./components/Cliente/ClienteHome";
-import ClienteServicios from "./components/Cliente/ClienteServicios";
-import MisTramites from "./components/Cliente/MisTramites";
-import MisTramitesMobile from "./components/Cliente/MisTramitesMobile";
-import Calendario from "./components/Cliente/Calendario.jsx";
-import ClienteHomeMobile from "./components/Cliente/ClienteHomeMobile.jsx";
+const Home = lazy(() => import("./components/Auth/Home.jsx"));
+const AdminDashboard = lazy(() => import("./components/Admin/AdminDashboard.jsx"));
+const AdminTramites = lazy(() => import("./components/Admin/AdminTramites.jsx"));
+const AdminClientes = lazy(() => import("./components/Admin/AdminClientes.jsx"));
+const AdminPagos = lazy(() => import("./components/Admin/AdminPagos.jsx"));
+const AdminCalendario = lazy(() => import("./components/Admin/AdminCalendario.jsx"));
+const AdminPerfil = lazy(() => import("./components/Admin/AdminPerfil.jsx"));
+const EmpresaDashboard = lazy(() => import("./components/Empresa/EmpresaDashboard.jsx"));
+const EmpresaTramites = lazy(() => import("./components/Empresa/EmpresaTramites.jsx"));
+const EmpresaClientes = lazy(() => import("./components/Empresa/EmpresaClientes.jsx"));
+const EmpresaPagos = lazy(() => import("./components/Empresa/EmpresaPagos.jsx"));
+const EmpresaCalendario = lazy(() => import("./components/Empresa/EmpresaCalendario.jsx"));
+const EmpresaHorarios = lazy(() => import("./components/Empresa/EmpresaHorarios.jsx"));
+const EmpresaServicios = lazy(() => import("./components/Empresa/EmpresaServicios.jsx"));
+const EmpresaAdmins = lazy(() => import("./components/Empresa/EmpresaAdmins.jsx"));
+const EmpresaPaginaPublica = lazy(() => import("./components/Empresa/EmpresaPaginaPublica.jsx"));
+const EmpresaPracticas = lazy(() => import("./components/Empresa/EmpresaPracticas.jsx"));
+const EmpresaRecursos = lazy(() => import("./components/Empresa/EmpresaRecursos.jsx"));
+const EmpresaLegalidad = lazy(() => import("./components/Empresa/EmpresaLegalidad.jsx"));
+const EmpresaPerfil = lazy(() => import("./components/Empresa/EmpresaPerfil.jsx"));
+const AdministradorServicios = lazy(() => import("./components/Admin/AdministradorServicios"));
+const RegistrarTramite = lazy(() => import("./components/Administrador/RegistrarTramite"));
+const RegistrarCliente = lazy(() => import('./components/Administrador/RegistrarCliente'));
+const ClienteHome = lazy(() => import("./components/Cliente/ClienteHome"));
+const ClienteServicios = lazy(() => import("./components/Cliente/ClienteServicios"));
+const MisTramites = lazy(() => import("./components/Cliente/MisTramites"));
+const MisTramitesMobile = lazy(() => import("./components/Cliente/MisTramitesMobile"));
+const Calendario = lazy(() => import("./components/Cliente/Calendario.jsx"));
+const ClienteHomeMobile = lazy(() => import("./components/Cliente/ClienteHomeMobile.jsx"));
 
 import NoAutorizado from "./components/common/NoAutorizado";
 import ProtectedRoute from "./components/common/ProtectedRoute";
-import OlvidarContra from "./components/Auth/OlvidarContra.jsx";
-import MiPerfil from "./components/Cliente/MiPerfil.jsx";
-import Formularios from "./components/Cliente/Formularios.jsx";
-import Pagos from "./components/Cliente/Pagos.jsx";
-import RegistrarPasos from "./components/Administrador/RegistrarPasos.jsx";
-import CombinedStepManager from "./components/Administrador/ActualizarPasos.jsx";
-import Page0 from "./components/Page0.jsx";
-import ServiciosPage from "./components/Landing/ServiciosPage.jsx";
-import Signin from "./components/Auth/Singin.jsx";
-import UploadPfd from "./components/Administrador/UploadPdf.jsx";
-import Practicas from "../Practicas.jsx";
+const OlvidarContra = lazy(() => import("./components/Auth/OlvidarContra.jsx"));
+const MiPerfil = lazy(() => import("./components/Cliente/MiPerfil.jsx"));
+const Formularios = lazy(() => import("./components/Cliente/Formularios.jsx"));
+const Pagos = lazy(() => import("./components/Cliente/Pagos.jsx"));
+const RegistrarPasos = lazy(() => import("./components/Administrador/RegistrarPasos.jsx"));
+const CombinedStepManager = lazy(() => import("./components/Administrador/ActualizarPasos.jsx"));
+const Page0 = lazy(() => import("./components/Page0.jsx"));
+const ServiciosPage = lazy(() => import("./components/Landing/ServiciosPage.jsx"));
+const Signin = lazy(() => import("./components/Auth/Singin.jsx"));
+const UploadPfd = lazy(() => import("./components/Administrador/UploadPdf.jsx"));
+const Practicas = lazy(() => import("../Practicas.jsx"));
 
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import PruebaPago from "./PruebaPago.jsx";
+const PruebaPago = lazy(() => import("./PruebaPago.jsx"));
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 function App() {
   return (
     <Router>
+      <Suspense fallback={null}>
       <Routes>
         {/* Stripe solo para esta ruta */}
         <Route path="/ClienteServicios" element={
@@ -271,6 +273,7 @@ function App() {
 
         <Route path="/no-encontrado" element={<NoAutorizado />} />
       </Routes>
+      </Suspense>
     </Router>
   );
 }
