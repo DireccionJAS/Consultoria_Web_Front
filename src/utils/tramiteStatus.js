@@ -6,16 +6,21 @@
 // código) — de ahí el riesgo de que el estado se viera mal para un cliente real.
 // Todo el que necesite mostrar o elegir un estado debe importar de aquí.
 
+// Tono de cada estado — paleta pedida por el usuario:
+// azul = en proceso · naranja = acción requerida/pago pendiente ·
+// amarillo = pendiente/esperando · verde = completado/aprobado/confirmado ·
+// rojo = rechazado/problema · gris = no iniciado/sin actividad (disponible,
+// ningún estado del flujo de 9 pasos lo usa hoy).
 export const TRAMITE_STATUSES = [
-  { code: 1, label: 'En espera de formatos internos', tone: 'proceso' },
-  { code: 2, label: 'Emitiendo formulario de DS-160', tone: 'proceso' },
-  { code: 3, label: 'En espera de pago de arancel', tone: 'pago' },
-  { code: 4, label: 'En busca de cita', tone: 'proceso' },
-  { code: 5, label: 'Citas confirmadas', tone: 'proceso' },
-  { code: 6, label: 'En espera de liquidación de honorarios', tone: 'pago' },
-  { code: 7, label: 'En espera de simulación con asesor', tone: 'proceso' },
-  { code: 8, label: 'Visa aprobada', tone: 'aprobado' },
-  { code: 9, label: 'Visa rechazada', tone: 'rechazado' },
+  { code: 1, label: 'En espera de formatos internos', tone: 'amarillo' },
+  { code: 2, label: 'Emitiendo formulario de DS-160', tone: 'azul' },
+  { code: 3, label: 'En espera de pago de arancel', tone: 'naranja' },
+  { code: 4, label: 'En busca de cita', tone: 'azul' },
+  { code: 5, label: 'Citas confirmadas', tone: 'verde' },
+  { code: 6, label: 'En espera de liquidación de honorarios', tone: 'naranja' },
+  { code: 7, label: 'En espera de simulación con asesor', tone: 'amarillo' },
+  { code: 8, label: 'Visa aprobada', tone: 'verde' },
+  { code: 9, label: 'Visa rechazada', tone: 'rojo' },
 ];
 
 export const TRAMITE_STATUS_LABELS = Object.fromEntries(

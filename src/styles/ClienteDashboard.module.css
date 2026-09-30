@@ -12,6 +12,7 @@
   --amber: #C68714; --amber-soft: #FBEBC9;
   --rose: #B73E3E; --rose-soft: #F5DADA;
   --gray: #6B7280; --gray-soft: #EAEBED;
+  --orange: #D9731A; --orange-soft: #FBE4CC;
   --line: rgba(15, 26, 48, 0.10);
   --line-2: rgba(15, 26, 48, 0.18);
   --muted: rgba(15, 26, 48, 0.55);
@@ -105,6 +106,7 @@
 .tagTerminado { background: var(--green-soft); color: var(--green); }
 .tagEspera { background: var(--amber-soft); color: var(--amber); }
 .tagRechazado { background: var(--rose-soft); color: var(--rose); }
+.tagNaranja { background: var(--orange-soft); color: var(--orange); }
 .cardLink { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--primary) !important; margin-top: 12px; background: none; border: 0; padding: 0; cursor: pointer; }
 
 /* accesos directos */

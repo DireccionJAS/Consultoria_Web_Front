@@ -38,8 +38,8 @@ function formatFechaCorta(fecha) {
   return `${String(day).padStart(2, '0')} ${MESES_CORTOS[Number(month) - 1]} ${year}`;
 }
 
-const TONE_CLS = { proceso: 'stProceso', pago: 'stPago', aprobado: 'stAprobado', rechazado: 'stRechazado' };
-const TONE_COLOR = { proceso: 'var(--c2)', pago: 'var(--rose)', aprobado: 'var(--green-dark)', rechazado: 'var(--rose-dark)' };
+const TONE_CLS = { azul: 'stProceso', naranja: 'stRevisar', amarillo: 'stEspera', verde: 'stAprobado', rojo: 'stRechazado', gris: 'stCancelado' };
+const TONE_COLOR = { azul: 'var(--c2)', naranja: 'var(--orange)', amarillo: 'var(--amber)', verde: 'var(--green-dark)', rojo: 'var(--rose-dark)', gris: 'var(--gray)' };
 const STATUS_META = Object.fromEntries(
   TRAMITE_STATUSES.map(({ code, label, tone }) => [code, { label, cls: TONE_CLS[tone], color: TONE_COLOR[tone] }])
 );

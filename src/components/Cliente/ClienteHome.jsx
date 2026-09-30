@@ -15,7 +15,7 @@ function CitasIcon({ size = 22 }) { return <svg width={size} height={size} viewB
 function FormulariosIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 7h6M9 11h6M9 15h4" /></svg>; }
 function PagosIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M3 10h18M7 14h4" /></svg>; }
 
-const TONE_CLS = { proceso: 'tagProceso', pago: 'tagEspera', aprobado: 'tagTerminado', rechazado: 'tagRechazado' };
+const TONE_CLS = { azul: 'tagProceso', naranja: 'tagNaranja', amarillo: 'tagEspera', verde: 'tagTerminado', rojo: 'tagRechazado', gris: 'tagTerminado' };
 const STATUS_META = Object.fromEntries(
   Object.entries(TRAMITE_STATUS_LABELS).map(([code, label]) => [
     code,

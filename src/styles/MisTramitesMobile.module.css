@@ -234,6 +234,7 @@
 .statusCancelled { background-color: #4b5563; }
 .statusReview { background-color: #7c3aed; }
 .statusRejected { background-color: #991b1b; }
+.statusOrange { background-color: #d9731a; }
 
 .cardActions {
   padding: 16px;

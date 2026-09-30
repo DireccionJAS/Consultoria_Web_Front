@@ -85,10 +85,12 @@ export default function MisTramitesMobile() {
   };
 
   const TONE_CLASS = {
-    proceso: styles.statusProcess,
-    pago: styles.statusPayment,
-    aprobado: styles.statusCompleted,
-    rechazado: styles.statusRejected,
+    azul: styles.statusProcess,
+    naranja: styles.statusOrange,
+    amarillo: styles.statusWaiting,
+    verde: styles.statusCompleted,
+    rojo: styles.statusRejected,
+    gris: styles.statusCancelled,
   };
 
   const getStatusText = (status) => TRAMITE_STATUS_LABELS[status] || 'Desconocido';

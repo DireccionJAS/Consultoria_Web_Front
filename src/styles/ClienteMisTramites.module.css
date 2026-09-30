@@ -4,6 +4,7 @@
   --c1: #1B2A4A; --c1-deep: #0F1A30; --primary: #1FA0D1; --hover: #205C81; --light: #C4E7F5; --c5: #E4F4FB; --white: #FFFFFF;
   --green: #28A052; --green-soft: #DFF5E5; --amber: #C68714; --amber-soft: #FBEBC9;
   --rose: #B73E3E; --rose-soft: #F5DADA; --gray: #6B7280; --gray-soft: #EAEBED;
+  --orange: #D9731A; --orange-soft: #FBE4CC;
   --line: rgba(15, 26, 48, 0.10); --line-2: rgba(15, 26, 48, 0.18); --muted: rgba(15, 26, 48, 0.55); --muted-2: rgba(15, 26, 48, 0.38);
   --display: "Bricolage Grotesque", system-ui, sans-serif; --sans: "Inter", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
 
@@ -53,6 +54,7 @@
 .tagAprobado { background: var(--green-soft); color: var(--green); }
 .tagCancelado { background: var(--gray-soft); color: var(--gray); }
 .tagRechazado { background: var(--rose-soft); color: var(--rose); }
+.tagNaranja { background: var(--orange-soft); color: var(--orange); }
 .tcardMeta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .tmLbl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
 .tmVal { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 7px; }

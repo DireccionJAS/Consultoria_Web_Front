@@ -11,7 +11,7 @@ import GestionarFormulariosModal from './GestionarFormulariosModal.jsx';
 import { TRAMITE_STATUSES } from '../../utils/tramiteStatus.js';
 import styles from '../../styles/tramites/ActualizarTramiteModal.module.css';
 
-const TONE_COLOR = { proceso: 'var(--primary)', pago: 'var(--rose)', aprobado: 'var(--green-dark)', rechazado: 'var(--rose-dark)' };
+const TONE_COLOR = { azul: 'var(--primary)', naranja: 'var(--orange)', amarillo: 'var(--amber)', verde: 'var(--green-dark)', rojo: 'var(--rose-dark)', gris: 'var(--gray)' };
 const STATUS_META = Object.fromEntries(
   TRAMITE_STATUSES.map(({ code, label, tone }) => [code, { label, color: TONE_COLOR[tone] }])
 );

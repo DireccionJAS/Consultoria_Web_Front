@@ -12,7 +12,7 @@ import NotificationBell from './../common/NotificationBell.jsx';
 
 function ArrowIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>; }
 
-const TONE_CLS = { proceso: 'tagProceso', pago: 'tagEspera', aprobado: 'tagAprobado', rechazado: 'tagRechazado' };
+const TONE_CLS = { azul: 'tagProceso', naranja: 'tagNaranja', amarillo: 'tagEspera', verde: 'tagAprobado', rojo: 'tagRechazado', gris: 'tagCancelado' };
 const ACTIVO = TRAMITE_STATUS_ACTIVO;
 
 function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
