@@ -50,6 +50,9 @@ function IconSwap() {
 function IconTrash() {
   return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>;
 }
+function IconCrop() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 2v14a2 2 0 0 0 2 2h14M18 22V8a2 2 0 0 0-2-2H2"></path></svg>;
+}
 function IconCheck() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12l5 5L20 7"></path></svg>;
 }
@@ -131,7 +134,7 @@ function IconoSelect({ value, onChange }) {
   );
 }
 
-function UploadField({ label, preview, meta, onPick, onClear, required = true, previewClassName, uploadZoneClassName }) {
+function UploadField({ label, preview, meta, onPick, onClear, onAdjust, required = true, previewClassName, uploadZoneClassName }) {
   const inputId = `upload-${label.replace(/\s/g, '')}`;
   return (
     <div>
@@ -141,8 +144,9 @@ function UploadField({ label, preview, meta, onPick, onClear, required = true, p
         <div className={`${styles.preview} ${previewClassName || ''}`}>
           <div className={styles.phImg} style={{ backgroundImage: `url("${preview}")` }}></div>
           <div className={styles.previewOverlay}>
-            <button type="button" className={styles.pvBtn} onClick={() => document.getElementById(inputId).click()}><IconSwap /></button>
-            <button type="button" className={`${styles.pvBtn} ${styles.del}`} onClick={onClear}><IconTrash /></button>
+            {onAdjust && <button type="button" className={styles.pvBtn} onClick={onAdjust} title="Ajustar recorte"><IconCrop /></button>}
+            <button type="button" className={styles.pvBtn} onClick={() => document.getElementById(inputId).click()} title="Cambiar imagen"><IconSwap /></button>
+            <button type="button" className={`${styles.pvBtn} ${styles.del}`} onClick={onClear} title="Quitar imagen"><IconTrash /></button>
           </div>
           {meta && (
             <span className={styles.previewBadge}>
@@ -254,8 +258,15 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
   };
   const handleClearImage = () => { setImageFile(null); setImagePreview(null); setImageMeta(null); };
 
+  // Reajustar el recorte de una imagen ya guardada (servicios existentes que
+  // quedaron mal recortados antes de este cambio), sin tener que volver a
+  // subirla desde el equipo.
+  const handleAdjustImage = () => {
+    if (imagePreview) setCropSrc(imagePreview);
+  };
+
   const handleCropCancel = () => {
-    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    if (cropSrc && cropSrc.startsWith('blob:')) URL.revokeObjectURL(cropSrc);
     setCropSrc(null);
   };
   const handleCropConfirm = (blob) => {
@@ -263,7 +274,7 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
     setImageFile(blob);
     setImagePreview(url);
     getImageDimensions(url).then((dim) => setImageMeta(dim ? { ...dim, bytes: blob.size } : null));
-    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    if (cropSrc && cropSrc.startsWith('blob:')) URL.revokeObjectURL(cropSrc);
     setCropSrc(null);
   };
 
@@ -373,6 +384,7 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
                 meta={imageMeta}
                 onPick={handlePickImage}
                 onClear={handleClearImage}
+                onAdjust={handleAdjustImage}
                 previewClassName={styles.previewMain}
                 uploadZoneClassName={styles.uploadZoneMain}
               />
