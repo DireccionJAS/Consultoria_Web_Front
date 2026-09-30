@@ -196,7 +196,7 @@
 .ncRow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .ncSelectWrap, .ncInpWrap { border: 1.5px solid var(--ncmLine); border-radius: 10px; padding: 9px 12px; font-size: 13px; color: var(--ncmInk); display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; background: #fff; }
 .ncSelectWrap:focus-within, .ncInpWrap:focus-within { border-color: var(--teal); }
-.ncSelectWrap select, .ncInpWrap input { border: 0; outline: 0; background: transparent; font: inherit; font-size: 13px; color: var(--ncmInk); flex: 1; min-width: 0; }
+.ncSelectWrap select, .ncInpWrap input, .ncInpWrap select { border: 0; outline: 0; background: transparent; font: inherit; font-size: 13px; color: var(--ncmInk); flex: 1; min-width: 0; }
 .ncSelectWrap svg, .ncInpWrap svg { color: var(--ncmMuted); flex-shrink: 0; }
 
 /* RichSelect: reemplaza los <select> nativos (filtro de trámites,
@@ -307,6 +307,7 @@
 .ccTimePill.sel { border-color: var(--cc-primary); background: var(--cc-primary) !important; color: #fff; }
 .ccTimePill.disabled { color: #C7CDD3; text-decoration: line-through; cursor: not-allowed; }
 .ccTimePill.disabled:hover { border-color: var(--cc-line-2); }
+.manualLink { display: inline-block; margin-top: 8px; font-size: 11.5px; font-weight: 600; color: var(--cc-primary, var(--teal)); text-decoration: underline; cursor: pointer; background: none; border: 0; padding: 0; }
 
 .ccWarn { padding: 14px 16px; background: var(--cc-rose-soft); border: 1px solid rgba(183,62,62,0.25); border-radius: 14px; margin: 6px 0 16px; }
 .ccWarnTop { display: flex; gap: 10px; }

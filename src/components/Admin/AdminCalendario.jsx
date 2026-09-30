@@ -233,13 +233,15 @@ export default function AdminCalendario() {
   const [ncTramite, setNcTramite] = useState('');
   const [ncFecha, setNcFecha] = useState('');
   const [ncHora, setNcHora] = useState('');
+  const [ncHoraManual, setNcHoraManual] = useState(false);
   const [ncCiudad, setNcCiudad] = useState('');
   const [ncEncargado, setNcEncargado] = useState('');
   const [ncAtencion, setNcAtencion] = useState('zoom');
 
   const [extAbierta, setExtAbierta] = useState(false);
-  const [extDia, setExtDia] = useState(0);
+  const [extFecha, setExtFecha] = useState('');
   const [extHora, setExtHora] = useState('10:00');
+  const [extHoraManual, setExtHoraManual] = useState(false);
   const [extAtencion, setExtAtencion] = useState('zoom');
   const [extNombre, setExtNombre] = useState('');
   const [extApellido, setExtApellido] = useState('');
@@ -273,6 +275,7 @@ export default function AdminCalendario() {
   const [ccContext, setCcContext] = useState(null);
   const [ccFecha, setCcFecha] = useState('');
   const [ccHora, setCcHora] = useState('');
+  const [ccHoraManual, setCcHoraManual] = useState(false);
   const [ccPayMode, setCcPayMode] = useState('online');
   const [ccPayMethod, setCcPayMethod] = useState('stripe');
   const [ccGuardando, setCcGuardando] = useState(false);
@@ -437,6 +440,7 @@ export default function AdminCalendario() {
     setNcTramite('');
     setNcFecha('');
     setNcHora('09:00');
+    setNcHoraManual(false);
     setNcCiudad('');
     setNcEncargado('');
     setNcAtencion('zoom');
@@ -444,8 +448,9 @@ export default function AdminCalendario() {
   };
 
   const abrirExterna = () => {
-    setExtDia(0);
+    setExtFecha(extDias[0]?.iso || toDateStr(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1)));
     setExtHora('10:00');
+    setExtHoraManual(false);
     setExtAtencion('zoom');
     setExtNombre('');
     setExtApellido('');
@@ -461,8 +466,7 @@ export default function AdminCalendario() {
       Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Nombre, apellido, teléfono y horario son obligatorios.' });
       return;
     }
-    const fechaSeleccionada = extDias[extDia]?.iso;
-    if (!fechaSeleccionada) {
+    if (!extFecha) {
       Swal.fire({ icon: 'error', title: 'Sin fecha disponible', text: 'No hay un día válido seleccionado.' });
       return;
     }
@@ -473,7 +477,7 @@ export default function AdminCalendario() {
         apellido: extApellido.trim(),
         telefono: extTelefono.trim(),
         tipoAtencion: ATENCION_LABELS[extAtencion] || extAtencion,
-        fecha: fechaSeleccionada,
+        fecha: extFecha,
         hora: extHora,
       });
       if (!res?.success) throw new Error(res?.message || 'No se pudo guardar la cita externa');
@@ -492,6 +496,7 @@ export default function AdminCalendario() {
     setCcContext({ tipo: eventoDetalle.tipo, item: eventoDetalle.item, fecha: eventoDetalle.fecha, hora: eventoDetalle.hora });
     setCcFecha(eventoDetalle.fecha || '');
     setCcHora('');
+    setCcHoraManual(false);
     setCcPayMode('online');
     setCcPayMethod('stripe');
     setEventoDetalle(null);
@@ -896,20 +901,27 @@ export default function AdminCalendario() {
                 </div>
                 <div className={styles.ccField}>
                   <label className={styles.ccFieldLabel}>Nueva hora <span className={styles.ccReq}>*</span></label>
-                  <div className={styles.ccTimePills}>
-                    {(ccContext.tipo === 'sim' ? simHorasValidas : (ccEsUrgente ? CC_HORAS_CERCA : CC_HORAS_LEJOS)).map((h) => {
-                      const ocupada = ccContext.tipo === 'sim' && simHorasTomadas(ccFecha, ccContext.item.idTransactProgress).includes(h);
-                      return (
-                        <div
-                          key={h}
-                          className={`${styles.ccTimePill} ${ccHora === h ? styles.sel : ''} ${ocupada ? styles.disabled : ''}`}
-                          onClick={() => !ocupada && setCcHora(h)}
-                        >
-                          {h}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {!ccHoraManual ? (
+                    <>
+                      <div className={styles.ccInpWrap}>
+                        <select className={styles.ccInp} value={ccHora} onChange={(e) => setCcHora(e.target.value)}>
+                          <option value="">Selecciona una hora</option>
+                          {(ccContext.tipo === 'sim' ? simHorasValidas : (ccEsUrgente ? CC_HORAS_CERCA : CC_HORAS_LEJOS)).map((h) => {
+                            const ocupada = ccContext.tipo === 'sim' && simHorasTomadas(ccFecha, ccContext.item.idTransactProgress).includes(h);
+                            return <option key={h} value={h} disabled={ocupada}>{h}{ocupada ? ' · ocupado' : ''}</option>;
+                          })}
+                        </select>
+                      </div>
+                      <button type="button" className={styles.manualLink} onClick={() => { setCcHoraManual(true); setCcHora(''); }}>Escribir hora manualmente</button>
+                    </>
+                  ) : (
+                    <>
+                      <div className={styles.ccInpWrap}>
+                        <input className={styles.ccInp} type="time" value={ccHora} onChange={(e) => setCcHora(e.target.value)} />
+                      </div>
+                      <button type="button" className={styles.manualLink} onClick={() => { setCcHoraManual(false); setCcHora(''); }}>Elegir de los horarios disponibles</button>
+                    </>
+                  )}
                 </div>
 
                 {ccEsUrgente && (
@@ -1013,33 +1025,26 @@ export default function AdminCalendario() {
                   </div>
                   <div className={styles.ncField}>
                     <div className={styles.ncFieldLabel}>Hora <span className={styles.req}>*</span></div>
-                    {ncTipo === 'sim' ? (
-                      <div className={styles.ccTimePills}>
-                        {simHorasValidas.map((h) => {
-                          const ocupada = simHorasTomadas(ncFecha).includes(h);
-                          return (
-                            <div
-                              key={h}
-                              className={`${styles.ccTimePill} ${ncHora === h ? styles.sel : ''} ${ocupada ? styles.disabled : ''}`}
-                              onClick={() => !ocupada && setNcHora(h)}
-                            >
-                              {h}
-                            </div>
-                          );
-                        })}
-                      </div>
+                    {!ncHoraManual ? (
+                      <>
+                        <div className={styles.ncInpWrap}>
+                          <select value={ncHora} onChange={(e) => setNcHora(e.target.value)}>
+                            <option value="">Selecciona una hora</option>
+                            {(ncTipo === 'sim' ? simHorasValidas : CC_HORAS_LEJOS).map((h) => {
+                              const ocupada = ncTipo === 'sim' && simHorasTomadas(ncFecha).includes(h);
+                              return <option key={h} value={h} disabled={ocupada}>{h}{ocupada ? ' · ocupado' : ''}</option>;
+                            })}
+                          </select>
+                        </div>
+                        <button type="button" className={styles.manualLink} onClick={() => { setNcHoraManual(true); setNcHora(''); }}>Escribir hora manualmente</button>
+                      </>
                     ) : (
-                      <div className={styles.ccTimePills}>
-                        {CC_HORAS_LEJOS.map((h) => (
-                          <div
-                            key={h}
-                            className={`${styles.ccTimePill} ${ncHora === h ? styles.sel : ''}`}
-                            onClick={() => setNcHora(h)}
-                          >
-                            {h}
-                          </div>
-                        ))}
-                      </div>
+                      <>
+                        <div className={styles.ncInpWrap}>
+                          <input type="time" value={ncHora} onChange={(e) => setNcHora(e.target.value)} />
+                        </div>
+                        <button type="button" className={styles.manualLink} onClick={() => { setNcHoraManual(false); setNcHora(''); }}>Elegir de los horarios disponibles</button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -1129,26 +1134,36 @@ export default function AdminCalendario() {
                   </div>
                 </div>
 
-                <div className={styles.ncFieldLabel}>Día disponible</div>
-                <div className={styles.extDayGrid}>
-                  {extDias.map((dia, i) => (
-                    <div key={i} className={`${styles.extDayCard} ${extDia === i ? styles.active : ''}`} onClick={() => setExtDia(i)}>
-                      <div className={styles.d}>{dia.d}</div><div className={styles.m}>{dia.m}</div>
-                    </div>
-                  ))}
+                <div className={styles.ncField}>
+                  <div className={styles.ncFieldLabel}>Día <span className={styles.req}>*</span></div>
+                  <div className={styles.ncInpWrap}>
+                    <input type="date" value={extFecha} onChange={(e) => setExtFecha(e.target.value)} />
+                    <IconCalSmall />
+                  </div>
                 </div>
 
-                <div className={styles.ncFieldLabel}>Horario disponible <span className={styles.req}>*</span></div>
-                <div className={styles.extTimeGrid}>
-                  {extHoras.map((h) => (
-                    <div
-                      key={h.hora}
-                      className={`${styles.extTimeCard} ${h.disabled ? styles.disabled : ''} ${extHora === h.hora ? styles.active : ''}`}
-                      onClick={() => !h.disabled && setExtHora(h.hora)}
-                    >
-                      {h.hora}
-                    </div>
-                  ))}
+                <div className={styles.ncField}>
+                  <div className={styles.ncFieldLabel}>Horario <span className={styles.req}>*</span></div>
+                  {!extHoraManual ? (
+                    <>
+                      <div className={styles.ncInpWrap}>
+                        <select value={extHora} onChange={(e) => setExtHora(e.target.value)}>
+                          <option value="">Selecciona una hora</option>
+                          {extHoras.map((h) => (
+                            <option key={h.hora} value={h.hora} disabled={h.disabled}>{h.hora}{h.disabled ? ' · ocupado' : ''}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button type="button" className={styles.manualLink} onClick={() => { setExtHoraManual(true); setExtHora(''); }}>Escribir hora manualmente</button>
+                    </>
+                  ) : (
+                    <>
+                      <div className={styles.ncInpWrap}>
+                        <input type="time" value={extHora} onChange={(e) => setExtHora(e.target.value)} />
+                      </div>
+                      <button type="button" className={styles.manualLink} onClick={() => { setExtHoraManual(false); setExtHora(''); }}>Elegir de los horarios disponibles</button>
+                    </>
+                  )}
                 </div>
 
                 <div className={styles.ncField} style={{ marginBottom: 0 }}>

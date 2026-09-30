@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { useEffect, useMemo, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
-import { clientePorId, getHorarios, getMisCitas, getHorasTomadas, crearCita, eliminarCita, getCambiosCita } from './../../api/api.js';
+import { clientePorId, getHorarios, getMisCitas, getHorasTomadas, crearCita, eliminarCita, getCambiosCita, tramitesPorId } from './../../api/api.js';
 import styles from './../../styles/ClienteCitas.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
@@ -21,9 +21,22 @@ const DOW = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
+// Tipos que el cliente puede agendar él mismo desde esta pantalla (solo
+// Simulación). CAS/Consular las agenda el asesor directo en el trámite —
+// ver TIPOS_INFO más abajo para mostrarlas en el calendario sin ofrecerlas
+// como opción de autoagendado.
 const TIPOS = [
   { key: 'SIMULACION', label: 'Simulación', sub: 'Práctica de entrevista', icon: SimIcon, cls: '', ubicacion: 'Sucursal Jiutepec' },
 ];
+
+// Info de despliegue (etiqueta/ubicación) para TODOS los tipos de cita que
+// se pueden mostrar en el calendario, incluidas las que agenda el asesor
+// directo en el trámite (CAS/Consular) y que por eso no viven en TIPOS.
+const TIPOS_INFO = {
+  SIMULACION: TIPOS[0],
+  CAS: { key: 'CAS', label: 'Cita CAS', sub: 'Centro de Atención al Solicitante', icon: CalIcon, cls: '', ubicacion: 'Tu asesor te dará los detalles' },
+  CON: { key: 'CON', label: 'Cita consular', sub: 'Entrevista en el consulado', icon: CalIcon, cls: '', ubicacion: 'Tu asesor te dará los detalles' },
+};
 
 function configTipo(tipo) { return tipo === 'ATENCION' ? 'ATENCION_REMOTA' : tipo; }
 function toISO(date) {
@@ -31,6 +44,7 @@ function toISO(date) {
   return `${y}-${m}-${d}`;
 }
 function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+function parseISO(str) { return str ? new Date(`${str}T00:00:00`) : null; }
 
 export default function Calendario() {
   const navigate = useNavigate();
@@ -38,6 +52,11 @@ export default function Calendario() {
   const [userId, setUserId] = useState('');
   const [horarios, setHorarios] = useState({ SIMULACION: { dias: [], horas: [] }, ATENCION_REMOTA: { dias: [], horas: [] } });
   const [citas, setCitas] = useState([]);
+  // Citas CAS/Consular/Simulación que el asesor agenda directo en el
+  // trámite (TransactProgress.dateCas/dateCon/dateSimulation) — viven
+  // aparte de la tabla `Cita` (autoagendado), así que sin esto esta
+  // pantalla nunca las mostraba aunque sí aparecían en el Dashboard.
+  const [citasTramite, setCitasTramite] = useState([]);
   const [viewDate, setViewDate] = useState(new Date());
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,8 +64,9 @@ export default function Calendario() {
   const [diaSel, setDiaSel] = useState(null);
   const [horaSel, setHoraSel] = useState(null);
   const [horasTomadas, setHorasTomadas] = useState([]);
+  const [horaManual, setHoraManual] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [cambiosInfo, setCambiosInfo] = useState({ cambiosUsados: 0, cambiosGratisRestantes: 2, comision: 99, advance: false });
+  const [cambiosInfo, setCambiosInfo] = useState({ cambiosUsados: 0, cambiosGratisRestantes: 2, comision: 99, comisionSimulacion: 99, advance: false });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -74,6 +94,7 @@ export default function Calendario() {
 
     cargarHorarios();
     cargarCitas(idUser);
+    cargarCitasTramite(idUser);
     cargarCambiosInfo(idUser);
   }, [navigate]);
 
@@ -97,6 +118,34 @@ export default function Calendario() {
       .catch((error) => console.error('Error al obtener citas:', error));
   };
 
+  // dateCas/dateCon/dateSimulation vienen como "yyyy-MM-dd HH:mm:ss" en
+  // CADA trámite del cliente (no solo el más reciente, a diferencia del
+  // Dashboard) — se convierten al mismo shape {fecha, hora, tipo} que usa
+  // el resto de esta pantalla para las citas autoagendadas.
+  const cargarCitasTramite = (idUser) => {
+    tramitesPorId(idUser)
+      .then((response) => {
+        const tramites = response?.response?.transactProgresses || [];
+        const derivadas = [];
+        tramites.forEach((t) => {
+          [['dateSimulation', 'SIMULACION'], ['dateCas', 'CAS'], ['dateCon', 'CON']].forEach(([campo, tipo]) => {
+            const valor = t[campo];
+            if (!valor) return;
+            const [fecha, horaCompleta] = valor.split(' ');
+            derivadas.push({
+              idCita: `tramite-${t.idTransactProgress}-${tipo}`,
+              fecha,
+              hora: (horaCompleta || '').slice(0, 5),
+              tipo,
+              origenTramite: true,
+            });
+          });
+        });
+        setCitasTramite(derivadas);
+      })
+      .catch((error) => console.error('Error al obtener citas del trámite:', error));
+  };
+
   const cargarCambiosInfo = (idUser) => {
     getCambiosCita(idUser)
       .then((response) => { if (response.success && response.response) setCambiosInfo(response.response); })
@@ -110,11 +159,13 @@ export default function Calendario() {
     return dias;
   }, [horarios]);
 
+  const todasLasCitas = useMemo(() => [...citas, ...citasTramite], [citas, citasTramite]);
+
   const citasPorFecha = useMemo(() => {
     const map = {};
-    citas.forEach((c) => { (map[c.fecha] ||= []).push(c); });
+    todasLasCitas.forEach((c) => { (map[c.fecha] ||= []).push(c); });
     return map;
-  }, [citas]);
+  }, [todasLasCitas]);
 
   const celdas = useMemo(() => {
     const year = viewDate.getFullYear();
@@ -162,18 +213,16 @@ export default function Calendario() {
     setTipoSel('SIMULACION');
     setDiaSel(diasPillsDisponibles[0] || null);
     setHoraSel(null);
+    setHoraManual(false);
     setHorasTomadas([]);
     setModalOpen(true);
   };
 
   useEffect(() => {
     if (!modalOpen) return;
-    setDiaSel((prev) => {
-      const opciones = horarios[configTipo(tipoSel)]?.dias || [];
-      if (prev && opciones.includes(prev.getDay())) return prev;
-      return diasPillsDisponibles[0] || null;
-    });
+    setDiaSel((prev) => prev || diasPillsDisponibles[0] || null);
     setHoraSel(null);
+    setHoraManual(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tipoSel, modalOpen]);
 
@@ -210,19 +259,25 @@ export default function Calendario() {
     }
   };
 
-  const avisoComision = cambiosInfo.cambiosGratisRestantes <= 0
-    ? `Ya usaste tus 2 cambios/cancelaciones gratuitos de este trámite. Esta acción generará un cargo de $${cambiosInfo.comision} MXN.`
+  // La comisión de Simulación es el precio real del servicio "Simulación de
+  // entrevista" (se actualiza solo si lo editan en Servicios), distinta del
+  // flat $99 que sigue aplicando a Atención — ver comisionSimulacion en
+  // getCambiosCita.
+  const montoComisionTipo = (tipo) => (tipo === 'SIMULACION' ? cambiosInfo.comisionSimulacion : cambiosInfo.comision);
+
+  const avisoComision = (tipo) => cambiosInfo.cambiosGratisRestantes <= 0
+    ? `Ya usaste tus 2 cambios/cancelaciones gratuitos de este trámite. Esta acción generará un cargo de $${montoComisionTipo(tipo)} MXN.`
     : `Te ${cambiosInfo.cambiosGratisRestantes === 1 ? 'queda' : 'quedan'} ${cambiosInfo.cambiosGratisRestantes} cambio${cambiosInfo.cambiosGratisRestantes === 1 ? '' : 's'}/cancelación${cambiosInfo.cambiosGratisRestantes === 1 ? '' : 'es'} gratis en este trámite.`;
 
   const avisarComisionSiAplica = (data) => {
     if (data?.comisionGenerada) {
-      Swal.fire({ icon: 'info', title: 'Se generó un cargo', text: `Este cambio generó una comisión de $${cambiosInfo.comision} MXN, la verás reflejada en Pagos.` });
+      Swal.fire({ icon: 'info', title: 'Se generó un cargo', text: `Este cambio generó una comisión de $${data.montoComision ?? cambiosInfo.comision} MXN, la verás reflejada en Pagos.` });
     }
   };
 
   const cambiarCita = async (cita) => {
     const confirm = await Swal.fire({
-      icon: 'warning', title: '¿Cambiar esta cita?', text: `Se cancelará para que elijas un nuevo horario. ${avisoComision}`,
+      icon: 'warning', title: '¿Cambiar esta cita?', text: `Se cancelará para que elijas un nuevo horario. ${avisoComision(cita.tipo)}`,
       showCancelButton: true, confirmButtonText: 'Sí, cambiar', cancelButtonText: 'No',
     });
     if (!confirm.isConfirmed) return;
@@ -244,7 +299,7 @@ export default function Calendario() {
 
   const cancelarCita = async (cita) => {
     const confirm = await Swal.fire({
-      icon: 'warning', title: '¿Cancelar esta cita?', text: avisoComision,
+      icon: 'warning', title: '¿Cancelar esta cita?', text: avisoComision(cita.tipo),
       showCancelButton: true, confirmButtonText: 'Sí, cancelar', cancelButtonText: 'No',
     });
     if (!confirm.isConfirmed) return;
@@ -261,10 +316,10 @@ export default function Calendario() {
 
   const proximasCitas = useMemo(() => {
     const hoyIso = toISO(new Date());
-    return [...citas].filter((c) => c.fecha >= hoyIso).sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
-  }, [citas]);
+    return todasLasCitas.filter((c) => c.fecha >= hoyIso).sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+  }, [todasLasCitas]);
 
-  const tipoInfo = (tipo) => TIPOS.find((t) => t.key === tipo) || TIPOS[0];
+  const tipoInfo = (tipo) => TIPOS_INFO[tipo] || TIPOS[0];
 
   return (
     <div className={styles.page}>
@@ -320,6 +375,7 @@ export default function Calendario() {
             </div>
             <div className={styles.calLegend}>
               <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--orange)' }}></span> Simulación</div>
+              <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--hover)' }}></span> CAS / Consular (agendadas por tu asesor)</div>
             </div>
           </div>
 
@@ -340,10 +396,14 @@ export default function Calendario() {
                     <div className={styles.apptInfo}>
                       <div className={styles.apptType}>{info.label}</div>
                       <div className={styles.apptTime}><ClockIcon /> {cita.hora} hrs · {info.ubicacion}</div>
-                      <div className={styles.apptActions}>
-                        <button className={`${styles.apptBtn} ${styles.change}`} onClick={() => cambiarCita(cita)}>Cambiar</button>
-                        <button className={`${styles.apptBtn} ${styles.cancel}`} onClick={() => cancelarCita(cita)}>Cancelar</button>
-                      </div>
+                      {cita.origenTramite ? (
+                        <div className={styles.apptTime} style={{ marginTop: 4 }}>Agendada por tu asesor — para cambios contáctalo directamente.</div>
+                      ) : (
+                        <div className={styles.apptActions}>
+                          <button className={`${styles.apptBtn} ${styles.change}`} onClick={() => cambiarCita(cita)}>Cambiar</button>
+                          <button className={`${styles.apptBtn} ${styles.cancel}`} onClick={() => cancelarCita(cita)}>Cancelar</button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -352,8 +412,8 @@ export default function Calendario() {
                 <WarnIcon />
                 <div className={styles.warnText}>
                   {cambiosInfo.cambiosGratisRestantes <= 0
-                    ? <>Ya usaste tus <strong>2 cambios/cancelaciones gratuitos</strong> de este trámite. El siguiente genera un cargo de <strong>${cambiosInfo.comision} MXN</strong>.</>
-                    : <>Tienes <strong>{cambiosInfo.cambiosGratisRestantes} de 2</strong> cambios/cancelaciones gratis en este trámite. A partir del 3ro se cobra una comisión de <strong>${cambiosInfo.comision} MXN</strong>.</>}
+                    ? <>Ya usaste tus <strong>2 cambios/cancelaciones gratuitos</strong> de este trámite. El siguiente genera un cargo de <strong>${cambiosInfo.comisionSimulacion} MXN</strong>.</>
+                    : <>Tienes <strong>{cambiosInfo.cambiosGratisRestantes} de 2</strong> cambios/cancelaciones gratis en este trámite. A partir del 3ro se cobra el total de la Simulación (<strong>${cambiosInfo.comisionSimulacion} MXN</strong>).</>}
                 </div>
               </div>
             </div>
@@ -399,36 +459,48 @@ export default function Calendario() {
               </div>
 
               <div className={styles.mField}>
-                <label className={styles.mLabel}>Día disponible</label>
-                {diasPillsDisponibles.length === 0 ? (
-                  <div className={styles.empty}>No hay días configurados para este tipo de cita.</div>
-                ) : (
-                  <div className={styles.dayPills}>
-                    {diasPillsDisponibles.map((d) => (
-                      <div key={toISO(d)} className={`${styles.dayPill} ${diaSel && sameDay(diaSel, d) ? styles.sel : ''}`} onClick={() => { setDiaSel(d); setHoraSel(null); }}>
-                        <div className={styles.dayPillNum}>{d.getDate()}</div>
-                        <div className={styles.dayPillMon}>{DOW[d.getDay()]}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <label className={styles.mLabel}>Día</label>
+                <input
+                  type="date"
+                  className={styles.mDateInput}
+                  min={toISO(new Date())}
+                  value={diaSel ? toISO(diaSel) : ''}
+                  onChange={(e) => { setDiaSel(parseISO(e.target.value)); setHoraSel(null); }}
+                />
               </div>
 
               <div className={styles.mField} style={{ marginBottom: 0 }}>
-                <label className={styles.mLabel}>Horario disponible</label>
-                {horasPillsDisponibles.length === 0 ? (
-                  <div className={styles.empty}>No hay horarios configurados para este tipo de cita.</div>
+                <label className={styles.mLabel}>Horario</label>
+                {!horaManual ? (
+                  <>
+                    <select
+                      className={styles.mSelect}
+                      value={horaSel || ''}
+                      onChange={(e) => setHoraSel(e.target.value || null)}
+                    >
+                      <option value="">Selecciona una hora</option>
+                      {horasPillsDisponibles.map((h) => (
+                        <option key={h} value={h} disabled={horasTomadas.includes(h)}>
+                          {h}{horasTomadas.includes(h) ? ' · ocupado' : ''}
+                        </option>
+                      ))}
+                    </select>
+                    <button type="button" className={styles.manualLink} onClick={() => { setHoraManual(true); setHoraSel(null); }}>
+                      Escribir hora manualmente
+                    </button>
+                  </>
                 ) : (
-                  <div className={styles.timePills}>
-                    {horasPillsDisponibles.map((h) => {
-                      const taken = horasTomadas.includes(h);
-                      return (
-                        <div key={h} className={`${styles.timePill} ${horaSel === h ? styles.sel : ''} ${taken ? styles.taken : ''}`} onClick={taken ? undefined : () => setHoraSel(h)}>
-                          {h}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <>
+                    <input
+                      type="time"
+                      className={styles.mDateInput}
+                      value={horaSel || ''}
+                      onChange={(e) => setHoraSel(e.target.value || null)}
+                    />
+                    <button type="button" className={styles.manualLink} onClick={() => { setHoraManual(false); setHoraSel(null); }}>
+                      Elegir de los horarios disponibles
+                    </button>
+                  </>
                 )}
               </div>
             </div>
