@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { createService, updateService } from './../../api/api.js';
 import { ICONOS } from './../../utils/serviceIcons.js';
+import ImageCropModal from './ImageCropModal.jsx';
 import styles from './../../styles/ModalesServicio.module.css';
 
 // Extraído 1:1 de "15-ModalesServicio (standalone) (1).html". "Categoría" y
@@ -130,14 +131,14 @@ function IconoSelect({ value, onChange }) {
   );
 }
 
-function UploadField({ label, preview, meta, onPick, onClear, required = true }) {
+function UploadField({ label, preview, meta, onPick, onClear, required = true, previewClassName, uploadZoneClassName }) {
   const inputId = `upload-${label.replace(/\s/g, '')}`;
   return (
     <div>
       <label className={styles.fieldLabel}>{label} {required && <span className={styles.req}>*</span>}</label>
-      <input id={inputId} type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && onPick(e.target.files[0])} />
+      <input id={inputId} type="file" accept="image/*" hidden onChange={(e) => { if (e.target.files[0]) onPick(e.target.files[0]); e.target.value = ''; }} />
       {preview ? (
-        <div className={styles.preview}>
+        <div className={`${styles.preview} ${previewClassName || ''}`}>
           <div className={styles.phImg} style={{ backgroundImage: `url("${preview}")` }}></div>
           <div className={styles.previewOverlay}>
             <button type="button" className={styles.pvBtn} onClick={() => document.getElementById(inputId).click()}><IconSwap /></button>
@@ -150,7 +151,7 @@ function UploadField({ label, preview, meta, onPick, onClear, required = true })
           )}
         </div>
       ) : (
-        <label htmlFor={inputId} className={styles.uploadZone}>
+        <label htmlFor={inputId} className={`${styles.uploadZone} ${uploadZoneClassName || ''}`}>
           <div className={styles.uploadIcon}><IconUpload /></div>
           <div className={styles.uploadTitle}>Subir imagen</div>
           <div className={styles.uploadSub}>PNG, JPG</div>
@@ -174,6 +175,7 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
   const [detailPreview, setDetailPreview] = useState(null);
   const [detailFile, setDetailFile] = useState(null);
   const [detailMeta, setDetailMeta] = useState(null);
+  const [cropSrc, setCropSrc] = useState(null);
   const [tieneAnticipo, setTieneAnticipo] = useState(false);
   const [tieneOtroCosto, setTieneOtroCosto] = useState(false);
   const [isDateService, setIsDateService] = useState(false);
@@ -244,13 +246,26 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
 
   const handleChange = (campo) => (e) => setCampos((prev) => ({ ...prev, [campo]: e.target.value }));
 
+  // La "Imagen principal" pasa primero por el recorte (estilo Instagram/
+  // WhatsApp) antes de guardarse, para que el admin elija qué parte se ve
+  // en vez de que un object-fit:cover la recorte a ciegas.
   const handlePickImage = (file) => {
-    setImageFile(file);
-    const url = URL.createObjectURL(file);
-    setImagePreview(url);
-    getImageDimensions(url).then((dim) => setImageMeta(dim ? { ...dim, bytes: file.size } : null));
+    setCropSrc(URL.createObjectURL(file));
   };
   const handleClearImage = () => { setImageFile(null); setImagePreview(null); setImageMeta(null); };
+
+  const handleCropCancel = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  };
+  const handleCropConfirm = (blob) => {
+    const url = URL.createObjectURL(blob);
+    setImageFile(blob);
+    setImagePreview(url);
+    getImageDimensions(url).then((dim) => setImageMeta(dim ? { ...dim, bytes: blob.size } : null));
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  };
 
   const handlePickDetail = (file) => {
     setDetailFile(file);
@@ -352,7 +367,15 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
             <div className={styles.fsecTitle}>Imágenes</div>
             <div className={styles.uploadsGrid}>
               <IconoSelect value={iconoId} onChange={setIconoId} />
-              <UploadField label="Imagen principal" preview={imagePreview} meta={imageMeta} onPick={handlePickImage} onClear={handleClearImage} />
+              <UploadField
+                label="Imagen principal"
+                preview={imagePreview}
+                meta={imageMeta}
+                onPick={handlePickImage}
+                onClear={handleClearImage}
+                previewClassName={styles.previewMain}
+                uploadZoneClassName={styles.uploadZoneMain}
+              />
               <UploadField
                 label="Imagen de detalle de costos"
                 preview={detailPreview}
@@ -448,6 +471,10 @@ export default function ModalServicio({ show, onHide, servicio, onGuardado }) {
           </button>
         </div>
       </div>
+
+      {cropSrc && (
+        <ImageCropModal key={cropSrc} imageSrc={cropSrc} onCancel={handleCropCancel} onConfirm={handleCropConfirm} />
+      )}
     </div>
   );
 }
