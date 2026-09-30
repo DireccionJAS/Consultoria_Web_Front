@@ -7,6 +7,7 @@ import AdminSidebar from './AdminSidebar.jsx';
 import CrearTramiteModal from '../tramites/CrearTramiteModal.jsx';
 import ActualizarTramiteModal from '../tramites/ActualizarTramiteModal.jsx';
 import { trasacciones, actualizarT } from './../../api/api.js';
+import { TRAMITE_STATUSES, TRAMITE_STATUS_LABELS, TRAMITE_STATUS_TONES } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/AdminTramites.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
@@ -37,16 +38,11 @@ function formatFechaCorta(fecha) {
   return `${String(day).padStart(2, '0')} ${MESES_CORTOS[Number(month) - 1]} ${year}`;
 }
 
-const STATUS_META = {
-  1: { label: 'En proceso', cls: 'stProceso', color: 'var(--c2)' },
-  2: { label: 'En espera', cls: 'stEspera', color: 'var(--amber)' },
-  3: { label: 'Falta de pago', cls: 'stPago', color: 'var(--rose)' },
-  4: { label: 'Terminado', cls: 'stTerminado', color: 'var(--green)' },
-  5: { label: 'Cancelado', cls: 'stCancelado', color: 'var(--gray)' },
-  6: { label: 'Revisar', cls: 'stRevisar', color: 'var(--orange)' },
-  7: { label: 'Aprobado', cls: 'stAprobado', color: 'var(--green-dark)' },
-  8: { label: 'Rechazado', cls: 'stRechazado', color: 'var(--rose-dark)' },
-};
+const TONE_CLS = { proceso: 'stProceso', pago: 'stPago', aprobado: 'stAprobado', rechazado: 'stRechazado' };
+const TONE_COLOR = { proceso: 'var(--c2)', pago: 'var(--rose)', aprobado: 'var(--green-dark)', rechazado: 'var(--rose-dark)' };
+const STATUS_META = Object.fromEntries(
+  TRAMITE_STATUSES.map(({ code, label, tone }) => [code, { label, cls: TONE_CLS[tone], color: TONE_COLOR[tone] }])
+);
 
 // Empresa real del cliente dueño del trámite (viene de user.empresaName/
 // empresaCode, poblado en el backend desde User.empresa) — solo lectura,
@@ -62,14 +58,7 @@ function EmpresaBadge({ nombre, code }) {
 
 const CHIP_FILTERS = [
   { value: '', label: 'Todos', dot: null },
-  { value: '1', label: 'En proceso', dot: 'var(--c2)' },
-  { value: '2', label: 'En espera', dot: 'var(--amber)' },
-  { value: '3', label: 'Falta de pago', dot: 'var(--rose)' },
-  { value: '4', label: 'Terminado', dot: 'var(--green)' },
-  { value: '5', label: 'Cancelado', dot: 'var(--gray)' },
-  { value: '6', label: 'Revisar', dot: 'var(--orange)' },
-  { value: '7', label: 'Aprobado', dot: 'var(--green-dark)' },
-  { value: '8', label: 'Rechazado', dot: 'var(--rose-dark)' },
+  ...TRAMITE_STATUSES.map(({ code, label, tone }) => ({ value: String(code), label, dot: TONE_COLOR[tone] })),
 ];
 
 function StatusDropdown({ status, onChange }) {

@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import '../../styles/ActualizarTramite.css';
 import { FaCreditCard } from 'react-icons/fa';
 import { actualizarTC, actualizarTCS, obtenerLosPasos, cancelarCita, getAllDates } from './../../api/api.js';
+import { TRAMITE_STATUS_LABELS } from './../../utils/tramiteStatus.js';
 import apiClient from './../../api/apiClient.js';
 import CheckoutForm from '../Pagos.jsx';
 import PayPalScriptLoader from '../PayPal/PayPalScriptLoader.jsx';
@@ -915,14 +916,7 @@ export default function ActualizarMiTramite({ show, onHide, onClienteRegistrado,
 
                         <div className="form-group">
                             <label>Estado:</label>
-                            <input type="text" className="form-control" value={
-                                cliente?.status === 1 ? 'En proceso' :
-                                    cliente?.status === 2 ? 'En espera' :
-                                        cliente?.status === 3 ? 'Falta de pago' :
-                                            cliente?.status === 4 ? 'Terminado' :
-                                                cliente?.status === 5 ? 'Cancelado' :
-                                                    cliente?.status === 6 ? 'Revisar' : ''
-                            } disabled />
+                            <input type="text" className="form-control" value={TRAMITE_STATUS_LABELS[cliente?.status] || ''} disabled />
                         </div>
 
                         <div className="form-group">

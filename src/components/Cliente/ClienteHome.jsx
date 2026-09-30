@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { useEffect, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import { clientePorId, tramitesPorId, getStepById } from './../../api/api.js';
+import { TRAMITE_STATUS_LABELS, TRAMITE_STATUS_TONES } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/ClienteDashboard.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import NotificationBell from './../common/NotificationBell.jsx';
@@ -14,14 +15,13 @@ function CitasIcon({ size = 22 }) { return <svg width={size} height={size} viewB
 function FormulariosIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 7h6M9 11h6M9 15h4" /></svg>; }
 function PagosIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M3 10h18M7 14h4" /></svg>; }
 
-const STATUS_META = {
-  1: { label: 'En proceso', cls: 'tagProceso' },
-  2: { label: 'En espera', cls: 'tagEspera' },
-  3: { label: 'Falta de pago', cls: 'tagEspera' },
-  4: { label: 'Terminado', cls: 'tagTerminado' },
-  6: { label: 'En revisión', cls: 'tagEspera' },
-  7: { label: 'Aprobado', cls: 'tagTerminado' },
-};
+const TONE_CLS = { proceso: 'tagProceso', pago: 'tagEspera', aprobado: 'tagTerminado', rechazado: 'tagRechazado' };
+const STATUS_META = Object.fromEntries(
+  Object.entries(TRAMITE_STATUS_LABELS).map(([code, label]) => [
+    code,
+    { label, cls: TONE_CLS[TRAMITE_STATUS_TONES[code]] || 'tagProceso' },
+  ])
+);
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 function formatCita(fecha) {

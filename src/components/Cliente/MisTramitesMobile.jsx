@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import Navbar from '../NavbarUser.jsx';
 import { Button, Form, Spinner, Image } from 'react-bootstrap';
 import { tramitesPorId } from './../../api/api.js';
+import { TRAMITE_STATUSES, TRAMITE_STATUS_LABELS, TRAMITE_STATUS_TONES } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/MisTramitesMobile.module.css';
 import ModalActualizarTramite from './ActualizarMiTramite.jsx';
 
@@ -83,29 +84,16 @@ export default function MisTramitesMobile() {
     }
   };
 
-  const getStatusText = (status) => {
-    const statusMap = {
-      1: 'En proceso',
-      2: 'En espera',
-      3: 'Falta de pago',
-      4: 'Terminado',
-      5: 'Cancelado',
-      6: 'Revisar'
-    };
-    return statusMap[status] || 'Desconocido';
+  const TONE_CLASS = {
+    proceso: styles.statusProcess,
+    pago: styles.statusPayment,
+    aprobado: styles.statusCompleted,
+    rechazado: styles.statusRejected,
   };
 
-  const getStatusClass = (status) => {
-    const statusClassMap = {
-      1: styles.statusProcess,
-      2: styles.statusWaiting,
-      3: styles.statusPayment,
-      4: styles.statusCompleted,
-      5: styles.statusCancelled,
-      6: styles.statusReview
-    };
-    return statusClassMap[status] || '';
-  };
+  const getStatusText = (status) => TRAMITE_STATUS_LABELS[status] || 'Desconocido';
+
+  const getStatusClass = (status) => TONE_CLASS[TRAMITE_STATUS_TONES[status]] || '';
 
   const filtrados = datos.filter(d => {
     const busquedaStr = busqueda.toLowerCase();
@@ -159,12 +147,9 @@ export default function MisTramitesMobile() {
             onChange={(e) => setEstadoSeleccionado(e.target.value)}
           >
             <option value="">Todos</option>
-            <option value="1">En proceso</option>
-            <option value="2">En espera</option>
-            <option value="3">Falta de pago</option>
-            <option value="4">Terminado</option>
-            <option value="5">Cancelado</option>
-            <option value="6">Revisar</option>
+            {TRAMITE_STATUSES.map(({ code, label }) => (
+              <option key={code} value={code}>{label}</option>
+            ))}
           </Form.Select>
         </div>
 

@@ -9,6 +9,7 @@ import '../../styles/ActualizarTramite.css';
 import { FaCheck } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import { actualizarTC, obtenerLosPasos, deleteTRansactProgress , envioCorreoActualizacion} from './../../api/api.js';
+import { TRAMITE_STATUS_LABELS } from './../../utils/tramiteStatus.js';
 
 export default function ActualizarTramite({ show, onHide, onClienteRegistrado, cliente }) {
     const citaCas = cliente?.transact?.cas === true;
@@ -282,14 +283,7 @@ export default function ActualizarTramite({ show, onHide, onClienteRegistrado, c
 
                     <div className="form-group">
                         <label>Progreso:</label>
-                        <input type="text" className="form-control modern-input" value={
-                            cliente?.status === 1 ? 'En proceso' :
-                                cliente?.status === 2 ? 'En espera' :
-                                    cliente?.status === 3 ? 'Falta de pago' :
-                                        cliente?.status === 4 ? 'Terminado' :
-                                            cliente?.status === 5 ? 'Cancelado' :
-                                                cliente?.status === 6 ? 'Revisar' : ''
-                        } disabled />
+                        <input type="text" className="form-control modern-input" value={TRAMITE_STATUS_LABELS[cliente?.status] || ''} disabled />
                     </div>
 
                     <div className="form-group">

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import Liquidacion from './Modals/Liquidacion.jsx';
 import { clientePorId, tramitesPorId, getStepById } from './../../api/api.js';
+import { TRAMITE_STATUS_LABELS } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/ClientePagos.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import NotificationBell from './../common/NotificationBell.jsx';
@@ -16,11 +17,6 @@ function EyeIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill
 function CloseIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 6l12 12M6 18L18 6" /></svg>; }
 function CasIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>; }
 function ConIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg>; }
-
-const STATUS_META = {
-  1: { label: 'En proceso' }, 2: { label: 'En espera' }, 3: { label: 'Falta de pago' },
-  4: { label: 'Terminado' }, 5: { label: 'Cancelado' }, 6: { label: 'En revisión' }, 7: { label: 'Aprobado' },
-};
 
 function fmtMoney(n) { return `$${(n || 0).toLocaleString('es-MX')}`; }
 function fmtFecha(v) {
@@ -237,7 +233,7 @@ export default function Pagos() {
                 <div className={styles.stepBox}>
                   <div className={styles.stepNum}>{detalle.stepProgress ?? '–'}</div>
                   <div>
-                    <div className={styles.stepName}>{paso?.name || STATUS_META[detalle.status]?.label || 'En proceso'}</div>
+                    <div className={styles.stepName}>{paso?.name || TRAMITE_STATUS_LABELS[detalle.status] || 'En espera de formatos internos'}</div>
                     <div className={styles.stepDesc}>{paso?.description || 'Tu asesor está dando seguimiento a este paso.'}</div>
                   </div>
                 </div>

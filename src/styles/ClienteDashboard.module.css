@@ -104,6 +104,7 @@
 .tagProceso { background: var(--light); color: var(--hover); }
 .tagTerminado { background: var(--green-soft); color: var(--green); }
 .tagEspera { background: var(--amber-soft); color: var(--amber); }
+.tagRechazado { background: var(--rose-soft); color: var(--rose); }
 .cardLink { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--primary) !important; margin-top: 12px; background: none; border: 0; padding: 0; cursor: pointer; }
 
 /* accesos directos */

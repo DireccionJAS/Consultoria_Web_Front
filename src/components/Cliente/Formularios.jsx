@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { useEffect, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import { clientePorId, tramitesPorId, getPersonasByProgress } from './../../api/api.js';
+import { TRAMITE_STATUS_ACTIVO } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/ClienteFormularios.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import NotificationBell from './../common/NotificationBell.jsx';
@@ -25,7 +26,7 @@ function getInitials(name = '') {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
-const ACTIVO = new Set([1, 2, 3, 6]);
+const ACTIVO = TRAMITE_STATUS_ACTIVO;
 
 export default function Formularios() {
   const navigate = useNavigate();

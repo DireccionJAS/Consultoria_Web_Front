@@ -5,36 +5,28 @@ import Swal from 'sweetalert2';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import ModalActualizarTramite from './ActualizarMiTramite.jsx';
 import { clientePorId, tramitesPorId, getStepById } from './../../api/api.js';
+import { TRAMITE_STATUS_LABELS, TRAMITE_STATUS_TONES, TRAMITE_STATUS_ACTIVO, esTramiteCerrado } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/ClienteMisTramites.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import NotificationBell from './../common/NotificationBell.jsx';
 
 function ArrowIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>; }
 
-const STATUS_META = {
-  1: { label: 'En proceso', cls: 'tagProceso' },
-  2: { label: 'En espera', cls: 'tagEspera' },
-  3: { label: 'Falta de pago', cls: 'tagEspera' },
-  4: { label: 'Terminado', cls: 'tagAprobado' },
-  5: { label: 'Cancelado', cls: 'tagCancelado' },
-  6: { label: 'En revisión', cls: 'tagEspera' },
-  7: { label: 'Aprobado', cls: 'tagAprobado' },
-};
-const ACTIVO = new Set([1, 2, 3, 6]);
+const TONE_CLS = { proceso: 'tagProceso', pago: 'tagEspera', aprobado: 'tagAprobado', rechazado: 'tagRechazado' };
+const ACTIVO = TRAMITE_STATUS_ACTIVO;
 
 function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
-  const meta = STATUS_META[tramite.status] || { label: 'En proceso', cls: 'tagProceso' };
-  const cerrado = tramite.status === 4 || tramite.status === 7;
-  const cancelado = tramite.status === 5;
+  const label = TRAMITE_STATUS_LABELS[tramite.status] || 'En espera de formatos internos';
+  const meta = { label, cls: TONE_CLS[TRAMITE_STATUS_TONES[tramite.status]] || 'tagProceso' };
+  const cerrado = esTramiteCerrado(tramite.status);
+  const rechazado = tramite.status === 9;
   const progresoPct = totalPasos ? Math.round(((tramite.stepProgress || 0) / totalPasos) * 100) : 0;
-  const fill = cancelado ? 'var(--gray)' : cerrado ? 'var(--green)' : 'var(--primary)';
+  const fill = rechazado ? 'var(--rose)' : cerrado ? 'var(--green)' : 'var(--primary)';
   const progLabel = cerrado
     ? `Completado · ${meta.label}`
-    : cancelado
-      ? 'Cancelado'
-      : totalPasos
-        ? `Paso ${tramite.stepProgress || 0} de ${totalPasos}`
-        : 'Sin pasos registrados';
+    : totalPasos
+      ? `Paso ${tramite.stepProgress || 0} de ${totalPasos}`
+      : 'Sin pasos registrados';
   const fechaInicio = tramite.dateStart ? new Date(tramite.dateStart).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sin definir';
 
   return (
@@ -72,7 +64,7 @@ function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
 
         <div className={styles.tcardFoot}>
           <button className={cerrado ? styles.btnGhost : styles.btnPrimary} onClick={() => onVerDetalle(tramite)}>Ver detalle <ArrowIcon /></button>
-          {!cerrado && !cancelado && <button className={styles.btnGhost} onClick={onVerFormularios}>Ver formularios</button>}
+          {!cerrado && <button className={styles.btnGhost} onClick={onVerFormularios}>Ver formularios</button>}
         </div>
       </div>
     </div>

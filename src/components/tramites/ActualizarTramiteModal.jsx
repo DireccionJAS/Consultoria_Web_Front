@@ -8,18 +8,13 @@ import {
   envioCorreoActualizacion,
 } from '../../api/api.js';
 import GestionarFormulariosModal from './GestionarFormulariosModal.jsx';
+import { TRAMITE_STATUSES } from '../../utils/tramiteStatus.js';
 import styles from '../../styles/tramites/ActualizarTramiteModal.module.css';
 
-const STATUS_META = {
-  1: { label: 'En proceso', color: 'var(--primary)' },
-  2: { label: 'En espera', color: 'var(--amber)' },
-  3: { label: 'Falta de pago', color: 'var(--rose)' },
-  4: { label: 'Terminado', color: 'var(--green)' },
-  5: { label: 'Cancelado', color: 'var(--gray)' },
-  6: { label: 'Revisar', color: 'var(--orange)' },
-  7: { label: 'Aprobado', color: 'var(--green-dark)' },
-  8: { label: 'Rechazado', color: 'var(--rose-dark)' },
-};
+const TONE_COLOR = { proceso: 'var(--primary)', pago: 'var(--rose)', aprobado: 'var(--green-dark)', rechazado: 'var(--rose-dark)' };
+const STATUS_META = Object.fromEntries(
+  TRAMITE_STATUSES.map(({ code, label, tone }) => [code, { label, color: TONE_COLOR[tone] }])
+);
 
 function getInitials(name = '') {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -574,8 +569,8 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                 <div className={styles.field}>
                   <label className={styles.fieldLabel}>Estatus del trámite</label>
                   <div className={styles.seg}>
-                    <button type="button" className={form.status === 7 ? styles.onGreen : ''} onClick={() => set({ status: 7 })}>Aprobada</button>
-                    <button type="button" className={form.status === 8 ? styles.onRose : ''} onClick={() => set({ status: 8 })}>Rechazada</button>
+                    <button type="button" className={form.status === 8 ? styles.onGreen : ''} onClick={() => set({ status: 8 })}>Aprobada</button>
+                    <button type="button" className={form.status === 9 ? styles.onRose : ''} onClick={() => set({ status: 9 })}>Rechazada</button>
                   </div>
                 </div>
                 <div className={styles.field}>
