@@ -18,7 +18,7 @@ import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 // soft-delete que ya usa EmpresaClientes.jsx, pero el texto de la UI
 // dice "Eliminar" tal como en el mockup (decisión del usuario).
 
-const ITEMS_POR_PAGINA = 7;
+const ITEMS_POR_PAGINA = 15;
 
 const GRADIENTES = [
   ['#6FAEDB', '#4E6A9C'],

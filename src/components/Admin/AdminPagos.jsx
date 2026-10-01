@@ -9,7 +9,7 @@ import styles from './../../styles/AdminPagos.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 
-const ITEMS_POR_PAGINA = 7;
+const ITEMS_POR_PAGINA = 15;
 
 function IconPlus() {
   return (

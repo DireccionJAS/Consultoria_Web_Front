@@ -1,5 +1,6 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
@@ -63,14 +64,45 @@ const CHIP_FILTERS = [
 
 function StatusDropdown({ status, onChange }) {
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState(null);
   const ref = useRef(null);
+  const menuRef = useRef(null);
   const meta = STATUS_META[status] || { label: 'Desconocido', cls: 'stCancelado' };
 
   useEffect(() => {
-    const handleOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const handleOutside = (e) => {
+      if (ref.current?.contains(e.target) || menuRef.current?.contains(e.target)) return;
+      setOpen(false);
+    };
     document.addEventListener('mousedown', handleOutside);
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
+
+  // El menú se dibuja en <body> con position: fixed: dentro de la tabla lo
+  // recortaba .tableScroll (overflow-x: auto también recorta en vertical).
+  // Se abre hacia arriba si no cabe abajo y sigue a la pastilla al hacer scroll.
+  useLayoutEffect(() => {
+    if (!open) { setPos(null); return undefined; }
+    const ubicar = () => {
+      if (!ref.current || !menuRef.current) return;
+      const r = ref.current.getBoundingClientRect();
+      const alto = menuRef.current.offsetHeight;
+      const ancho = menuRef.current.offsetWidth;
+      const espacioAbajo = window.innerHeight - r.bottom;
+      const haciaArriba = espacioAbajo < alto + 12 && r.top > espacioAbajo;
+      setPos({
+        top: haciaArriba ? Math.max(8, r.top - alto - 6) : r.bottom + 6,
+        left: Math.max(8, Math.min(r.left, window.innerWidth - ancho - 8)),
+      });
+    };
+    ubicar();
+    window.addEventListener('scroll', ubicar, true);
+    window.addEventListener('resize', ubicar);
+    return () => {
+      window.removeEventListener('scroll', ubicar, true);
+      window.removeEventListener('resize', ubicar);
+    };
+  }, [open]);
 
   return (
     <div className={styles.statusDd} ref={ref}>
@@ -79,26 +111,35 @@ function StatusDropdown({ status, onChange }) {
         {meta.label}
         <ChevronDownIcon />
       </div>
-      {open && (
-        <div className={styles.statusMenu}>
-          {Object.entries(STATUS_META).map(([code, m]) => (
-            <div
-              key={code}
-              className={`${styles.statusOpt} ${Number(code) === status ? styles.sel : ''}`}
-              onClick={() => { onChange(Number(code)); setOpen(false); }}
-            >
-              <span className={styles.od} style={{ background: m.color }}></span>
-              {m.label}
-              {Number(code) === status && <span className={styles.check}><CheckIcon /></span>}
-            </div>
-          ))}
-        </div>
+      {open && createPortal(
+        // .page con display: contents solo para heredar las variables de
+        // color/tipografía de la página, sin pintar fondo ni ocupar espacio.
+        <div className={styles.page} style={{ display: 'contents' }}>
+          <div
+            ref={menuRef}
+            className={styles.statusMenu}
+            style={pos ? { position: 'fixed', top: pos.top, left: pos.left } : { position: 'fixed', top: 0, left: 0, visibility: 'hidden' }}
+          >
+            {Object.entries(STATUS_META).map(([code, m]) => (
+              <div
+                key={code}
+                className={`${styles.statusOpt} ${Number(code) === status ? styles.sel : ''}`}
+                onClick={() => { onChange(Number(code)); setOpen(false); }}
+              >
+                <span className={styles.od} style={{ background: m.color }}></span>
+                {m.label}
+                {Number(code) === status && <span className={styles.check}><CheckIcon /></span>}
+              </div>
+            ))}
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
 }
 
-const ITEMS_POR_PAGINA = 7;
+const ITEMS_POR_PAGINA = 15;
 
 export default function AdminTramites() {
   const navigate = useNavigate();

@@ -9,7 +9,7 @@ import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import ClienteModal from '../Administrador/ClienteModal.jsx';
 
-const ITEMS_POR_PAGINA = 7;
+const ITEMS_POR_PAGINA = 15;
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
