@@ -8,6 +8,7 @@ import '../../styles/ActualizarTramite.css';
 import { FaCreditCard } from 'react-icons/fa';
 import { actualizarTC, actualizarTCS, obtenerLosPasos, cancelarCita, getAllDates } from './../../api/api.js';
 import { TRAMITE_STATUS_LABELS } from './../../utils/tramiteStatus.js';
+import { hoyISO } from './../../utils/fechaCita.js';
 import apiClient from './../../api/apiClient.js';
 import CheckoutForm from '../Pagos.jsx';
 import PayPalScriptLoader from '../PayPal/PayPalScriptLoader.jsx';
@@ -270,7 +271,7 @@ const DateTimeSelector = ({ value, onChange, fechasOcupadas, className, error, o
 
     const handleDateChange = (e) => {
         const newDate = e.target.value;
-        const today = new Date().toISOString().split('T')[0];
+        const today = hoyISO();
 
         if (newDate < today) {
             Swal.fire({
@@ -330,10 +331,7 @@ const DateTimeSelector = ({ value, onChange, fechasOcupadas, className, error, o
         }
     };
 
-    const getMinDate = () => {
-        const today = new Date();
-        return today.toISOString().split('T')[0];
-    };
+    const getMinDate = () => hoyISO();
 
     const isHourAvailable = (hour) => {
         return availableHours.includes(hour);

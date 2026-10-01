@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import useReveal from "../../hooks/useReveal";
 import { enviarCorreoConDatos, crearAsesoria, getHorarios } from "../../api/api.js";
 import styles from '../../styles/landing/AgendaSection.module.css';
+import { fechaCitaYaPaso, MENSAJE_FECHA_PASADA } from '../../utils/fechaCita.js';
 
 const DESTINO_AGENDA = 'direcciongeneral@consultoriajas.com';
 
@@ -63,6 +64,12 @@ export default function AgendaSection() {
         title: 'Faltan datos',
         text: 'Completa nombre, apellido, WhatsApp, fecha y hora para agendar tu cita.',
       });
+      return;
+    }
+    // Va antes del correo: crearAsesoria (que también lo valida en backend)
+    // corre después y es best-effort, así que no frenaría el aviso al equipo.
+    if (fechaCitaYaPaso(fecha, hora)) {
+      Swal.fire({ icon: 'error', title: 'Fecha no válida', text: MENSAJE_FECHA_PASADA });
       return;
     }
     setEnviando(true);

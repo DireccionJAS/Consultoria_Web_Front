@@ -9,6 +9,7 @@ import {
 } from '../../api/api.js';
 import GestionarFormulariosModal from './GestionarFormulariosModal.jsx';
 import { TRAMITE_STATUSES } from '../../utils/tramiteStatus.js';
+import { hoyISO, fechaCitaYaPaso, MENSAJE_FECHA_PASADA } from '../../utils/fechaCita.js';
 import styles from '../../styles/tramites/ActualizarTramiteModal.module.css';
 
 const TONE_COLOR = { azul: 'var(--primary)', naranja: 'var(--orange)', amarillo: 'var(--amber)', verde: 'var(--green-dark)', rojo: 'var(--rose-dark)', gris: 'var(--gray)' };
@@ -169,6 +170,24 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
   };
 
   const handleSubmit = async () => {
+    // Solo se revisa la cita cuya fecha/hora se CAMBIÓ: un trámite con una
+    // cita CAS que ya ocurrió debe poder seguir editándose (estatus, pagos).
+    const citaPasadaCambiada = [
+      citaCas && ['dateCas', 'timeCas', cliente.dateCas],
+      citaCon && ['dateCon', 'timeCon', cliente.dateCon],
+      citaSimulacion && ['dateSimulation', 'timeSimulation', cliente.dateSimulation],
+    ].some((c) => {
+      if (!c) return false;
+      const [kDate, kTime, original] = c;
+      const orig = splitDateTime(original);
+      const cambio = form[kDate] !== orig.date || form[kTime] !== orig.time;
+      return cambio && fechaCitaYaPaso(form[kDate], form[kTime]);
+    });
+    if (citaPasadaCambiada) {
+      Swal.fire({ icon: 'error', title: 'Fecha no válida', text: MENSAJE_FECHA_PASADA });
+      return;
+    }
+
     setSubmitting(true);
     try {
       const payload = {
@@ -429,7 +448,7 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                   </div>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Fecha CAS</label>
-                    <input className={styles.inp} type="date" value={form.dateCas} onChange={(e) => set({ dateCas: e.target.value })} />
+                    <input className={styles.inp} type="date" min={hoyISO()} value={form.dateCas} onChange={(e) => set({ dateCas: e.target.value })} />
                   </div>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Horario CAS</label>
@@ -458,7 +477,7 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                   </div>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Fecha Consular</label>
-                    <input className={styles.inp} type="date" value={form.dateCon} onChange={(e) => set({ dateCon: e.target.value })} />
+                    <input className={styles.inp} type="date" min={hoyISO()} value={form.dateCon} onChange={(e) => set({ dateCon: e.target.value })} />
                   </div>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Horario Consular</label>
@@ -483,7 +502,7 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
                 <div className={styles.grid3}>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Fecha Simulación</label>
-                    <input className={styles.inp} type="date" value={form.dateSimulation} onChange={(e) => set({ dateSimulation: e.target.value })} />
+                    <input className={styles.inp} type="date" min={hoyISO()} value={form.dateSimulation} onChange={(e) => set({ dateSimulation: e.target.value })} />
                   </div>
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>Hora Simulación</label>

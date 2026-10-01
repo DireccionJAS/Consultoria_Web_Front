@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
+import { hoyISO, fechaCitaYaPaso, MENSAJE_FECHA_PASADA } from './../../utils/fechaCita.js';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { trasacciones, listarEncargados, actualizarTC, getHorarios, getAsesorias, crearAsesoria, getAllCitas, eliminarCita } from './../../api/api.js';
 import styles from './../../styles/EmpresaCalendario.module.css';
@@ -470,6 +471,10 @@ export default function EmpresaCalendario() {
       Swal.fire({ icon: 'error', title: 'Sin fecha', text: 'Elige un día para la cita.' });
       return;
     }
+    if (fechaCitaYaPaso(extFecha, extHora)) {
+      Swal.fire({ icon: 'error', title: 'Fecha no válida', text: MENSAJE_FECHA_PASADA });
+      return;
+    }
     setExtGuardando(true);
     try {
       const res = await crearAsesoria({
@@ -558,6 +563,10 @@ export default function EmpresaCalendario() {
 
   const handleConfirmarCambioLejos = async () => {
     if (!ccContext || !ccFecha || !ccHora) return;
+    if (fechaCitaYaPaso(ccFecha, ccHora)) {
+      Swal.fire({ icon: 'error', title: 'Fecha no válida', text: MENSAJE_FECHA_PASADA });
+      return;
+    }
     setCcGuardando(true);
     const fechaHora = `${ccFecha} ${ccHora}:00`;
     const payload = { ...ccContext.item };
@@ -603,6 +612,10 @@ export default function EmpresaCalendario() {
     if (!puedeAgendar) return;
     const item = datos.find((d) => String(d.idTransactProgress) === String(ncTramite));
     if (!item) return;
+    if (fechaCitaYaPaso(ncFecha, ncHora)) {
+      Swal.fire({ icon: 'error', title: 'Fecha no válida', text: MENSAJE_FECHA_PASADA });
+      return;
+    }
     setGuardando(true);
     const fechaHora = `${ncFecha} ${ncHora}:00`;
     const payload = {
@@ -891,7 +904,7 @@ export default function EmpresaCalendario() {
                   <label className={styles.ccFieldLabel}>Nuevo día <span className={styles.ccReq}>*</span></label>
                   <div className={styles.ccInpWrap}>
                     <span className={styles.ccInpIcon}><IconCalSmall /></span>
-                    <input className={styles.ccInp} type="date" value={ccFecha} onChange={(e) => { setCcFecha(e.target.value); setCcHora(''); }} />
+                    <input className={styles.ccInp} type="date" min={hoyISO()} value={ccFecha} onChange={(e) => { setCcFecha(e.target.value); setCcHora(''); }} />
                   </div>
                   {ccContext.tipo === 'sim' && ccFecha && !fechaDiaValido(ccFecha) && (
                     <div className={styles.ccWarnText} style={{ marginTop: 6, color: 'var(--danger, #d33)' }}>
@@ -1014,7 +1027,7 @@ export default function EmpresaCalendario() {
                   <div className={styles.ncField}>
                     <div className={styles.ncFieldLabel}>Fecha <span className={styles.req}>*</span></div>
                     <div className={styles.ncInpWrap}>
-                      <input type="date" value={ncFecha} onChange={(e) => { setNcFecha(e.target.value); setNcHora(''); }} />
+                      <input type="date" min={hoyISO()} value={ncFecha} onChange={(e) => { setNcFecha(e.target.value); setNcHora(''); }} />
                       <IconCalSmall />
                     </div>
                     {ncTipo === 'sim' && ncFecha && !fechaDiaValido(ncFecha) && (
@@ -1137,7 +1150,7 @@ export default function EmpresaCalendario() {
                 <div className={styles.ncField}>
                   <div className={styles.ncFieldLabel}>Día <span className={styles.req}>*</span></div>
                   <div className={styles.ncInpWrap}>
-                    <input type="date" value={extFecha} onChange={(e) => setExtFecha(e.target.value)} />
+                    <input type="date" min={hoyISO()} value={extFecha} onChange={(e) => setExtFecha(e.target.value)} />
                     <IconCalSmall />
                   </div>
                 </div>

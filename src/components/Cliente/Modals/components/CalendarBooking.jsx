@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getHorarios } from './../../../../api/api.js';
+import { fechaCitaYaPaso } from './../../../../utils/fechaCita.js';
+
+const fechaLocal = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 // Días/horas reales de disponibilidad: se reutiliza el horario configurado
 // para SIMULACION (Empresa > Horarios) porque este flujo guarda la fecha en
@@ -75,11 +78,17 @@ const CalendarBooking = ({ onDateSelected, disabledDates = [], minDate }) => {
           style={{ minWidth: 140 }}
         >
           <option value="">Selecciona una hora</option>
-          {availableHours.map(hour => (
-            <option key={hour} value={hour} disabled={disabledDates.includes(`${selectedDate ? selectedDate.toISOString().split('T')[0] : ''}T${hour}`)}>
-              {hour}
-            </option>
-          ))}
+          {availableHours.map(hour => {
+            // Hoy con una hora que ya pasó: se bloquea aquí porque la fecha se
+            // guarda hasta DESPUÉS del cobro (createProgressWithPayment) y el
+            // backend ya no puede rechazarla sin dejar un pago sin trámite.
+            const yaPaso = fechaCitaYaPaso(selectedDate ? fechaLocal(selectedDate) : '', hour);
+            return (
+              <option key={hour} value={hour} disabled={yaPaso || disabledDates.includes(`${selectedDate ? selectedDate.toISOString().split('T')[0] : ''}T${hour}`)}>
+                {hour}{yaPaso ? ' (ya pasó)' : ''}
+              </option>
+            );
+          })}
         </select>
       </div>
     </div>
