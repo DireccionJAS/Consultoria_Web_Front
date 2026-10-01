@@ -103,6 +103,12 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
   const [tramitesCliente, setTramitesCliente] = useState([]);
   const [cargandoTramites, setCargandoTramites] = useState(false);
   const [idTramiteSeleccionado, setIdTramiteSeleccionado] = useState('');
+  // Cuando el modal se abre CON un pago de contexto (botón "Registrar
+  // efectivo" del detalle de un pago ya existente), ese pago no trae
+  // idTransactProgress — hay que resolverlo buscando entre los trámites
+  // del cliente el que coincide con pago.idTransact, igual que hace el
+  // backend ya NO hace solo (ver aplicarPagoAlAdeudo en PaymentServiceImp).
+  const [idTransactProgressDelPago, setIdTransactProgressDelPago] = useState(null);
 
   useEffect(() => {
     if (!show) return;
@@ -114,12 +120,21 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
     setBuscadorAbierto(false);
     setTramitesCliente([]);
     setIdTramiteSeleccionado('');
+    setIdTransactProgressDelPago(null);
     if (requiereSeleccion) {
       clientes()
         .then((res) => setListaClientes(res.success ? res.response.users : []))
         .catch(() => setListaClientes([]));
+    } else if (pago?.idUser) {
+      tramitesPorId(pago.idUser)
+        .then((res) => {
+          const tramites = res.success ? res.response.transactProgresses : [];
+          const match = tramites.find((t) => t.idTransact === pago.idTransact);
+          setIdTransactProgressDelPago(match?.idTransactProgress ?? null);
+        })
+        .catch(() => setIdTransactProgressDelPago(null));
     }
-  }, [show, requiereSeleccion]);
+  }, [show, requiereSeleccion, pago?.idUser, pago?.idTransact]);
 
   useEffect(() => {
     if (!clienteSeleccionado) return;
@@ -140,11 +155,12 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
   const idUser = pago ? pago.idUser : clienteSeleccionado?.idUser;
   // idTransact identifica el tipo de servicio (para el recibo); idTransactProgress
   // identifica el trámite puntual del cliente al que hay que descontarle el
-  // adeudo. Cuando viene de un "pago" ya existente (ModalDetallePago) no
-  // tenemos el idTransactProgress a la mano — el backend lo resuelve solo
-  // por idUser+idTransact en ese caso.
+  // adeudo. El backend SOLO descuenta el adeudo si este id viene — si no,
+  // no toca nada (lo necesitan Stripe del carrito y el cobro de $99 por
+  // reagendar tarde, que también usan este mismo endpoint sin querer tocar
+  // el adeudo).
   const idTransact = pago ? pago.idTransact : tramiteSeleccionado?.idTransact;
-  const idTransactProgress = pago ? null : tramiteSeleccionado?.idTransactProgress;
+  const idTransactProgress = pago ? idTransactProgressDelPago : tramiteSeleccionado?.idTransactProgress;
   const nombreCliente = pago ? pago.user?.name : clienteSeleccionado?.name;
   const nombreTramite = pago ? pago.transact?.name : tramiteSeleccionado?.transact?.name;
 
