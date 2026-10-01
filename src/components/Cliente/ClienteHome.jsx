@@ -70,7 +70,22 @@ export default function ClienteHome() {
         const activos = response.response.transactProgresses;
         setTramitesCount(activos.length);
         if (activos.length === 0) return;
-        const actual = [...activos].sort((a, b) => b.idTransactProgress - a.idTransactProgress)[0];
+        // Antes siempre mostraba el trámite más reciente (mayor ID). Si el
+        // cliente tenía 2+ trámites, una cita asignada por el asesor en un
+        // trámite "viejo" desaparecía del dashboard en cuanto se creaba un
+        // trámite nuevo (aunque la cita siguiera vigente). Ahora prioriza
+        // el trámite con la cita futura más próxima entre todos los suyos.
+        const fechaCita = (t) => t.dateSimulation || t.dateCas || t.dateCon;
+        const ahora = new Date();
+        const conCitaProxima = activos
+          .filter((t) => {
+            const raw = fechaCita(t);
+            if (!raw) return false;
+            const d = new Date(raw.replace(' ', 'T'));
+            return !Number.isNaN(d.getTime()) && d >= ahora;
+          })
+          .sort((a, b) => new Date(fechaCita(a).replace(' ', 'T')) - new Date(fechaCita(b).replace(' ', 'T')))[0];
+        const actual = conCitaProxima || [...activos].sort((a, b) => b.idTransactProgress - a.idTransactProgress)[0];
         setTramite(actual);
         return getStepById(actual.idTransact);
       })
