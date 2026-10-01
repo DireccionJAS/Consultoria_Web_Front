@@ -1055,11 +1055,12 @@ export const getAllPayments = async () => {
   }
 };
 
-export const registrarPagoEfectivo = async ({ idUser, idTransact, total, quantity = 1 }) => {
+export const registrarPagoEfectivo = async ({ idUser, idTransact, idTransactProgress, total, quantity = 1 }) => {
   try {
     const response = await apiClient.post(`/payment`, {
       idUser,
       idTransact,
+      idTransactProgress,
       total,
       quantity,
       status: 1,

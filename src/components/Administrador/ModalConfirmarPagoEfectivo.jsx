@@ -133,12 +133,20 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
 
   if (!show) return null;
 
+  const tramiteSeleccionado = tramitesCliente.find(
+    (t) => t.idTransactProgress === Number(idTramiteSeleccionado)
+  );
+
   const idUser = pago ? pago.idUser : clienteSeleccionado?.idUser;
-  const idTransact = pago ? pago.idTransact : (idTramiteSeleccionado ? Number(idTramiteSeleccionado) : null);
+  // idTransact identifica el tipo de servicio (para el recibo); idTransactProgress
+  // identifica el trámite puntual del cliente al que hay que descontarle el
+  // adeudo. Cuando viene de un "pago" ya existente (ModalDetallePago) no
+  // tenemos el idTransactProgress a la mano — el backend lo resuelve solo
+  // por idUser+idTransact en ese caso.
+  const idTransact = pago ? pago.idTransact : tramiteSeleccionado?.idTransact;
+  const idTransactProgress = pago ? null : tramiteSeleccionado?.idTransactProgress;
   const nombreCliente = pago ? pago.user?.name : clienteSeleccionado?.name;
-  const nombreTramite = pago
-    ? pago.transact?.name
-    : tramitesCliente.find((t) => t.idTransact === Number(idTramiteSeleccionado))?.transact?.name;
+  const nombreTramite = pago ? pago.transact?.name : tramiteSeleccionado?.transact?.name;
 
   const clientesFiltrados = listaClientes.filter((c) =>
     (c.name ?? '').toLowerCase().includes(busquedaCliente.toLowerCase())
@@ -151,7 +159,7 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
     if (!puedeConfirmar) return;
     setEnviando(true);
     try {
-      const res = await registrarPagoEfectivo({ idUser, idTransact, total: montoNumero });
+      const res = await registrarPagoEfectivo({ idUser, idTransact, idTransactProgress, total: montoNumero });
       // El backend siempre responde HTTP 201 aunque falle al guardar
       // (createPayment atrapa la excepción y devuelve success:false igual),
       // así que hay que revisar el body, no solo el status HTTP.
@@ -259,7 +267,7 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
                       >
                         <option value="">Selecciona un trámite</option>
                         {tramitesCliente.map((t) => (
-                          <option key={t.idTransactProgress} value={t.idTransact}>{t.transact?.name}</option>
+                          <option key={t.idTransactProgress} value={t.idTransactProgress}>{t.transact?.name}</option>
                         ))}
                       </select>
                       <span className={styles.moneySuffix}><IconChevronDown /></span>
