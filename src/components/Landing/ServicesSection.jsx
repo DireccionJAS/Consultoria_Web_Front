@@ -1,6 +1,7 @@
 import React from "react";
 import useReveal from "../../hooks/useReveal";
 import styles from '../../styles/landing/ServicesSection.module.css';
+import { getServiceIcon } from '../../utils/serviceIcons.js';
 
 function DocIcon({ size = 24 }) {
   return (
@@ -49,9 +50,24 @@ function cleanDescription(text) {
   return text.replace(/•/g, '').replace(/\s{2,}/g, ' ').trim();
 }
 
-export default function ServicesSection({ services, handleOpenDetailsModal, handleOpenStepsModal, singint, highlightServiceId }) {
+// La portada solo muestra 4 servicios; el resto vive en /Servicios.
+const MAX_VISIBLES = 4;
+
+export default function ServicesSection({ services, handleOpenDetailsModal, handleOpenStepsModal, singint, highlightServiceId, destinoVisibleId, whatsapp }) {
   const [headerRef, headerIn] = useReveal();
   const [bentoRef, bentoIn] = useReveal();
+
+  // Los botones de destino del Hero llevan a un servicio específico; si ese
+  // servicio no está entre los 4 visibles, toma el lugar de la última
+  // tarjeta para que el scroll tenga a dónde llegar (y se queda ahí aunque
+  // el resaltado de 2.5 s ya se haya quitado).
+  let visibles = services.slice(0, MAX_VISIBLES);
+  if (destinoVisibleId != null && !visibles.some((s) => s.idTransact === destinoVisibleId)) {
+    const destacado = services.find((s) => s.idTransact === destinoVisibleId);
+    if (destacado) visibles = [...visibles.slice(0, MAX_VISIBLES - 1), destacado];
+  }
+
+  const whatsappHref = `https://wa.me/52${String(whatsapp || '777 219 3613').replace(/\D/g, '')}`;
 
   return (
     <section className={styles.services} id="servicios">
@@ -69,28 +85,48 @@ export default function ServicesSection({ services, handleOpenDetailsModal, hand
         </div>
 
         <div ref={bentoRef} className={`${styles.bento} jas-reveal ${bentoIn ? 'jas-in' : ''}`}>
-          {services.map((service, index) => {
-            const isFeatured = index === 0;
+          <div className={styles.bentoSide}>
+            <div className={styles.bentoCtaCard}>
+              <div className={styles.bentoImg}></div>
+              <span className={styles.bentoCtaNum}>
+                {String(services.length + 1).padStart(2, '0')} / {services.length} servicios más...
+              </span>
+              <h3>Ver mas<br />Servicios</h3>
+              <p className={styles.bentoCtaDesc}>
+                Más de {services.length} servicios migratorios diseñados para cubrir cada etapa de tu trámite.
+              </p>
+              <a href="/Servicios" className={styles.bentoCtaMore}>
+                Ver más servicios
+                <CtaArrow size={14} />
+              </a>
+            </div>
+            <a className={styles.googleBar} href={whatsappHref} target="_blank" rel="noopener noreferrer">
+              <span className={styles.googleBarIcon}>!</span>
+              ¿No tienes cuenta de Google? Contáctanos
+            </a>
+          </div>
+
+          {visibles.map((service, index) => {
             const price = formatCost(service.cost);
+            const icon = getServiceIcon(service);
             return (
               <div
                 key={service.idTransact}
                 id={`servicio-${service.idTransact}`}
-                className={`${styles.bentoCard} ${isFeatured ? styles.featured : ''} ${service.idTransact === highlightServiceId ? styles.highlighted : ''}`}
+                className={`${styles.bentoCard} ${service.idTransact === highlightServiceId ? styles.highlighted : ''}`}
               >
-                {isFeatured && <div className={styles.bentoImg}></div>}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isFeatured ? 'start' : undefined }}>
+                <div className={styles.bentoTop}>
                   <div className={styles.bentoIcon}>
-                    <DocIcon size={isFeatured ? 28 : 24} />
+                    {icon ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: icon.svg }} />
+                    ) : (
+                      <DocIcon size={20} />
+                    )}
                   </div>
-                  <span className={styles.bentoNum}>
-                    {String(index + 1).padStart(2, '0')}{isFeatured ? ' / FLAGSHIP' : ''}
-                  </span>
+                  <span className={styles.bentoNum}>{String(index + 1).padStart(2, '0')}</span>
                 </div>
-                <div>
-                  <h3>{service.name}</h3>
-                  <p className={styles.bentoDesc}>{cleanDescription(service.description)}</p>
-                </div>
+                <h3>{service.name}</h3>
+                <p className={styles.bentoDesc}>{cleanDescription(service.description)}</p>
                 <div className={styles.bentoFoot}>
                   <div>
                     <div className={styles.bentoLinks}>
@@ -98,7 +134,7 @@ export default function ServicesSection({ services, handleOpenDetailsModal, hand
                         <StepsIcon /> Ver pasos
                       </a>
                       <a onClick={() => handleOpenDetailsModal(service)}>
-                        Ver más <MoreIcon />
+                        Ver mas <MoreIcon />
                       </a>
                     </div>
                     {price && (
@@ -109,32 +145,13 @@ export default function ServicesSection({ services, handleOpenDetailsModal, hand
                     )}
                   </div>
                   <a className={styles.bentoCta} onClick={() => singint(service)}>
-                    {isFeatured ? 'Contratar ahora' : 'Contratar'}
-                    <CtaArrow size={isFeatured ? 14 : 12} />
+                    Contratar ahora
+                    <CtaArrow />
                   </a>
                 </div>
               </div>
             );
           })}
-
-          <div className={`${styles.bentoCard} ${styles.bentoCtaCard}`}>
-            <span className={styles.bentoNum} style={{ color: 'var(--c3)' }}>
-              {String(services.length + 1).padStart(2, '0')} / {services.length} servicios más...
-            </span>
-            <div>
-              <h3>Ver mas<br />Servicios</h3>
-              <p className={styles.bentoDesc}>
-                Más de {services.length} servicios migratorios diseñados para cubrir cada etapa de tu trámite.
-              </p>
-            </div>
-            <div className={styles.bentoFoot}>
-              <div></div>
-              <a href="/Servicios" className={styles.bentoCta}>
-                Ver más servicios
-                <CtaArrow />
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </section>

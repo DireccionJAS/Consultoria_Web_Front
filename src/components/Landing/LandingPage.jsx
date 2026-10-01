@@ -37,6 +37,8 @@ export default function LandingPage() {
   const [servicioDestacadoId, setServicioDestacadoId] = useState(null);
   const [destinoServicios, setDestinoServicios] = useState({});
   const [highlightServiceId, setHighlightServiceId] = useState(null);
+  const [destinoVisibleId, setDestinoVisibleId] = useState(null);
+  const [whatsapp, setWhatsapp] = useState(null);
   const highlightTimeoutRef = useRef(null);
 
   // Servicio destacado: se elige en Empresa > Página pública > Servicios.
@@ -48,6 +50,7 @@ export default function LandingPage() {
         if (!response.success || !response.response?.config) return;
         const c = response.response.config;
         if (c.servicioDestacadoId != null) setServicioDestacadoId(c.servicioDestacadoId);
+        if (c.whatsapp) setWhatsapp(c.whatsapp);
         setDestinoServicios({
           visaUsa: c.servicioVisaUsa ?? null,
           visaIndia: c.servicioVisaIndia ?? null,
@@ -71,7 +74,12 @@ export default function LandingPage() {
     if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
     if (targetId) {
       setHighlightServiceId(targetId);
-      document.getElementById(`servicio-${targetId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setDestinoVisibleId(targetId);
+      // ServicesSection solo muestra 4 servicios y mete el del destino si no
+      // estaba visible: esperar al render para que la tarjeta ya exista.
+      setTimeout(() => {
+        document.getElementById(`servicio-${targetId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 0);
       highlightTimeoutRef.current = setTimeout(() => setHighlightServiceId(null), 2500);
     } else {
       setHighlightServiceId(null);
@@ -237,6 +245,8 @@ export default function LandingPage() {
         handleOpenStepsModal={handleOpenStepsModal}
         singint={handleOpenPaymentModal}
         highlightServiceId={highlightServiceId}
+        destinoVisibleId={destinoVisibleId}
+        whatsapp={whatsapp}
       />
 
       <AboutSection />
