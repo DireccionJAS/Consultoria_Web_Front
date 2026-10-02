@@ -21,19 +21,20 @@ const DOW = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
-// Tipos que el cliente puede agendar él mismo desde esta pantalla (solo
-// Simulación). CAS/Consular las agenda el asesor directo en el trámite —
-// ver TIPOS_INFO más abajo para mostrarlas en el calendario sin ofrecerlas
-// como opción de autoagendado.
+// Tipos que el cliente puede agendar él mismo desde esta pantalla: solo
+// Atención al cliente, en los días/horas de Empresa > Horarios
+// (ATENCION_REMOTA). La Simulación, CAS y Consular las agenda Empresa/Admin
+// directo en el trámite — ver TIPOS_INFO para mostrarlas sin ofrecerlas.
 const TIPOS = [
-  { key: 'SIMULACION', label: 'Simulación', sub: 'Práctica de entrevista', icon: SimIcon, cls: '', ubicacion: 'Sucursal Jiutepec' },
+  { key: 'ATENCION', label: 'Atención al cliente', sub: 'Resuelve dudas con tu asesor', icon: CalIcon, cls: '', ubicacion: 'En línea' },
 ];
 
 // Info de despliegue (etiqueta/ubicación) para TODOS los tipos de cita que
 // se pueden mostrar en el calendario, incluidas las que agenda el asesor
-// directo en el trámite (CAS/Consular) y que por eso no viven en TIPOS.
+// directo en el trámite (Simulación/CAS/Consular) y que por eso no viven en TIPOS.
 const TIPOS_INFO = {
-  SIMULACION: TIPOS[0],
+  ATENCION: TIPOS[0],
+  SIMULACION: { key: 'SIMULACION', label: 'Simulación', sub: 'Práctica de entrevista', icon: SimIcon, cls: '', ubicacion: 'Sucursal Jiutepec' },
   CAS: { key: 'CAS', label: 'Cita CAS', sub: 'Centro de Atención al Solicitante', icon: CalIcon, cls: '', ubicacion: 'Tu asesor te dará los detalles' },
   CON: { key: 'CON', label: 'Cita consular', sub: 'Entrevista en el consulado', icon: CalIcon, cls: '', ubicacion: 'Tu asesor te dará los detalles' },
 };
@@ -60,11 +61,10 @@ export default function Calendario() {
   const [viewDate, setViewDate] = useState(new Date());
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [tipoSel, setTipoSel] = useState('SIMULACION');
+  const [tipoSel, setTipoSel] = useState('ATENCION');
   const [diaSel, setDiaSel] = useState(null);
   const [horaSel, setHoraSel] = useState(null);
   const [horasTomadas, setHorasTomadas] = useState([]);
-  const [horaManual, setHoraManual] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [cambiosInfo, setCambiosInfo] = useState({ cambiosUsados: 0, cambiosGratisRestantes: 2, comision: 99, comisionSimulacion: 99, advance: false });
 
@@ -155,7 +155,7 @@ export default function Calendario() {
   // --- calendario ---
   const diasDisponiblesSet = useMemo(() => {
     const dias = new Set();
-    (horarios.SIMULACION?.dias || []).forEach((d) => dias.add(d));
+    (horarios.ATENCION_REMOTA?.dias || []).forEach((d) => dias.add(d));
     return dias;
   }, [horarios]);
 
@@ -181,7 +181,8 @@ export default function Calendario() {
         date: d,
         otherMonth: d.getMonth() !== month,
         isToday: sameDay(d, hoy),
-        avail: diasDisponiblesSet.has(d.getDay()) && d >= new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()),
+        // A partir de mañana: el backend no acepta citas para hoy.
+        avail: diasDisponiblesSet.has(d.getDay()) && d > new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()),
         citasDelDia: citasPorFecha[toISO(d)] || [],
       });
     }
@@ -199,7 +200,8 @@ export default function Calendario() {
     cursor.setHours(0, 0, 0, 0);
     cursor.setDate(cursor.getDate() + 1);
     let guard = 0;
-    while (out.length < 6 && guard < 60) {
+    // Próximas ~4 semanas de días configurados (empieza mañana).
+    while (out.length < 20 && guard < 60) {
       if (activos.includes(cursor.getDay())) out.push(new Date(cursor));
       cursor.setDate(cursor.getDate() + 1);
       guard++;
@@ -210,10 +212,9 @@ export default function Calendario() {
   const horasPillsDisponibles = horarios[configTipo(tipoSel)]?.horas || [];
 
   const abrirModal = () => {
-    setTipoSel('SIMULACION');
+    setTipoSel('ATENCION');
     setDiaSel(diasPillsDisponibles[0] || null);
     setHoraSel(null);
-    setHoraManual(false);
     setHorasTomadas([]);
     setModalOpen(true);
   };
@@ -222,7 +223,6 @@ export default function Calendario() {
     if (!modalOpen) return;
     setDiaSel((prev) => prev || diasPillsDisponibles[0] || null);
     setHoraSel(null);
-    setHoraManual(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tipoSel, modalOpen]);
 
@@ -233,13 +233,7 @@ export default function Calendario() {
       .catch((error) => console.error('Error al obtener disponibilidad:', error));
   }, [modalOpen, diaSel, tipoSel]);
 
-  const simulacionBloqueada = !cambiosInfo.advance;
-
   const confirmarCita = async () => {
-    if (tipoSel === 'SIMULACION' && simulacionBloqueada) {
-      Swal.fire({ icon: 'warning', title: 'Anticipo pendiente', text: 'Debes pagar el anticipo de tu trámite antes de agendar una cita de Simulación.' });
-      return;
-    }
     if (!diaSel || !horaSel) {
       Swal.fire({ icon: 'warning', title: 'Falta información', text: 'Elige un día y un horario.' });
       return;
@@ -363,7 +357,7 @@ export default function Calendario() {
                 >
                   <span className={`${styles.calDaynum} ${c.isToday ? styles.today : ''}`}>{c.date.getDate()}</span>
                   {c.citasDelDia.map((cita) => (
-                    <div key={cita.idCita} className={`${styles.calEv} ${cita.tipo === 'SIMULACION' ? styles.evSim : styles.evAtencion}`}>
+                    <div key={cita.idCita} className={`${styles.calEv} ${cita.tipo === 'ATENCION' ? styles.evAtencion : styles.evSim}`}>
                       {tipoInfo(cita.tipo).label} {cita.hora}
                     </div>
                   ))}
@@ -374,8 +368,8 @@ export default function Calendario() {
               ))}
             </div>
             <div className={styles.calLegend}>
-              <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--orange)' }}></span> Simulación</div>
-              <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--hover)' }}></span> CAS / Consular (agendadas por tu asesor)</div>
+              <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--hover)' }}></span> Atención al cliente</div>
+              <div className={styles.legItem}><span className={styles.legDot} style={{ background: 'var(--orange)' }}></span> Simulación / CAS / Consular (agendadas por tu asesor)</div>
             </div>
           </div>
 
@@ -389,14 +383,14 @@ export default function Calendario() {
                 const fecha = new Date(cita.fecha + 'T00:00:00');
                 return (
                   <div key={cita.idCita} className={styles.appt}>
-                    <div className={`${styles.apptDate} ${info.key === 'SIMULACION' ? styles.sim : styles.atencion}`}>
+                    <div className={`${styles.apptDate} ${info.key === 'ATENCION' ? styles.atencion : styles.sim}`}>
                       <div className={styles.apptDay}>{fecha.getDate()}</div>
                       <div className={styles.apptMon}>{MESES_CORTOS[fecha.getMonth()]}</div>
                     </div>
                     <div className={styles.apptInfo}>
                       <div className={styles.apptType}>{info.label}</div>
                       <div className={styles.apptTime}><ClockIcon /> {cita.hora} hrs · {info.ubicacion}</div>
-                      {cita.origenTramite ? (
+                      {cita.origenTramite || cita.tipo === 'SIMULACION' ? (
                         <div className={styles.apptTime} style={{ marginTop: 4 }}>Agendada por tu asesor — para cambios contáctalo directamente.</div>
                       ) : (
                         <div className={styles.apptActions}>
@@ -412,8 +406,8 @@ export default function Calendario() {
                 <WarnIcon />
                 <div className={styles.warnText}>
                   {cambiosInfo.cambiosGratisRestantes <= 0
-                    ? <>Ya usaste tus <strong>2 cambios/cancelaciones gratuitos</strong> de este trámite. El siguiente genera un cargo de <strong>${cambiosInfo.comisionSimulacion} MXN</strong>.</>
-                    : <>Tienes <strong>{cambiosInfo.cambiosGratisRestantes} de 2</strong> cambios/cancelaciones gratis en este trámite. A partir del 3ro se cobra el total de la Simulación (<strong>${cambiosInfo.comisionSimulacion} MXN</strong>).</>}
+                    ? <>Ya usaste tus <strong>2 cambios/cancelaciones gratuitos</strong> de este trámite. El siguiente genera un cargo de <strong>${cambiosInfo.comision} MXN</strong>.</>
+                    : <>Tienes <strong>{cambiosInfo.cambiosGratisRestantes} de 2</strong> cambios/cancelaciones gratis en este trámite. A partir del 3ro se cobra <strong>${cambiosInfo.comision} MXN</strong> por cambio.</>}
                 </div>
               </div>
             </div>
@@ -435,78 +429,66 @@ export default function Calendario() {
               <div className={styles.mField}>
                 <label className={styles.mLabel}>Tipo de cita</label>
                 <div className={styles.typeOpts}>
-                  {TIPOS.map((t) => {
-                    const locked = t.key === 'SIMULACION' && simulacionBloqueada;
-                    return (
-                      <div
-                        key={t.key}
-                        className={`${styles.typeOpt} ${t.cls ? styles[t.cls] : ''} ${tipoSel === t.key ? styles.sel : ''} ${locked ? styles.locked : ''}`}
-                        onClick={locked ? undefined : () => setTipoSel(t.key)}
-                      >
-                        <div className={styles.typeOptIcon}><t.icon /></div>
-                        <div className={styles.typeOptName}>{t.label}</div>
-                        <div className={styles.typeOptSub}>{t.sub}</div>
-                      </div>
-                    );
-                  })}
+                  {TIPOS.map((t) => (
+                    <div
+                      key={t.key}
+                      className={`${styles.typeOpt} ${t.cls ? styles[t.cls] : ''} ${tipoSel === t.key ? styles.sel : ''}`}
+                      onClick={() => setTipoSel(t.key)}
+                    >
+                      <div className={styles.typeOptIcon}><t.icon /></div>
+                      <div className={styles.typeOptName}>{t.label}</div>
+                      <div className={styles.typeOptSub}>{t.sub}</div>
+                    </div>
+                  ))}
                 </div>
-                {tipoSel === 'SIMULACION' && simulacionBloqueada && (
-                  <div className={styles.lockNote}>
-                    <WarnIcon />
-                    <div className={styles.lockNoteText}>Debes pagar el anticipo de tu trámite para poder agendar una cita de Simulación.</div>
-                  </div>
-                )}
+                <div className={styles.lockNote}>
+                  <WarnIcon />
+                  <div className={styles.lockNoteText}>Tu Simulación de entrevista la agenda tu asesor; aparecerá aquí en cuanto la programe.</div>
+                </div>
               </div>
 
+              {/* Solo días/horas configurados en Empresa > Horarios: así el
+                  cliente nunca elige algo que el backend le vaya a rechazar. */}
               <div className={styles.mField}>
                 <label className={styles.mLabel}>Día</label>
-                <input
-                  type="date"
-                  className={styles.mDateInput}
-                  min={toISO(new Date())}
-                  value={diaSel ? toISO(diaSel) : ''}
-                  onChange={(e) => { setDiaSel(parseISO(e.target.value)); setHoraSel(null); }}
-                />
+                {diasPillsDisponibles.length === 0 ? (
+                  <div className={styles.empty}>Por ahora no hay días disponibles. Intenta más tarde o contacta a tu asesor.</div>
+                ) : (
+                  <select
+                    className={styles.mSelect}
+                    value={diaSel ? toISO(diaSel) : ''}
+                    onChange={(e) => { setDiaSel(parseISO(e.target.value)); setHoraSel(null); }}
+                  >
+                    <option value="">Selecciona un día</option>
+                    {(diaSel && !diasPillsDisponibles.some((d) => sameDay(d, diaSel)) ? [diaSel, ...diasPillsDisponibles] : diasPillsDisponibles).map((d) => (
+                      <option key={toISO(d)} value={toISO(d)}>
+                        {DOW[d.getDay()]} {d.getDate()} {MESES_CORTOS[d.getMonth()]} {d.getFullYear()}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div className={styles.mField} style={{ marginBottom: 0 }}>
                 <label className={styles.mLabel}>Horario</label>
-                {!horaManual ? (
-                  <>
-                    <select
-                      className={styles.mSelect}
-                      value={horaSel || ''}
-                      onChange={(e) => setHoraSel(e.target.value || null)}
-                    >
-                      <option value="">Selecciona una hora</option>
-                      {horasPillsDisponibles.map((h) => (
-                        <option key={h} value={h} disabled={horasTomadas.includes(h)}>
-                          {h}{horasTomadas.includes(h) ? ' · ocupado' : ''}
-                        </option>
-                      ))}
-                    </select>
-                    <button type="button" className={styles.manualLink} onClick={() => { setHoraManual(true); setHoraSel(null); }}>
-                      Escribir hora manualmente
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <input
-                      type="time"
-                      className={styles.mDateInput}
-                      value={horaSel || ''}
-                      onChange={(e) => setHoraSel(e.target.value || null)}
-                    />
-                    <button type="button" className={styles.manualLink} onClick={() => { setHoraManual(false); setHoraSel(null); }}>
-                      Elegir de los horarios disponibles
-                    </button>
-                  </>
-                )}
+                <select
+                  className={styles.mSelect}
+                  value={horaSel || ''}
+                  onChange={(e) => setHoraSel(e.target.value || null)}
+                  disabled={!diaSel}
+                >
+                  <option value="">Selecciona una hora</option>
+                  {horasPillsDisponibles.map((h) => (
+                    <option key={h} value={h} disabled={horasTomadas.includes(h)}>
+                      {h}{horasTomadas.includes(h) ? ' · ocupado' : ''}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className={styles.modalFoot}>
               <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setModalOpen(false)}>Cancelar</button>
-              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={confirmarCita} disabled={guardando || (tipoSel === 'SIMULACION' && simulacionBloqueada)}>
+              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={confirmarCita} disabled={guardando}>
                 <CheckIcon /> {guardando ? 'Agendando...' : 'Confirmar cita'}
               </button>
             </div>
