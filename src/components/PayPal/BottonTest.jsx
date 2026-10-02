@@ -89,6 +89,8 @@ const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalSt
               // que ya se hizo en CheckoutForm.jsx/Stripe — si se crea el
               // Payment primero y luego falla un trámite, queda un cobro
               // ya aprobado por PayPal sin ningún trámite asociado.
+              // El id del pedido de PayPal permite al backend verificar el pago.
+              paymentData.externalChargeRef = details.id;
               for (let i = 0; i < paymentData.quantity; i++) {
                 const progressResult = await createProcessWithPayment(paymentData);
                 if (!progressResult?.success) {
@@ -96,7 +98,10 @@ const PayPalButton = ({ amount, onSuccess, onError, userId, service, setPaypalSt
                 }
               }
 
-              const response = await apiClient.post(`/payment`, paymentData);
+              // El recibo (Payment) registra lo que de verdad se cobró en PayPal
+              // (`amount`), no el costo total del servicio (`total`/costoTotal),
+              // que en un anticipo es mayor a lo pagado.
+              const response = await apiClient.post(`/payment`, { ...paymentData, total: parseFloat(amount) });
               if (!response.data.success) {
                 throw new Error(response.data.message || 'No se pudo registrar el pago.');
               }

@@ -72,6 +72,8 @@ export default function CartCheckoutForm({ services, totalAmount, userEmail, use
             status: 1,
             idUser: parseInt(userId, 10),
             idTransact: service.idTransact,
+            // El backend verifica este cobro en Stripe antes de crear el trámite pagado.
+            externalChargeRef: paymentIntentId,
           });
           if (!progressResult?.success) {
             throw new Error(progressResult?.message || `No se pudo registrar el trámite de "${service.name}".`);

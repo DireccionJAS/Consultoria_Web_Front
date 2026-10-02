@@ -166,6 +166,8 @@ export default function CheckoutForm({
               idUser: parseInt(customer),
               idTransact: parseInt(idProductoTransaccion),
               personName: (names[i] || '').trim() || null,
+              // El backend verifica este cobro en Stripe antes de crear el trámite pagado.
+              externalChargeRef: paymentIntentId,
             };
             const progressResult = await createProcessWithPayment(processPaymentData);
             if (!progressResult?.success) {
