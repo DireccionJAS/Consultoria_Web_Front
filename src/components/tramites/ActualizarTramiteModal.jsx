@@ -188,6 +188,22 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
       return;
     }
 
+    // "Monto de adelanto" se puede escribir aunque "¿Adelanto?" esté en "No"
+    // — al guardar, ese monto se descarta y se guarda como $0 (ver payload
+    // más abajo). Sin este aviso, un asesor puede teclear el anticipo y
+    // dejarlo en 0 por accidente sin darse cuenta hasta después.
+    if (!form.advance && parseMoney(form.paid) > 0) {
+      const confirm = await Swal.fire({
+        icon: 'warning',
+        title: '¿Adelanto? está en "No"',
+        html: `Escribiste <strong>${fmtMoney(parseMoney(form.paid))}</strong> en "Monto de adelanto", pero como "¿Adelanto?" está en "No", se va a guardar como <strong>$0</strong>. ¿Quieres continuar así?`,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar como $0',
+        cancelButtonText: 'Cancelar y revisar',
+      });
+      if (!confirm.isConfirmed) return;
+    }
+
     setSubmitting(true);
     try {
       const payload = {
