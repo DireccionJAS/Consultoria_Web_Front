@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
-import { RegistrarCliente, olvidarContraSin, enviarCorreoConDatos, obtenerUsuarioPorCorreo } from '../../api/api.js';
+import { RegistrarCliente, olvidarContraSin, enviarCorreoConDatos, obtenerUsuarioPorCorreo, verificarCodigoRegistro } from '../../api/api.js';
 import { isEducationalEmail, EDU_EMAIL_MESSAGE } from '../../utils/emailValidation.js';
 import styles from './../../styles/Signin.module.css';
 import { MdClose, MdOpenInNew, MdDownload } from 'react-icons/md';
@@ -304,9 +304,11 @@ export default function Signin({ onCancel }) {
 
     try {
       const res = await olvidarContraSin(datosFormulario.email);
-      const code = res?.response?.code;
+      // El backend ya no regresa el código (lo valida él); solo se guarda si
+      // viene, para el respaldo de handlePaso2 mientras se despliega.
+      const code = res?.response?.code ?? null;
 
-      if (!code) {
+      if (!res?.success) {
         await enviarNotificacionAdministrador(datosFormulario, 'Código no recibido en reenvío');
         await Swal.fire({
           title: 'Problema persistente',
@@ -425,9 +427,9 @@ export default function Signin({ onCancel }) {
 
     try {
       const res = await olvidarContraSin(data.email);
-      const code = res?.response?.code;
+      const code = res?.response?.code ?? null;
 
-      if (!code) {
+      if (!res?.success) {
         await enviarNotificacionAdministrador(data, 'Código de verificación no recibido en paso 1');
         await Swal.fire({
           title: 'Problema con el envío del código',
@@ -470,12 +472,29 @@ export default function Signin({ onCancel }) {
   };
 
   const handlePaso2 = async () => {
-    const codigoIngresado = otpDigits.join('');
-    if (codigoIngresado.length < 6 || codigoIngresado.trim() !== (codigoEnviado || '').toString().trim()) {
+    const codigoIngresado = otpDigits.join('').trim();
+    let valido = false;
+    let mensajeError = 'El código ingresado no es válido';
+    if (codigoIngresado.length === 6) {
+      try {
+        const res = await verificarCodigoRegistro(datosFormulario?.email, codigoIngresado);
+        valido = !!res?.success;
+        if (!valido && res?.message) mensajeError = res.message;
+      } catch (error) {
+        // Respaldo solo mientras se despliega: backend viejo sin esta ruta
+        // (404) que todavía regresaba el código en la respuesta del envío.
+        if (error?.response?.status === 404 && codigoEnviado) {
+          valido = codigoIngresado === String(codigoEnviado).trim();
+        } else if (error?.response?.data?.message) {
+          mensajeError = error.response.data.message;
+        }
+      }
+    }
+    if (!valido) {
       setOtpError(true);
       await Swal.fire({
         title: 'Código incorrecto',
-        text: 'El código ingresado no es válido',
+        text: mensajeError,
         icon: 'error',
         customClass: { popup: 'swal-popup-custom' },
       });
@@ -486,10 +505,10 @@ export default function Signin({ onCancel }) {
     setOtpError(false);
     setPaso(3);
     setProcesando(true);
-    setTimeout(() => { handlePaso3(); }, 1000);
+    setTimeout(() => { handlePaso3(codigoIngresado); }, 1000);
   };
 
-  const handlePaso3 = async () => {
+  const handlePaso3 = async (codigoVerificacion) => {
     if (!datosFormulario) {
       await Swal.fire({ title: 'Error', text: 'No se encontraron los datos del formulario.', icon: 'error', customClass: { popup: 'swal-popup-custom' } });
       setPaso(1);
@@ -499,7 +518,8 @@ export default function Signin({ onCancel }) {
 
     try {
       const { confirmPassword, ...datosRegistro } = datosFormulario;
-      const datos = { ...datosRegistro, phone: `${phonePrefix}${datosRegistro.phone}`, status: 1 };
+      // El backend vuelve a validar el código aquí (y lo gasta) antes de crear la cuenta.
+      const datos = { ...datosRegistro, phone: `${phonePrefix}${datosRegistro.phone}`, status: 1, codigoVerificacion };
       const resRegistrar = await RegistrarCliente(datos);
 
       if (resRegistrar?.success) {

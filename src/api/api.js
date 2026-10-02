@@ -122,6 +122,13 @@ export const clientePorId = async (id) => {
   }
 };
 
+// Paso 2 del auto-registro: el servidor valida el código que llegó por correo
+// (antes el código venía en la respuesta y se comparaba en el navegador).
+export const verificarCodigoRegistro = async (email, codigo) => {
+  const response = await apiClient.post(`/users/verify-registration-code`, { email, codigo });
+  return response.data;
+};
+
 export const RegistrarCliente = async (data) => {
   try {
     const response = await apiClient.post(`/users`, data);
