@@ -1095,6 +1095,14 @@ export const createPaymentIntent = async (data) => {
 // GESTIÓN DE CORREOS ELECTRÓNICOS
 // =============================================================================
 
+// /mail/send/web/* requiere sesión (un cliente solo puede mandarse a sí
+// mismo, el staff a cualquiera — ver MailController). Estas llamadas usan
+// axios directo (no apiClient) porque van a /mail, no a /api.
+const authHeaderCorreo = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const olvidarContra = async (email) => {
   try {
     if (!email || !email.trim() || !email.includes('@')) {
@@ -1142,7 +1150,8 @@ export const envioCorreo = async (email, nombreCliente, nombreTramite) => {
       body,
       {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...authHeaderCorreo(),
         }
       }
     );
@@ -1172,7 +1181,8 @@ export const envioCorreoActualizacion = async (email, nombreCliente, nombreTrami
       body,
       {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...authHeaderCorreo(),
         }
       }
     );
@@ -1263,7 +1273,8 @@ export const payDS160 = async (email) => {
       data,
       {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...authHeaderCorreo(),
         }
       }
     );
