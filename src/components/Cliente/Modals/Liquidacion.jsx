@@ -7,7 +7,6 @@ import CheckoutForm from '../../Checkout.jsx';
 import paymentStyles from '../../../styles/servicios/client/PaymentModal.module.css';
 import PayPalScriptLoader from '../../PayPal/PayPalScriptLoader.jsx';
 import PayPalButton from '../../PayPal/BottonTest.jsx';
-import { actualizarTC } from '../../../api/api.js';
 import apiClient from '../../../api/apiClient.js';
 
 const VisaSVG = () => (
@@ -54,13 +53,6 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                 throw new Error('Service is undefined');
             }
 
-            await actualizarTC(service.idTransactProgress, {
-                ...service,
-                paid: service.paidAll,
-                paidAll: 0
-            });
-
-
             let idTransact;
             if (service.transact && service.transact.idTransact) {
                 idTransact = parseInt(service.transact.idTransact);
@@ -76,10 +68,17 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                 status: 1,
                 idUser: parseInt(userId),
                 idTransact: idTransact,
+                // El servidor descuenta el adeudo de este trámite con el monto
+                // verificado del cobro (antes se marcaba pagado con PUT /progress,
+                // que es solo de staff).
+                idTransactProgress: service.idTransactProgress,
                 externalChargeRef: externalChargeRef || null,
             };
 
-            await apiClient.post(`/payment`, paymentData);
+            const { data } = await apiClient.post(`/payment`, paymentData);
+            if (!data?.success) {
+                throw new Error(data?.message || 'No se pudo registrar el pago');
+            }
 
             return true;
         } catch (error) {
