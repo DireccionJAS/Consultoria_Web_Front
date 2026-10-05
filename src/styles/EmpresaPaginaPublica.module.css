@@ -150,4 +150,7 @@ textarea.inp { resize: vertical; line-height: 1.5; }
   .content { padding: 20px; }
   .grid2, .grid3 { grid-template-columns: 1fr; }
   .testGrid { grid-template-columns: repeat(2, 1fr); }
+  /* Los botones flotantes de menú/regresar (48px, a 16px del borde) quedan
+     debajo de la barra; sin este espacio tapaban "Publicar cambios". */
+  .saveFoot { padding-bottom: 76px; }
 }
