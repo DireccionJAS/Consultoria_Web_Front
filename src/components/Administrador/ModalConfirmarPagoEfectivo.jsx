@@ -162,7 +162,10 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
   const idTransact = pago ? pago.idTransact : tramiteSeleccionado?.idTransact;
   const idTransactProgress = pago ? idTransactProgressDelPago : tramiteSeleccionado?.idTransactProgress;
   const nombreCliente = pago ? pago.user?.name : clienteSeleccionado?.name;
-  const nombreTramite = pago ? pago.transact?.name : tramiteSeleccionado?.transact?.name;
+  // /progress/progressByUserIdWeb manda el nombre del servicio en
+  // transact.description (y la descripción larga en transact.name); el portal
+  // Cliente ya depende de ese orden, por eso aquí se lee al revés.
+  const nombreTramite = pago ? pago.transact?.name : tramiteSeleccionado?.transact?.description;
 
   const clientesFiltrados = listaClientes.filter((c) =>
     (c.name ?? '').toLowerCase().includes(busquedaCliente.toLowerCase())
@@ -283,7 +286,7 @@ export default function ModalConfirmarPagoEfectivo({ show, onHide, pago, onConfi
                       >
                         <option value="">Selecciona un trámite</option>
                         {tramitesCliente.map((t) => (
-                          <option key={t.idTransactProgress} value={t.idTransactProgress}>{t.transact?.name}</option>
+                          <option key={t.idTransactProgress} value={t.idTransactProgress}>{t.transact?.description} · #{String(t.idTransactProgress).padStart(3, '0')}</option>
                         ))}
                       </select>
                       <span className={styles.moneySuffix}><IconChevronDown /></span>

@@ -26,7 +26,7 @@
 
 .modal { width: 440px; max-width: 100%; background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(15,26,48,0.35), 0 0 0 1px rgba(15,26,48,0.05); display: flex; flex-direction: column; max-height: 90vh; }
 .modal.wide { width: 500px; }
-.modalBody { padding: 22px 24px; overflow-y: auto; }
+.modalBody { padding: 22px 24px; overflow-y: auto; overflow-x: hidden; }
 
 .modalHead { padding: 20px 24px; background: linear-gradient(135deg, var(--c1), var(--hover)); color: var(--white); position: relative; overflow: hidden; flex-shrink: 0; }
 .modalHead::after { content: ""; position: absolute; top: -55px; right: -45px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(31,160,209,0.22) 0%, transparent 70%); pointer-events: none; }
@@ -58,6 +58,8 @@
 .dateWrap input[type="date"]::-webkit-calendar-picker-indicator { display: none; -webkit-appearance: none; }
 .dateSuffix { padding: 0 13px; color: var(--muted); display: flex; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Sin min-width: 0 el input de fecha no se encoge y empujaba el modal (scroll horizontal). */
+.grid2 > * { min-width: 0; }
 .cashNote { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--green-soft); border-radius: 12px; margin-top: 4px; }
 .cashNote svg { color: var(--green); flex-shrink: 0; }
 .cashNoteText { font-size: 12px; color: #1a6b3a; line-height: 1.45; }

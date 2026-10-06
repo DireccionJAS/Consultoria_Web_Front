@@ -252,7 +252,7 @@ export default function EmpresaAdmins() {
 
         <div className={styles.content}>
           <div className={styles.statsStrip}>
-            <div className={styles.statMini}><div className={styles.lbl}>Administradores</div><div className={styles.val}>{noArchivados.length}</div></div>
+            <div className={styles.statMini}><div className={styles.lbl}>Administradores</div><div className={styles.val}>{admins.length}</div></div>
             <div className={styles.statMini}><div className={styles.lbl}>Activos</div><div className={styles.val} style={{ color: 'var(--green)' }}>{activos}</div></div>
             <div className={styles.statMini}><div className={styles.lbl}>Archivados</div><div className={styles.val} style={{ color: 'var(--gray)' }}>{archivados}</div></div>
           </div>

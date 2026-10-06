@@ -195,7 +195,7 @@ export default function ClienteHome() {
             <div className={styles.quickGrid}>
               <div className={styles.quickCard} onClick={() => navigate('/Calendario')}>
                 <div className={styles.qcIcon}><CitasIcon /></div>
-                <div><div className={styles.qcName}>Citas</div><div className={styles.qcSub}>Agenda tu simulación</div></div>
+                <div><div className={styles.qcName}>Citas</div><div className={styles.qcSub}>Agenda una cita de atención</div></div>
                 <div className={styles.qcArrow}><ArrowIcon /></div>
               </div>
               <div className={styles.quickCard} onClick={() => navigate('/Formularios')}>
