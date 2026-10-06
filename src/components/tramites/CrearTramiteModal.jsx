@@ -188,8 +188,10 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
         paid: pagoInicial,
         paidAll: costoTotal,
         status: 1,
-        stepProgress: 6,
-        advance: false,
+        stepProgress: 1,
+        // El pago inicial es un adelanto: si quedara en false, al editar el
+        // trámite ActualizarTramiteModal ofrece guardarlo como $0.
+        advance: pagoInicial > 0,
       });
       // El backend responde 200 con success:false (no un error HTTP) cuando
       // el guardado falla internamente — sin este check el modal mostraba

@@ -21,7 +21,8 @@ function ConIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill
 function fmtMoney(n) { return `$${(n || 0).toLocaleString('es-MX')}`; }
 function fmtFecha(v) {
   if (!v) return null;
-  const d = new Date(v.replace(' ', 'T'));
+  // 'YYYY-MM-DD' solo se interpreta como UTC (sale un día antes en México): se fuerza hora local.
+  const d = new Date(/^\d{4}-\d{2}-\d{2}$/.test(v) ? `${v}T00:00:00` : v.replace(' ', 'T'));
   if (Number.isNaN(d.getTime())) return null;
   return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) + (v.includes(':') ? ` · ${d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} hrs` : '');
 }

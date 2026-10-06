@@ -89,7 +89,7 @@ export default function RegistrarTramite({ show, onHide, onClienteRegistrado }) 
   const onSubmit = async (data) => {
     try {
       data.status = 1;
-      data.stepProgress = 6;
+      data.stepProgress = 1;
 
       const usuarioSeleccionado = usuarios.find(u => u.idUser === data.idUser);
       const tramiteSeleccionado = transacciones.find(t => t.idTransact === data.idTransact);

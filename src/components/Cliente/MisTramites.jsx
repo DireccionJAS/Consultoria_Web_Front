@@ -27,7 +27,7 @@ function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
     : totalPasos
       ? `Paso ${tramite.stepProgress || 0} de ${totalPasos}`
       : 'Sin pasos registrados';
-  const fechaInicio = tramite.dateStart ? new Date(tramite.dateStart).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sin definir';
+  const fechaInicio = tramite.dateStart ? new Date(`${tramite.dateStart}T00:00:00`).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sin definir';
 
   return (
     <div className={styles.tcard}>
