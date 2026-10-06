@@ -179,6 +179,16 @@ export const archivarCliente = async (id_user, archivado) => {
   }
 };
 
+export const cambiarEmpresaCliente = async (idUser, idEmpresa) => {
+  try {
+    const response = await apiClient.put(`/users/${idUser}/empresa`, { idEmpresa });
+    return response.data;
+  } catch (error) {
+    console.error("Error al cambiar la empresa del cliente", error);
+    throw error;
+  }
+};
+
 export const asignarEncargadoCliente = async (idUser, idEncargado) => {
   try {
     const response = await apiClient.put(`/users/${idUser}/encargado`, { idEncargado });

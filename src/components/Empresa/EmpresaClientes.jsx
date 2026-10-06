@@ -8,6 +8,7 @@ import styles from './../../styles/EmpresaClientes.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import ClienteModal from '../Administrador/ClienteModal.jsx';
+import { EncargadoDropdown, EmpresaDropdown, useCatalogosAsignacion } from './AsignacionDropdowns.jsx';
 
 const ITEMS_POR_PAGINA = 15;
 
@@ -106,19 +107,6 @@ function IconCheck() {
   );
 }
 
-// Empresa real del cliente (user.empresaName/empresaCode, poblado en el
-// backend desde User.empresa) — solo lectura. Para una vista Empresa esto
-// siempre es la propia empresa del caller (los datos ya vienen filtrados),
-// se mantiene por consistencia con AdminClientes.jsx.
-function EmpresaBadge({ nombre, code }) {
-  return (
-    <div className={styles.empresaCell}>
-      <span className={styles.empresaAvatar}>{code ? code.slice(0, 3) : '—'}</span>
-      <span className={styles.empresaCode}>{nombre || 'Sin empresa'}</span>
-    </div>
-  );
-}
-
 function IconChevronLeft() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -154,6 +142,7 @@ export default function EmpresaClientes() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [tabActiva, setTabActiva] = useState('activos');
+  const { admins, empresas } = useCatalogosAsignacion();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -322,6 +311,7 @@ export default function EmpresaClientes() {
                       <th>Correo</th>
                       <th>Teléfono</th>
                       <th>Trámites</th>
+                      <th>Encargado</th>
                       <th>Empresa</th>
                       <th>Estado</th>
                       <th style={{ width: 120, textAlign: 'right' }}>Acciones</th>
@@ -360,7 +350,23 @@ export default function EmpresaClientes() {
                             )}
                           </td>
                           <td>
-                            <EmpresaBadge nombre={cliente.empresaName} code={cliente.empresaCode} />
+                            <EncargadoDropdown
+                              idUser={cliente.idUser}
+                              clienteNombre={cliente.name}
+                              encargadoId={cliente.encargadoId}
+                              encargadoName={cliente.encargadoName}
+                              admins={admins}
+                              onChanged={fetchServices}
+                            />
+                          </td>
+                          <td>
+                            <EmpresaDropdown
+                              idUser={cliente.idUser}
+                              clienteNombre={cliente.name}
+                              empresaCode={cliente.empresaCode}
+                              empresas={empresas}
+                              onChanged={fetchServices}
+                            />
                           </td>
                           <td>
                             <div className={styles.tgWrap}>

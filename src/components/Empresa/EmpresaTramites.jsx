@@ -12,6 +12,7 @@ import { TRAMITE_STATUSES } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/EmpresaTramites.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
+import { EncargadoDropdown, EmpresaDropdown, useCatalogosAsignacion } from './AsignacionDropdowns.jsx';
 
 function SearchIcon() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)' }}><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>; }
 function PlusIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>; }
@@ -44,18 +45,6 @@ const TONE_COLOR = { azul: 'var(--c2)', naranja: 'var(--orange)', amarillo: 'var
 const STATUS_META = Object.fromEntries(
   TRAMITE_STATUSES.map(({ code, label, tone }) => [code, { label, cls: TONE_CLS[tone], color: TONE_COLOR[tone] }])
 );
-
-// Empresa real del cliente dueño del trámite (viene de user.empresaName/
-// empresaCode, poblado en el backend desde User.empresa) — solo lectura,
-// la empresa de un cliente no se reasigna por trámite.
-function EmpresaBadge({ nombre, code }) {
-  return (
-    <div className={styles.empresaCell}>
-      <span className={styles.empresaAvatar}>{code ? code.slice(0, 3) : '—'}</span>
-      <span className={styles.empresaCode}>{nombre || 'Sin empresa'}</span>
-    </div>
-  );
-}
 
 const CHIP_FILTERS = [
   { value: '', label: 'Todos', dot: null },
@@ -152,6 +141,7 @@ export default function EmpresaTramites() {
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
   const [estadoSeleccionado, setEstadoSeleccionado] = useState('');
+  const { admins, empresas } = useCatalogosAsignacion();
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/'); return; }
@@ -340,9 +330,24 @@ export default function EmpresaTramites() {
                             onChange={(nuevo) => handleStatusChange(cliente.idTransactProgress, nuevo)}
                           />
                         </td>
-                        <td><div className={styles.encargadoCell}>— Sin asignar</div></td>
                         <td>
-                          <EmpresaBadge nombre={cliente.user?.empresaName} code={cliente.user?.empresaCode} />
+                          <EncargadoDropdown
+                            idUser={cliente.user?.idUser}
+                            clienteNombre={cliente.user?.name}
+                            encargadoId={cliente.user?.encargadoId}
+                            encargadoName={cliente.user?.encargadoName}
+                            admins={admins}
+                            onChanged={fetchServices}
+                          />
+                        </td>
+                        <td>
+                          <EmpresaDropdown
+                            idUser={cliente.user?.idUser}
+                            clienteNombre={cliente.user?.name}
+                            empresaCode={cliente.user?.empresaCode}
+                            empresas={empresas}
+                            onChanged={fetchServices}
+                          />
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <div className={styles.rowActions}>
