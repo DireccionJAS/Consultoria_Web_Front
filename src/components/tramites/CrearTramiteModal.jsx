@@ -146,10 +146,15 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
     return u.name?.toLowerCase().includes(term) || u.email?.toLowerCase().includes(term);
   });
 
+  // GET /transaction manda name/description INVERTIDOS (el nombre corto viene
+  // en .description, el texto largo en .name) — mismo caso que
+  // /progress/progressByUserIdWeb; el envío de correo de abajo ya usa .description.
+  const nombreServicio = (t) => t?.description || t?.name || '';
+
   const filteredServicios = transacciones.filter((t) => {
     const term = buscarServicio.trim().toLowerCase();
     if (!term) return true;
-    return t.name?.toLowerCase().includes(term);
+    return nombreServicio(t).toLowerCase().includes(term);
   });
 
   const pickCliente = (user) => {
@@ -365,7 +370,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
                   <>
                     <span className={styles.selIconBox}><ServiceIcon /></span>
                     <span className={styles.selMain}>
-                      <span className={styles.selName}>{selectedService.name}</span>
+                      <span className={styles.selName}>{nombreServicio(selectedService)}</span>
                       <span className={styles.selSub}>{formatMoney(selectedService.cost)}</span>
                     </span>
                   </>
@@ -409,7 +414,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
                       >
                         <span className={styles.selIconBox}><ServiceIcon /></span>
                         <span className={styles.selMain}>
-                          <span className={styles.selName}>{t.name}</span>
+                          <span className={styles.selName}>{nombreServicio(t)}</span>
                           <span className={styles.selSub}>{formatMoney(t.cost)}</span>
                         </span>
                       </div>
