@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
 import { getAllProcess, getTestimonios, crearTestimonio, eliminarTestimonio, getPaginaPublicaConfig, actualizarPaginaPublicaConfig } from './../../api/api.js';
+import { TIPOS_RED, tipoRed, IconoRed, redesDesdeConfig } from './../../utils/redesSociales.jsx';
 import styles from './../../styles/EmpresaPaginaPublica.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import aboutMainImg from './../../img/landing/about-main.jpg';
@@ -53,9 +54,6 @@ function IconEditSm({ size = 14 }) { return <svg width={size} height={size} view
 function IconPlus({ size = 14 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"></path></svg>; }
 function IconClose({ size = 12 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 6l12 12M6 18L18 6"></path></svg>; }
 function IconGrip() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg>; }
-function IconFacebook() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>; }
-function IconInstagram() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor"></circle></svg>; }
-function IconTiktok() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9a5 5 0 0 1-3-1v6.5a5.5 5.5 0 1 1-5.5-5.5V13a2.5 2.5 0 1 0 2.5 2.5V3h2.5a3 3 0 0 0 3.5 3z"></path></svg>; }
 function IconCheckFaq() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"></path></svg>; }
 
 function UploadRow({ thumbStyle, title, sub, onPick, onClear }) {
@@ -141,9 +139,8 @@ export default function EmpresaPaginaPublica() {
   const [telContacto, setTelContacto] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [correo, setCorreo] = useState('');
-  const [fbSeguidores, setFbSeguidores] = useState('');
-  const [igSeguidores, setIgSeguidores] = useState('');
-  const [ttSeguidores, setTtSeguidores] = useState('');
+  // [{ id, tipo, nombre, url, usuario, seguidores }] — id solo local (key/edición).
+  const [redes, setRedes] = useState([]);
   const [horPresencialLV, setHorPresencialLV] = useState('');
   const [horLineaLV, setHorLineaLV] = useState('');
   const [horLineaFinde, setHorLineaFinde] = useState('');
@@ -169,9 +166,7 @@ export default function EmpresaPaginaPublica() {
       setTelContacto(c.telContacto || '');
       setWhatsapp(c.whatsapp || '');
       setCorreo(c.correo || '');
-      setFbSeguidores(c.fbSeguidores || '');
-      setIgSeguidores(c.igSeguidores || '');
-      setTtSeguidores(c.ttSeguidores || '');
+      setRedes(redesDesdeConfig(c).map((r, i) => ({ id: i + 1, ...r })));
       setHorPresencialLV(c.horPresencialLV || '');
       setHorLineaLV(c.horLineaLV || '');
       setHorLineaFinde(c.horLineaFinde || '');
@@ -261,9 +256,13 @@ export default function EmpresaPaginaPublica() {
         telContacto,
         whatsapp,
         correo,
-        fbSeguidores,
-        igSeguidores,
-        ttSeguidores,
+        redesSociales: redes.map(({ tipo, nombre, url, usuario, seguidores }) => ({
+          tipo, nombre: (nombre || '').trim() || tipoRed(tipo).label, url: (url || '').trim(), usuario: (usuario || '').trim(), seguidores: (seguidores || '').trim(),
+        })),
+        // Campos viejos: se mantienen con la primera red de cada tipo.
+        fbSeguidores: redes.find((r) => r.tipo === 'facebook')?.seguidores || '',
+        igSeguidores: redes.find((r) => r.tipo === 'instagram')?.seguidores || '',
+        ttSeguidores: redes.find((r) => r.tipo === 'tiktok')?.seguidores || '',
         horPresencialLV,
         horLineaLV,
         horLineaFinde,
@@ -391,6 +390,13 @@ export default function EmpresaPaginaPublica() {
   };
 
   const handleEliminarUbicacion = (id) => setUbicaciones((prev) => prev.filter((u) => u.id !== id));
+
+  const handleAgregarRed = () => setRedes((prev) => [
+    ...prev,
+    { id: Math.max(0, ...prev.map((r) => r.id)) + 1, tipo: 'tiktok', nombre: '', url: '', usuario: '', seguidores: '' },
+  ]);
+  const handleCambiarRed = (id, campo, valor) => setRedes((prev) => prev.map((r) => (r.id === id ? { ...r, [campo]: valor } : r)));
+  const handleEliminarRed = (id) => setRedes((prev) => prev.filter((r) => r.id !== id));
 
   return (
     <div className={styles.page}>
@@ -668,24 +674,42 @@ export default function EmpresaPaginaPublica() {
               <div className={styles.card}>
                 <div className={styles.cardHead}>
                   <div className={styles.cardIcon}><IconGlobe2 /></div>
-                  <div><div className={styles.cardTitle}>Redes sociales</div><div className={styles.cardSub}>Número de seguidores mostrado</div></div>
+                  <div><div className={styles.cardTitle}>Redes sociales</div><div className={styles.cardSub}>{redes.length} {redes.length === 1 ? 'red' : 'redes'} · las que no tienen link no se muestran en la página</div></div>
                 </div>
                 <div className={styles.cardBody}>
-                  <div className={styles.socRow}>
-                    <div className={styles.socLogo} style={{ background: '#1877F2' }}><IconFacebook /></div>
-                    <span className={styles.socName}>Facebook</span>
-                    <div className={styles.socCount}><input value={fbSeguidores} onChange={(e) => setFbSeguidores(e.target.value)} /><span className={styles.socSfx}>seguidores</span></div>
-                  </div>
-                  <div className={styles.socRow}>
-                    <div className={styles.socLogo} style={{ background: 'linear-gradient(135deg,#F58529,#DD2A7B,#8134AF)' }}><IconInstagram /></div>
-                    <span className={styles.socName}>Instagram</span>
-                    <div className={styles.socCount}><input value={igSeguidores} onChange={(e) => setIgSeguidores(e.target.value)} /><span className={styles.socSfx}>seguidores</span></div>
-                  </div>
-                  <div className={styles.socRow}>
-                    <div className={styles.socLogo} style={{ background: '#000' }}><IconTiktok /></div>
-                    <span className={styles.socName}>TikTok</span>
-                    <div className={styles.socCount}><input value={ttSeguidores} onChange={(e) => setTtSeguidores(e.target.value)} /><span className={styles.socSfx}>seguidores</span></div>
-                  </div>
+                  {redes.map((r) => (
+                    <div key={r.id} className={styles.redRow}>
+                      <div className={styles.socLogo} style={{ background: tipoRed(r.tipo).fondo }}><IconoRed tipo={r.tipo} /></div>
+                      <div className={styles.redFields}>
+                        <div className={styles.field}>
+                          <label className={styles.fieldLabel}>Red</label>
+                          <select className={styles.inp} value={r.tipo} onChange={(e) => handleCambiarRed(r.id, 'tipo', e.target.value)}>
+                            {Object.entries(TIPOS_RED).map(([valor, t]) => <option key={valor} value={valor}>{t.label}</option>)}
+                          </select>
+                        </div>
+                        <div className={styles.field}>
+                          <label className={styles.fieldLabel}>Nombre que se muestra</label>
+                          <input className={styles.inp} placeholder={`p. ej. ${tipoRed(r.tipo).label} secundario`} value={r.nombre} onChange={(e) => handleCambiarRed(r.id, 'nombre', e.target.value)} />
+                        </div>
+                        <div className={styles.field}>
+                          <label className={styles.fieldLabel}>Seguidores</label>
+                          <input className={styles.inp} placeholder="12.5k" value={r.seguidores} onChange={(e) => handleCambiarRed(r.id, 'seguidores', e.target.value)} />
+                        </div>
+                        <div className={`${styles.field} ${styles.redUrl}`}>
+                          <label className={styles.fieldLabel}>Link</label>
+                          <input className={styles.inp} style={{ fontFamily: 'var(--mono)' }} placeholder="https://www.tiktok.com/@usuario" value={r.url} onChange={(e) => handleCambiarRed(r.id, 'url', e.target.value)} />
+                        </div>
+                        <div className={styles.field}>
+                          <label className={styles.fieldLabel}>Usuario</label>
+                          <input className={styles.inp} style={{ fontFamily: 'var(--mono)' }} placeholder="@usuario" value={r.usuario} onChange={(e) => handleCambiarRed(r.id, 'usuario', e.target.value)} />
+                        </div>
+                      </div>
+                      <div className={styles.repActions}>
+                        <button className={styles.del} title="Eliminar" onClick={() => handleEliminarRed(r.id)}><IconTrashSm size={15} /></button>
+                      </div>
+                    </div>
+                  ))}
+                  <button className={styles.addBtn} onClick={handleAgregarRed}><IconPlus /> Agregar red social</button>
                 </div>
               </div>
 

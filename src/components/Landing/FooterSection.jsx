@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "../../img/landing/logo.png";
-import { getPdfLegalUrl } from "../../api/api.js";
+import { getPdfLegalUrl, getPaginaPublicaConfig } from "../../api/api.js";
+import { redesDesdeConfig, redesVisibles, tipoRed, IconoRed, urlRed } from "../../utils/redesSociales.jsx";
 import styles from '../../styles/landing/FooterSection.module.css';
 
 export default function FooterSection() {
+  // Mismas redes que Contacto (Empresa > Página pública); mientras carga o si
+  // falla, las 3 de siempre.
+  const [redes, setRedes] = useState(() => redesDesdeConfig(null));
+
+  useEffect(() => {
+    let activo = true;
+    getPaginaPublicaConfig()
+      .then((response) => {
+        const config = response?.success ? response.response?.config : null;
+        if (activo && config) setRedes(redesDesdeConfig(config));
+      })
+      .catch(() => {});
+    return () => { activo = false; };
+  }, []);
+
   return (
     <>
       <footer className={styles.footer}>
@@ -20,11 +36,10 @@ export default function FooterSection() {
               </p>
               <div className={styles.footerSocialLabel}>Síguenos</div>
               <div className={styles.footerSocial}>
-                <a href="https://www.facebook.com/share/1C2Aw6H7vq/" target="_blank" rel="noreferrer" className={styles.fb} aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg></a>
-                <a href="https://www.instagram.com/somosconsultoriajas" target="_blank" rel="noreferrer" className={styles.ig} aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg></a>
-                <a href="https://www.tiktok.com/@consultoriajas" target="_blank" rel="noreferrer" className={styles.tk} aria-label="TikTok"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9a5 5 0 0 1-3-1v6.5a5.5 5.5 0 1 1-5.5-5.5V13a2.5 2.5 0 1 0 2.5 2.5V3h2.5a3 3 0 0 0 3.5 3z" /></svg></a>
+                {redesVisibles(redes).map((r, i) => (
+                  <a key={`${r.tipo}-${i}`} href={urlRed(r.url)} target="_blank" rel="noreferrer" className={styles[tipoRed(r.tipo).clase]} aria-label={r.nombre || tipoRed(r.tipo).label} title={r.nombre || tipoRed(r.tipo).label}><IconoRed tipo={r.tipo} /></a>
+                ))}
                 <a href="https://wa.me/527772193613" target="_blank" rel="noreferrer" className={styles.wa} aria-label="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z" /></svg></a>
-                <a href="#" className={styles.th} aria-label="Threads"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M8 12c0-3 1.5-5 4-5s4 1.5 4 4-2 4-4 4-3-1-3-2 1-2 3-2 4 1 4 3" /></svg></a>
               </div>
             </div>
 

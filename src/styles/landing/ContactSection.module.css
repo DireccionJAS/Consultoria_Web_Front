@@ -296,17 +296,37 @@
 .socialTile.ig { --brand-color: #DD2A7B; --brand-bg: linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%); --brand-fg: #fff; }
 .socialTile.tk { --brand-color: #25F4EE; --brand-bg: linear-gradient(135deg, #25F4EE 0%, #000 50%, #FE2C55 100%); --brand-fg: #fff; }
 .socialTile.wa { --brand-color: #25D366; --brand-bg: #25D366; --brand-fg: #fff; }
+.socialTile.yt { --brand-color: #FF0000; --brand-bg: #FF0000; --brand-fg: #fff; }
+.socialTile.xx { --brand-color: #000; --brand-bg: #000; --brand-fg: #fff; }
+.socialTile.th { --brand-color: #101010; --brand-bg: #101010; --brand-fg: #fff; }
+.socialTile.li { --brand-color: #0A66C2; --brand-bg: #0A66C2; --brand-fg: #fff; }
+.socialTile.ot { --brand-color: #5B6B7F; --brand-bg: #5B6B7F; --brand-fg: #fff; }
 .socialTile.fb:hover .socialTileHandle,
 .socialTile.ig:hover .socialTileHandle,
 .socialTile.tk:hover .socialTileHandle,
+.socialTile.yt:hover .socialTileHandle,
+.socialTile.xx:hover .socialTileHandle,
+.socialTile.th:hover .socialTileHandle,
+.socialTile.li:hover .socialTileHandle,
+.socialTile.ot:hover .socialTileHandle,
 .socialTile.wa:hover .socialTileHandle { color: rgba(255,255,255,0.85); }
 .socialTile.fb:hover .socialTileLab,
 .socialTile.ig:hover .socialTileLab,
 .socialTile.tk:hover .socialTileLab,
+.socialTile.yt:hover .socialTileLab,
+.socialTile.xx:hover .socialTileLab,
+.socialTile.th:hover .socialTileLab,
+.socialTile.li:hover .socialTileLab,
+.socialTile.ot:hover .socialTileLab,
 .socialTile.wa:hover .socialTileLab { color: rgba(255,255,255,0.8); }
 .socialTile.fb:hover .socialTileStat,
 .socialTile.ig:hover .socialTileStat,
 .socialTile.tk:hover .socialTileStat,
+.socialTile.yt:hover .socialTileStat,
+.socialTile.xx:hover .socialTileStat,
+.socialTile.th:hover .socialTileStat,
+.socialTile.li:hover .socialTileStat,
+.socialTile.ot:hover .socialTileStat,
 .socialTile.wa:hover .socialTileStat { border-top-color: rgba(255,255,255,0.25); }
 
 @media (max-width: 991.98px) {

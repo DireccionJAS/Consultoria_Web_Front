@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useReveal from "../../hooks/useReveal";
 import { getPaginaPublicaConfig } from "../../api/api.js";
+import { redesDesdeConfig, redesVisibles, tipoRed, IconoRed, urlRed } from "../../utils/redesSociales.jsx";
 import styles from '../../styles/landing/ContactSection.module.css';
 
 function ArrowIcon() {
@@ -11,24 +12,10 @@ function ArrowIcon() {
   );
 }
 
-const SOCIALS_BASE = [
-  {
-    key: 'fb', href: 'https://www.facebook.com/share/1C2Aw6H7vq/', label: 'Facebook', handle: '@ConsultoriaJAS', statLabel: 'seguidores',
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>,
-  },
-  {
-    key: 'ig', href: 'https://www.instagram.com/somosconsultoriajas', label: 'Instagram', handle: '@somosconsultoriajas', statLabel: 'seguidores',
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>,
-  },
-  {
-    key: 'tk', href: 'https://www.tiktok.com/@consultoriajas', label: 'TikTok', handle: '@consultoriajas', statLabel: 'seguidores',
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9a5 5 0 0 1-3-1v6.5a5.5 5.5 0 1 1-5.5-5.5V13a2.5 2.5 0 1 0 2.5 2.5V3h2.5a3 3 0 0 0 3.5 3z" /></svg>,
-  },
-  {
-    key: 'wa', label: 'WhatsApp', statLabel: 'de respuesta',
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z" /></svg>,
-  },
-];
+const SOCIAL_WA = {
+  label: 'WhatsApp', statLabel: 'de respuesta',
+  icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z" /></svg>,
+};
 
 const CONTACT_FALLBACK = {
   tituloLocalidad: 'Visítanos en Jiutepec o en línea',
@@ -66,6 +53,7 @@ export default function ContactSection() {
           fbSeguidores: config.fbSeguidores || CONTACT_FALLBACK.fbSeguidores,
           igSeguidores: config.igSeguidores || CONTACT_FALLBACK.igSeguidores,
           ttSeguidores: config.ttSeguidores || CONTACT_FALLBACK.ttSeguidores,
+          redes: redesDesdeConfig(config, { fb: CONTACT_FALLBACK.fbSeguidores, ig: CONTACT_FALLBACK.igSeguidores, tt: CONTACT_FALLBACK.ttSeguidores }),
           horPresencialLV: config.horPresencialLV || CONTACT_FALLBACK.horPresencialLV,
           horLineaLV: config.horLineaLV || CONTACT_FALLBACK.horLineaLV,
           horLineaFinde: config.horLineaFinde || CONTACT_FALLBACK.horLineaFinde,
@@ -75,13 +63,20 @@ export default function ContactSection() {
     return () => { activo = false; };
   }, []);
 
-  const socials = SOCIALS_BASE.map((s) => {
-    if (s.key === 'wa') return { ...s, href: `https://wa.me/52${c.whatsapp.replace(/\s/g, '')}`, handle: c.whatsapp, stat: '·30m' };
-    if (s.key === 'fb') return { ...s, stat: c.fbSeguidores };
-    if (s.key === 'ig') return { ...s, stat: c.igSeguidores };
-    if (s.key === 'tk') return { ...s, stat: c.ttSeguidores };
-    return s;
-  });
+  const redes = c.redes || redesDesdeConfig(null, { fb: c.fbSeguidores, ig: c.igSeguidores, tt: c.ttSeguidores });
+  const socials = [
+    ...redesVisibles(redes).map((r, i) => ({
+      key: `${r.tipo}-${i}`,
+      clase: tipoRed(r.tipo).clase,
+      href: urlRed(r.url),
+      label: r.nombre || tipoRed(r.tipo).label,
+      handle: r.usuario,
+      stat: r.seguidores,
+      statLabel: 'seguidores',
+      icon: <IconoRed tipo={r.tipo} size={22} />,
+    })),
+    { ...SOCIAL_WA, key: 'wa', clase: 'wa', href: `https://wa.me/52${c.whatsapp.replace(/\s/g, '')}`, handle: c.whatsapp, stat: '·30m' },
+  ];
 
   return (
     <section className={styles.contact} id="contacto">
@@ -162,7 +157,7 @@ export default function ContactSection() {
             </div>
             <div className={styles.socialSpotlightGrid}>
               {socials.map((s) => (
-                <a key={s.key} href={s.href} className={`${styles.socialTile} ${styles[s.key]}`} aria-label={s.label}>
+                <a key={s.key} href={s.href} target="_blank" rel="noreferrer" className={`${styles.socialTile} ${styles[s.clase]}`} aria-label={s.label}>
                   {s.icon}
                   <div className={styles.socialTileInfo}>
                     <span className={styles.socialTileName}>{s.label}</span>

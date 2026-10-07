@@ -37,6 +37,7 @@
 }
 .footerSocial {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 .footerSocial a {
@@ -70,6 +71,10 @@
 .tk { --brand: #000000; }
 .wa { --brand: #25D366; }
 .th { --brand: #101010; }
+.yt { --brand: #FF0000; }
+.xx { --brand: #000000; }
+.li { --brand: #0A66C2; }
+.ot { --brand: #5B6B7F; }
 
 .footerSocialLabel {
   font-family: var(--mono);
