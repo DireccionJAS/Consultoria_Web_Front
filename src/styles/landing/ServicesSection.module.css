@@ -144,15 +144,28 @@
   flex-direction: column;
   background: var(--c1);
   border: 1.5px solid rgba(111, 174, 219, 0.45);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 1.2s ease;
 }
 .bentoCard:hover {
   transform: translateY(-4px);
   border-color: rgba(111, 174, 219, 0.85);
 }
+/* Tarjeta a la que lleva el carrusel de destinos: brillo que entra suave,
+   "respira" mientras está señalada y se apaga despacio al quitar la clase
+   (la transición de .bentoCard se encarga de la salida). */
 .highlighted {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(111, 174, 219, 0.3);
+  box-shadow: 0 0 0 3px rgba(111, 174, 219, 0.3), 0 18px 50px -12px rgba(111, 174, 219, 0.55);
+  animation: brilloDestino 2.4s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+  transition: border-color 1.2s ease, box-shadow 1.2s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes brilloDestino {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(111, 174, 219, 0.28), 0 18px 50px -12px rgba(111, 174, 219, 0.45); }
+  50% { box-shadow: 0 0 0 6px rgba(111, 174, 219, 0.16), 0 22px 60px -10px rgba(111, 174, 219, 0.7); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* sin "respirar", pero el brillo sigue entrando y saliendo suave */
+  .highlighted { animation: none; }
 }
 .bentoTop {
   display: flex;

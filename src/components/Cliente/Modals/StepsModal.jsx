@@ -26,7 +26,7 @@ const StepsModal = ({
   onContratar = null,
 }) => {
   return (
-    <Modal show={show} onHide={onHide} centered dialogClassName={styles.modalDialog}>
+    <Modal show={show} onHide={onHide} centered dialogClassName={styles.modalDialog} backdropClassName={styles.softBackdrop}>
       <div className={styles.head}>
         <div className={styles.headInfo}>
           <div className={styles.headIcon}><ListIcon /></div>
@@ -68,7 +68,7 @@ const StepsModal = ({
 
             <div className={styles.stepsList}>
               {steps.map((step, index) => (
-                <div key={step.idStep ?? index} className={styles.step}>
+                <div key={step.idStep ?? index} className={styles.step} style={{ '--i': index }}>
                   <div className={styles.stepNum}>{step.stepNumber ?? index + 1}</div>
                   <div className={styles.stepContent}>
                     <div className={styles.stepTitle}>{step.name}</div>

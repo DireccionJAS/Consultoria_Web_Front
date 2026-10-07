@@ -21,6 +21,38 @@ import ContactSection from './ContactSection.jsx';
 import PracticasSection from './PracticasSection.jsx';
 import FooterSection from './FooterSection.jsx';
 
+// Scroll con curva tipo edición (lento-rápido-lento) hasta `el`, dejando
+// espacio para la barra fija de arriba. Resuelve al llegar. Con "reducir
+// movimiento" (Windows: efectos de animación apagados) es más corto.
+const ESPACIO_NAVBAR = 110;
+function scrollSuave(el) {
+  return new Promise((resolve) => {
+    if (!el) { resolve(); return; }
+    const inicio = window.scrollY;
+    const destino = Math.max(0, el.getBoundingClientRect().top + inicio - ESPACIO_NAVBAR);
+    const distancia = destino - inicio;
+    const reducir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (Math.abs(distancia) < 4) {
+      window.scrollTo({ top: destino, behavior: 'instant' });
+      resolve();
+      return;
+    }
+    // Más distancia = un poco más de tiempo, sin pasar de ~1.4 s.
+    const duracion = reducir ? 450 : Math.min(1400, 650 + Math.abs(distancia) * 0.25);
+    const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const t0 = performance.now();
+    const paso = (ahora) => {
+      const t = Math.min(1, (ahora - t0) / duracion);
+      // behavior 'instant': el html tiene scroll-behavior: smooth y si no,
+      // cada cuadro se animaría por su cuenta (se ve trabado).
+      window.scrollTo({ top: inicio + distancia * easeInOutCubic(t), behavior: 'instant' });
+      if (t < 1) requestAnimationFrame(paso);
+      else resolve();
+    };
+    requestAnimationFrame(paso);
+  });
+}
+
 export default function LandingPage() {
   const [services, setServices] = useState([]);
   const [activeSection, setActiveSection] = useState('hero');
@@ -68,27 +100,30 @@ export default function LandingPage() {
     'eTA Canadá': 'etaCanada',
   };
 
+  // Carrusel de destinos: baja suave a la tarjeta del servicio, la ilumina y,
+  // al terminar de llegar, abre su "Ver pasos". El brillo se apaga despacio
+  // después de cerrar la ventanita (ver handleCloseStepsModal).
   const handleDestinoClick = (badge) => {
     const key = DESTINO_BADGE_TO_KEY[badge];
     const targetId = key ? destinoServicios[key] : null;
     if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+    setHighlightServiceId(null);
     if (targetId) {
-      setHighlightServiceId(targetId);
       setDestinoVisibleId(targetId);
+      const publicado = services.some((s) => s.idTransact === targetId);
       // ServicesSection solo muestra 4 servicios y mete el del destino si no
       // estaba visible: esperar al render para que la tarjeta ya exista.
-      setTimeout(() => {
-        document.getElementById(`servicio-${targetId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(async () => {
+        await scrollSuave(document.getElementById(`servicio-${targetId}`));
+        setHighlightServiceId(targetId);
+        if (publicado) {
+          highlightTimeoutRef.current = setTimeout(() => handleOpenStepsModal(targetId), 280);
+        } else {
+          highlightTimeoutRef.current = setTimeout(() => setHighlightServiceId(null), 2600);
+        }
       }, 0);
-      highlightTimeoutRef.current = setTimeout(() => setHighlightServiceId(null), 2500);
-      // Y si el servicio está publicado, al llegar se abre su "Ver pasos"
-      // (se espera al scroll: el modal bloquea el scroll del body).
-      if (services.some((s) => s.idTransact === targetId)) {
-        setTimeout(() => handleOpenStepsModal(targetId), 700);
-      }
     } else {
-      setHighlightServiceId(null);
-      document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollSuave(document.getElementById('servicios'));
     }
   };
 
@@ -195,6 +230,8 @@ export default function LandingPage() {
   };
 
   const handleCloseStepsModal = () => {
+    if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+    highlightTimeoutRef.current = setTimeout(() => setHighlightServiceId(null), 1600);
     setStepsModalOpen(false);
     setStepsService(null);
     setSteps([]);

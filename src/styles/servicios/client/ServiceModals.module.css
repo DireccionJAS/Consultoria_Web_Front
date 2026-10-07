@@ -27,6 +27,38 @@
   box-shadow: 0 30px 80px -20px rgba(0, 0, 42, 0.45);
 }
 
+/* Entrada suave: flota hacia arriba y se desvanece (en vez del brinco de
+   bootstrap), y el fondo se oscurece despacio. */
+:global(.modal.fade) .modalDialog {
+  opacity: 0;
+  transform: translateY(18px) scale(0.97);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+}
+:global(.modal.show) .modalDialog {
+  opacity: 1;
+  transform: none;
+}
+.softBackdrop:global(.fade) { transition: opacity 0.45s ease; }
+
+/* Los pasos entran en cascada, uno tras otro (--i = posición). */
+.stepsList .step {
+  animation: pasoEntra 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(180ms + var(--i, 0) * 70ms);
+}
+@keyframes pasoEntra {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+/* "Reducir movimiento": sin desplazamientos, solo desvanecidos. */
+@media (prefers-reduced-motion: reduce) {
+  :global(.modal.fade) .modalDialog { transform: none; transition: opacity 0.4s ease; }
+  .stepsList .step { animation-name: pasoAparece; }
+}
+@keyframes pasoAparece {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .modalWide {
   max-width: 480px;
 }
