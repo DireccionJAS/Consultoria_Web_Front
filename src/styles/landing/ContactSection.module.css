@@ -45,6 +45,7 @@
   background-size: 40px 40px;
 }
 .mapRoads { position: absolute; inset: 0; }
+.mapEmbed { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 3; display: block; }
 .mapRoads svg { width: 100%; height: 100%; }
 .mapPinMod {
   position: absolute;

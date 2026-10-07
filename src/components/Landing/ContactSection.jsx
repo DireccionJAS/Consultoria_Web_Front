@@ -99,6 +99,18 @@ export default function ContactSection() {
                 </svg>
               </div>
               <div className={styles.mapPinMod}></div>
+              {/* Mapa real de Google (embed sin llave). El dibujo de arriba queda
+                  de fondo mientras carga o si no hay dirección. */}
+              {u.direccion && (
+                <iframe
+                  className={styles.mapEmbed}
+                  title={`Mapa de ${u.titulo}`}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(u.direccion)}&z=16&hl=es&output=embed`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              )}
             </div>
             <div className={styles.locationBody}>
               <div className={styles.locationHead}>
