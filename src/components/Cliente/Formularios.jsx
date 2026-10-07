@@ -66,13 +66,23 @@ export default function Formularios() {
         if (!response.success || !Array.isArray(response.response.transactProgresses)) return;
         const items = response.response.transactProgresses;
         const activos = items.filter((t) => ACTIVO.has(t.status));
-        const actual = [...(activos.length ? activos : items)].sort((a, b) => b.idTransactProgress - a.idTransactProgress)[0];
+        // Si el cliente tiene varios trámites (p. ej. Visa + Pasaporte), se
+        // muestra el que SÍ lleva formularios — primero uno ya desbloqueado —
+        // y no simplemente el más reciente.
+        const conFormularios = (t) => !!(t.transact?.cas || t.transact?.con);
+        const base = activos.length ? activos : items;
+        const prioridad = [
+          base.filter((t) => conFormularios(t) && t.advance),
+          base.filter(conFormularios),
+          base,
+        ].find((grupo) => grupo.length) || [];
+        const actual = [...prioridad].sort((a, b) => b.idTransactProgress - a.idTransactProgress)[0];
         setTramite(actual || null);
         if (!actual) return;
         // Los formularios se habilitan con el pago INICIAL (anticipo) cubierto,
         // no con el trámite pagado al 100% — ver TransactProgress.advance,
         // el mismo flag que ya usa el backend para permitir agendar Simulación.
-        const aplica = actual.transact?.cas || actual.transact?.con;
+        const aplica = conFormularios(actual);
         if (actual.advance && aplica) {
           const personasResponse = await getPersonasByProgress(actual.idTransactProgress);
           setPersonas(personasResponse?.response?.personas || []);
@@ -85,6 +95,8 @@ export default function Formularios() {
   const anticipoRequerido = tramite?.transact?.cashAdvance ?? null;
   const aplica = !!(tramite?.transact?.cas || tramite?.transact?.con);
   const bloqueado = !tramite || !tramite.advance;
+  // name/description vienen invertidos en este endpoint; se revisan ambos.
+  const esCanada = /canad/i.test(`${tramite?.transact?.name || ''} ${tramite?.transact?.description || ''}`);
 
   const copiarLink = (persona) => {
     if (persona.ds160Link) navigator.clipboard?.writeText(persona.ds160Link);
@@ -150,7 +162,7 @@ export default function Formularios() {
               <div className={styles.card}>
                 <div className={styles.cardHead}>
                   <div>
-                    <div className={styles.cardTitle}>Formulario DS-160</div>
+                    <div className={styles.cardTitle}>{esCanada ? 'Formularios de Canadá' : 'Formulario DS-160'}</div>
                     <div className={styles.cardSub}>Un link por persona · {tramite.transact?.description || 'Trámite'}</div>
                   </div>
                   {personas.length > 0 && <span className={styles.dsBadge}>{personas.length} persona{personas.length === 1 ? '' : 's'}</span>}
