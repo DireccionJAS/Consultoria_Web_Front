@@ -72,7 +72,11 @@ export default function LandingPage() {
     const key = DESTINO_BADGE_TO_KEY[badge];
     const targetId = key ? destinoServicios[key] : null;
     if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
-    if (targetId) {
+    // Si el servicio del destino está publicado, se abre directo su "Ver pasos".
+    if (targetId && services.some((s) => s.idTransact === targetId)) {
+      setHighlightServiceId(null);
+      handleOpenStepsModal(targetId);
+    } else if (targetId) {
       setHighlightServiceId(targetId);
       setDestinoVisibleId(targetId);
       // ServicesSection solo muestra 4 servicios y mete el del destino si no
