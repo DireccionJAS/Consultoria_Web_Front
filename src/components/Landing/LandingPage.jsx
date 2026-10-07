@@ -72,11 +72,7 @@ export default function LandingPage() {
     const key = DESTINO_BADGE_TO_KEY[badge];
     const targetId = key ? destinoServicios[key] : null;
     if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
-    // Si el servicio del destino está publicado, se abre directo su "Ver pasos".
-    if (targetId && services.some((s) => s.idTransact === targetId)) {
-      setHighlightServiceId(null);
-      handleOpenStepsModal(targetId);
-    } else if (targetId) {
+    if (targetId) {
       setHighlightServiceId(targetId);
       setDestinoVisibleId(targetId);
       // ServicesSection solo muestra 4 servicios y mete el del destino si no
@@ -85,6 +81,11 @@ export default function LandingPage() {
         document.getElementById(`servicio-${targetId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 0);
       highlightTimeoutRef.current = setTimeout(() => setHighlightServiceId(null), 2500);
+      // Y si el servicio está publicado, al llegar se abre su "Ver pasos"
+      // (se espera al scroll: el modal bloquea el scroll del body).
+      if (services.some((s) => s.idTransact === targetId)) {
+        setTimeout(() => handleOpenStepsModal(targetId), 700);
+      }
     } else {
       setHighlightServiceId(null);
       document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
