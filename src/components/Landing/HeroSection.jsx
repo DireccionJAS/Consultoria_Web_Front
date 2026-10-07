@@ -13,6 +13,8 @@ const DESTINATIONS = [
   { img: "https://images.unsplash.com/photo-1640956641338-5a07e5811ca6?auto=format&fit=crop&w=1200&q=80", badge: "Visa Egipto", name: "El Cairo", country: "Egipto 🇪🇬" },
   { img: "https://images.unsplash.com/photo-1749098140326-3dc9cc3b7d97?auto=format&fit=crop&w=1200&q=80", badge: "eTA Canadá", name: "Toronto", country: "Canadá 🇨🇦" },
   { img: "https://images.unsplash.com/photo-1757266562608-2bbf67f92e71?auto=format&fit=crop&w=1200&q=80", badge: "eTA Canadá", name: "Vancouver", country: "Canadá 🇨🇦" },
+  { img: "https://images.unsplash.com/photo-1559682468-a6a29e7d9517?auto=format&fit=crop&w=1200&q=80", badge: "Visa Canadiense", name: "Montreal", country: "Canadá 🇨🇦" },
+  { img: "https://images.unsplash.com/photo-1710881710078-d25d578fedc3?auto=format&fit=crop&w=1200&q=80", badge: "Visa Canadiense", name: "Quebec", country: "Canadá 🇨🇦" },
 ];
 
 function getPerView() {

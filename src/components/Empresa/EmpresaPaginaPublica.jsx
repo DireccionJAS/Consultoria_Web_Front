@@ -114,6 +114,7 @@ export default function EmpresaPaginaPublica() {
   const [servicioVisaIndia, setServicioVisaIndia] = useState('');
   const [servicioVisaEgipto, setServicioVisaEgipto] = useState('');
   const [servicioEtaCanada, setServicioEtaCanada] = useState('');
+  const [servicioVisaCanada, setServicioVisaCanada] = useState('');
   const [imgServicioPreview, setImgServicioPreview] = useState(null);
   const [tasaAprobacion, setTasaAprobacion] = useState('');
   const [telServicios, setTelServicios] = useState('');
@@ -157,6 +158,7 @@ export default function EmpresaPaginaPublica() {
       if (c.servicioVisaIndia != null) setServicioVisaIndia(String(c.servicioVisaIndia));
       if (c.servicioVisaEgipto != null) setServicioVisaEgipto(String(c.servicioVisaEgipto));
       if (c.servicioEtaCanada != null) setServicioEtaCanada(String(c.servicioEtaCanada));
+      if (c.servicioVisaCanada != null) setServicioVisaCanada(String(c.servicioVisaCanada));
       setTasaAprobacion(c.tasaAprobacion || '');
       setTelServicios(c.telServicios || '');
       setImgNosotrosPreview(c.imgNosotros || null);
@@ -247,6 +249,7 @@ export default function EmpresaPaginaPublica() {
         servicioVisaIndia: servicioVisaIndia ? Number(servicioVisaIndia) : null,
         servicioVisaEgipto: servicioVisaEgipto ? Number(servicioVisaEgipto) : null,
         servicioEtaCanada: servicioEtaCanada ? Number(servicioEtaCanada) : null,
+        servicioVisaCanada: servicioVisaCanada ? Number(servicioVisaCanada) : null,
         tasaAprobacion,
         telServicios,
         imgNosotros: imgNosotrosPreview || null,
@@ -510,6 +513,7 @@ export default function EmpresaPaginaPublica() {
                     { label: 'Visa India (Taj Mahal, Nueva Delhi)', value: servicioVisaIndia, setter: setServicioVisaIndia },
                     { label: 'Visa Egipto (Pirámides de Giza, El Cairo)', value: servicioVisaEgipto, setter: setServicioVisaEgipto },
                     { label: 'eTA Canadá (Toronto, Vancouver)', value: servicioEtaCanada, setter: setServicioEtaCanada },
+                    { label: 'Visa Canadiense (Montreal, Quebec)', value: servicioVisaCanada, setter: setServicioVisaCanada },
                   ].map((d) => (
                     <div className={styles.field} key={d.label}>
                       <label className={styles.fieldLabel}>{d.label}</label>

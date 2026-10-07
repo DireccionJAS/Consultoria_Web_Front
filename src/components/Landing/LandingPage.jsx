@@ -88,6 +88,7 @@ export default function LandingPage() {
           visaIndia: c.servicioVisaIndia ?? null,
           visaEgipto: c.servicioVisaEgipto ?? null,
           etaCanada: c.servicioEtaCanada ?? null,
+          visaCanada: c.servicioVisaCanada ?? null,
         });
       })
       .catch((error) => console.error('Error al obtener configuración de página pública:', error));
@@ -98,6 +99,7 @@ export default function LandingPage() {
     'Visa India': 'visaIndia',
     'Visa Egipto': 'visaEgipto',
     'eTA Canadá': 'etaCanada',
+    'Visa Canadiense': 'visaCanada',
   };
 
   // Carrusel de destinos: baja suave a la tarjeta del servicio, la ilumina y,
