@@ -275,8 +275,8 @@ export default function StatsSection() {
           <div ref={zoneRef} className={`${styles.dvCard} jas-reveal jas-delay-1 ${zoneIn ? 'jas-in' : ''}`}>
             <div className={styles.dvHead}>
               <div>
-                <div className={styles.dvLabel}>Servicios por estado</div>
-                <div className={styles.dvTitle}>¿De dónde nos<br />buscan?</div>
+                <div className={styles.dvLabel}>Mapa de zonas</div>
+                <div className={styles.dvTitle}>Ubicaciones CAS<br />y Consulado</div>
               </div>
               <span className={styles.dvBadge}>Mapa</span>
             </div>
