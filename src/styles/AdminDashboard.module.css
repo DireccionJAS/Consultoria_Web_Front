@@ -81,7 +81,7 @@
 .sectionEyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
 .sectionTitle { font-family: var(--display); font-weight: 600; font-size: 24px; letter-spacing: -0.025em; line-height: 1; }
 
-.navGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.navGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .navCard {
   background: var(--white); border: 1px solid var(--line); border-radius: 20px; padding: 22px;
   cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;

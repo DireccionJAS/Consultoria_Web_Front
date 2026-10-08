@@ -3,7 +3,8 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { useEffect, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
-import { clientePorId, tramitesPorId, getPersonasByProgress } from './../../api/api.js';
+import { clientePorId, tramitesPorId, getPersonasByProgress, descargarPdfPersona } from './../../api/api.js';
+import { abrirPdf } from './../../utils/formularios.js';
 import { TRAMITE_STATUS_ACTIVO } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/ClienteFormularios.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
@@ -12,6 +13,7 @@ import NotificationBell from './../common/NotificationBell.jsx';
 function WarnIcon() { return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg>; }
 function InfoIcon() { return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>; }
 function WhatsAppIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z" /></svg>; }
+function PdfIcon() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3" /></svg>; }
 function LinkIcon() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5" /><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.5-1.5" /></svg>; }
 function CopyIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>; }
 function CheckIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12l5 5L20 7" /></svg>; }
@@ -32,7 +34,9 @@ export default function Formularios() {
   const navigate = useNavigate();
   const [nombre, setNombre] = useState('');
   const [tramite, setTramite] = useState(null);
-  const [personas, setPersonas] = useState([]);
+  // [{ tramite, personas }] — solo trámites con formularios ya enviados
+  // (al cliente el backend solo le regresa las personas con enviadoAt).
+  const [grupos, setGrupos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [copiadoId, setCopiadoId] = useState(null);
 
@@ -65,38 +69,31 @@ export default function Formularios() {
       .then(async (response) => {
         if (!response.success || !Array.isArray(response.response.transactProgresses)) return;
         const items = response.response.transactProgresses;
+        // Formularios que Admin > Formularios ya envió, en cualquier trámite.
+        const resultados = await Promise.all(items.map(async (t) => {
+          try {
+            const r = await getPersonasByProgress(t.idTransactProgress);
+            return { tramite: t, personas: (r?.success && r.response?.personas) || [] };
+          } catch {
+            return { tramite: t, personas: [] };
+          }
+        }));
+        setGrupos(resultados
+          .filter((g) => g.personas.length > 0)
+          .sort((a, b) => b.tramite.idTransactProgress - a.tramite.idTransactProgress));
+        // Para el mensaje cuando aún no hay formularios: el trámite activo más
+        // reciente, primero uno con el pago inicial ya cubierto.
         const activos = items.filter((t) => ACTIVO.has(t.status));
-        // Si el cliente tiene varios trámites (p. ej. Visa + Pasaporte), se
-        // muestra el que SÍ lleva formularios — primero uno ya desbloqueado —
-        // y no simplemente el más reciente.
-        const conFormularios = (t) => !!(t.transact?.cas || t.transact?.con);
         const base = activos.length ? activos : items;
-        const prioridad = [
-          base.filter((t) => conFormularios(t) && t.advance),
-          base.filter(conFormularios),
-          base,
-        ].find((grupo) => grupo.length) || [];
-        const actual = [...prioridad].sort((a, b) => b.idTransactProgress - a.idTransactProgress)[0];
+        const actual = [...base].sort((a, b) => (Number(b.advance) - Number(a.advance)) || (b.idTransactProgress - a.idTransactProgress))[0];
         setTramite(actual || null);
-        if (!actual) return;
-        // Los formularios se habilitan con el pago INICIAL (anticipo) cubierto,
-        // no con el trámite pagado al 100% — ver TransactProgress.advance,
-        // el mismo flag que ya usa el backend para permitir agendar Simulación.
-        const aplica = conFormularios(actual);
-        if (actual.advance && aplica) {
-          const personasResponse = await getPersonasByProgress(actual.idTransactProgress);
-          setPersonas(personasResponse?.response?.personas || []);
-        }
       })
       .catch((error) => console.error('Error al obtener el trámite:', error))
       .finally(() => setCargando(false));
   }, [navigate]);
 
   const anticipoRequerido = tramite?.transact?.cashAdvance ?? null;
-  const aplica = !!(tramite?.transact?.cas || tramite?.transact?.con);
-  const bloqueado = !tramite || !tramite.advance;
-  // name/description vienen invertidos en este endpoint; se revisan ambos.
-  const esCanada = /canad/i.test(`${tramite?.transact?.name || ''} ${tramite?.transact?.description || ''}`);
+  const pendientes = grupos.reduce((n, g) => n + g.personas.filter((p) => !p.filled).length, 0);
 
   const copiarLink = (persona) => {
     if (persona.ds160Link) navigator.clipboard?.writeText(persona.ds160Link);
@@ -122,35 +119,16 @@ export default function Formularios() {
         </header>
 
         <div className={styles.content}>
-          {cargando ? null : bloqueado ? (
-            <div className={styles.locked}>
-              <div className={styles.lockedIcon}><LockIcon /></div>
-              <div className={styles.lockedTitle}>{tramite ? 'Completa tu pago inicial para acceder a los formularios' : 'No tienes un trámite activo'}</div>
-              <div className={styles.lockedSub}>
-                {tramite
-                  ? <>Tus formularios se desbloquearán automáticamente una vez que registremos tu pago inicial{anticipoRequerido != null ? <> de <strong>${anticipoRequerido.toLocaleString('es-MX')} MXN</strong></> : null}.</>
-                  : 'Cuando tu asesor registre tu trámite, aquí verás tus formularios.'}
-              </div>
-              {tramite && (
-                <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => navigate('/MisTramites')}>Ir a pagos <ArrowIcon /></button>
-              )}
-            </div>
-          ) : !aplica ? (
-            <div className={styles.locked}>
-              <div className={styles.lockedIcon}><InfoIcon /></div>
-              <div className={styles.lockedTitle}>Este trámite no requiere formularios</div>
-              <div className={styles.lockedSub}>Tu trámite actual no incluye cita CAS ni cita consular, así que no necesitas llenar ningún formulario aquí.</div>
-            </div>
-          ) : (
+          {cargando ? null : grupos.length > 0 ? (
             <>
               <div className={styles.bannerCombo}>
                 <div className={`${styles.bcLine} ${styles.warn}`}>
                   <span className={styles.bcIc}><WarnIcon /></span>
-                  <span className={styles.bcText}>Debes llenar <strong>todos los formularios en esta misma pantalla</strong>, uno por cada persona. No cierres esta ventana hasta completarlos todos.</span>
+                  <span className={styles.bcText}>Hay <strong>un formulario por cada persona</strong>. Llena cada uno por separado con los datos de esa persona.</span>
                 </div>
                 <div className={`${styles.bcLine} ${styles.info}`}>
                   <span className={styles.bcIc}><InfoIcon /></span>
-                  <span className={styles.bcText}>Tienes <strong>{personas.filter((p) => !p.filled).length}</strong> formulario(s) pendiente(s) por completar. Llena cada uno por separado y avisa a tu asesor por WhatsApp cuando termines todos.</span>
+                  <span className={styles.bcText}>Tienes <strong>{pendientes}</strong> formulario(s) pendiente(s) por completar. Avisa a tu asesor por WhatsApp cuando termines todos.</span>
                 </div>
               </div>
 
@@ -159,44 +137,72 @@ export default function Formularios() {
                 <div className={styles.noteText}>Una vez que hayas llenado tu formulario, <strong>avisa a tu asesor por WhatsApp</strong> para que lo revise y continúe con tu trámite.</div>
               </div>
 
-              <div className={styles.card}>
-                <div className={styles.cardHead}>
-                  <div>
-                    <div className={styles.cardTitle}>{esCanada ? 'Formularios de Canadá' : 'Formulario DS-160'}</div>
-                    <div className={styles.cardSub}>Un link por persona · {tramite.transact?.description || 'Trámite'}</div>
+              {grupos.map(({ tramite: t, personas }) => (
+                <div key={t.idTransactProgress} className={styles.card}>
+                  <div className={styles.cardHead}>
+                    <div>
+                      <div className={styles.cardTitle}>Formulario de {personas[0]?.formularioEmpresaNombre || 'tu trámite'}</div>
+                      {/* name/description vienen invertidos en este endpoint */}
+                      <div className={styles.cardSub}>Uno por persona · {t.transact?.description || 'Trámite'}</div>
+                    </div>
+                    <span className={styles.dsBadge}>{personas.length} persona{personas.length === 1 ? '' : 's'}</span>
                   </div>
-                  {personas.length > 0 && <span className={styles.dsBadge}>{personas.length} persona{personas.length === 1 ? '' : 's'}</span>}
-                </div>
 
-                {personas.length === 0 ? (
-                  <div className={styles.empty}>Tu asesor aún no ha registrado los formularios de este trámite.</div>
-                ) : personas.map((p) => (
-                  <div key={p.idTramitePersona} className={styles.formRow}>
-                    <div className={styles.person}>
-                      <div className={styles.personAv}>{getInitials(p.name)}</div>
-                      <div><div className={styles.personName}>{p.name}</div><div className={styles.personRole}>{p.role}</div></div>
+                  {personas.map((p) => (
+                    <div key={p.idTramitePersona} className={styles.formRow}>
+                      <div className={styles.person}>
+                        <div className={styles.personAv}>{getInitials(p.name)}</div>
+                        <div><div className={styles.personName}>{p.name}</div><div className={styles.personRole}>{p.role}</div></div>
+                      </div>
+                      {p.formato === 'PDF' ? (
+                        <>
+                          <div className={styles.linkBox}>
+                            <span className={styles.linkIcon}><PdfIcon /></span>
+                            <span className={styles.linkUrl}>Formulario en PDF · descárgalo, llénalo y entrégalo a tu asesor</span>
+                          </div>
+                          <button className={styles.openBtn} onClick={() => abrirPdf(() => descargarPdfPersona(p.idTramitePersona))}><OpenIcon /> Descargar PDF</button>
+                        </>
+                      ) : p.ds160Link ? (
+                        <>
+                          <div className={styles.linkBox}>
+                            <span className={styles.linkIcon}><LinkIcon /></span>
+                            <span className={styles.linkUrl}>{p.ds160Link}</span>
+                          </div>
+                          <button className={`${styles.copyBtn} ${copiadoId === p.idTramitePersona ? styles.copied : ''}`} onClick={() => copiarLink(p)}>
+                            {copiadoId === p.idTramitePersona ? <><CheckIcon /> Copiado</> : <><CopyIcon /> Copiar</>}
+                          </button>
+                          <a className={styles.openBtn} href={p.ds160Link} target="_blank" rel="noopener noreferrer"><OpenIcon /> Abrir</a>
+                        </>
+                      ) : (
+                        <div className={styles.linkBox}><span className={styles.linkUrl}>Tu asesor aún no ha compartido el link</span></div>
+                      )}
+                      <div className={styles.formStatus}>
+                        <span className={`${styles.fsTag} ${p.filled ? styles.fsDone : styles.fsPend}`}>{p.filled ? 'Llenado' : 'Pendiente'}</span>
+                      </div>
                     </div>
-                    {p.ds160Link ? (
-                      <>
-                        <div className={styles.linkBox}>
-                          <span className={styles.linkIcon}><LinkIcon /></span>
-                          <span className={styles.linkUrl}>{p.ds160Link}</span>
-                        </div>
-                        <button className={`${styles.copyBtn} ${copiadoId === p.idTramitePersona ? styles.copied : ''}`} onClick={() => copiarLink(p)}>
-                          {copiadoId === p.idTramitePersona ? <><CheckIcon /> Copiado</> : <><CopyIcon /> Copiar</>}
-                        </button>
-                        <a className={styles.openBtn} href={p.ds160Link} target="_blank" rel="noopener noreferrer"><OpenIcon /> Abrir</a>
-                      </>
-                    ) : (
-                      <div className={styles.linkBox}><span className={styles.linkUrl}>Tu asesor aún no ha compartido el link</span></div>
-                    )}
-                    <div className={styles.formStatus}>
-                      <span className={`${styles.fsTag} ${p.filled ? styles.fsDone : styles.fsPend}`}>{p.filled ? 'Llenado' : 'Pendiente'}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ))}
             </>
+          ) : !tramite || !tramite.advance ? (
+            <div className={styles.locked}>
+              <div className={styles.lockedIcon}><LockIcon /></div>
+              <div className={styles.lockedTitle}>{tramite ? 'Completa tu pago inicial para acceder a los formularios' : 'No tienes un trámite activo'}</div>
+              <div className={styles.lockedSub}>
+                {tramite
+                  ? <>Tu formulario estará disponible en cuanto registremos tu pago inicial{anticipoRequerido != null ? <> de <strong>${anticipoRequerido.toLocaleString('es-MX')} MXN</strong></> : null}.</>
+                  : 'Cuando tu asesor registre tu trámite, aquí verás tus formularios.'}
+              </div>
+              {tramite && (
+                <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => navigate('/MisTramites')}>Ir a pagos <ArrowIcon /></button>
+              )}
+            </div>
+          ) : (
+            <div className={styles.locked}>
+              <div className={styles.lockedIcon}><InfoIcon /></div>
+              <div className={styles.lockedTitle}>Tu formulario aún no está listo</div>
+              <div className={styles.lockedSub}>Tu asesor te lo enviará muy pronto. Te avisaremos aquí en tu portal y por correo en cuanto puedas llenarlo.</div>
+            </div>
           )}
         </div>
       </main>

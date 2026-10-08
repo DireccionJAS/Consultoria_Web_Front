@@ -7,6 +7,7 @@ const Home = lazy(() => import("./components/Auth/Home.jsx"));
 const AdminDashboard = lazy(() => import("./components/Admin/AdminDashboard.jsx"));
 const AdminTramites = lazy(() => import("./components/Admin/AdminTramites.jsx"));
 const AdminClientes = lazy(() => import("./components/Admin/AdminClientes.jsx"));
+const AdminFormularios = lazy(() => import("./components/Admin/AdminFormularios.jsx"));
 const AdminPagos = lazy(() => import("./components/Admin/AdminPagos.jsx"));
 const AdminCalendario = lazy(() => import("./components/Admin/AdminCalendario.jsx"));
 const AdminPerfil = lazy(() => import("./components/Admin/AdminPerfil.jsx"));
@@ -174,6 +175,11 @@ function App() {
         <Route path="/PerfilAdmin" element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <AdminPerfil />
+          </ProtectedRoute>
+        } />
+        <Route path="/FormulariosAdmin" element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminFormularios />
           </ProtectedRoute>
         } />
         <Route path="/ClientesAdmin" element={

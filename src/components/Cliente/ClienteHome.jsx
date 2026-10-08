@@ -165,8 +165,8 @@ export default function ClienteHome() {
                 <div className={styles.card}>
                   <div className={`${styles.cardIcon} ${styles.ciAmber}`}><FormulariosIcon /></div>
                   <div className={styles.cardLabel}>Formularios</div>
-                  <div className={styles.cardValue}>DS-160</div>
-                  <div className={styles.cardMeta}>Un link por persona</div>
+                  <div className={styles.cardValue}>Tu formulario</div>
+                  <div className={styles.cardMeta}>Link o PDF, uno por persona</div>
                   <button className={styles.cardLink} onClick={() => navigate('/Formularios')}>Ir a formularios <ArrowIcon /></button>
                 </div>
 

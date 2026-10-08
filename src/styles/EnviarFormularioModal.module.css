@@ -1,0 +1,46 @@
+/* EnviarFormularioModal.module.css — complementa ActualizarTramiteModal.module.css
+   (overlay, modal, head, foot y botones vienen de ahí). Los <button> dentro de
+   .overlay heredan color/fondo, por eso aquí van con !important. */
+
+.empresaBox { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: #FAFBFC; }
+.empresaLogo { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--white); object-fit: contain; flex-shrink: 0; }
+.empresaTitle { font-size: 13px; font-weight: 600; }
+.empresaSub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+.sectionLabel { font-size: 11.5px; font-weight: 600; color: var(--c1); margin-bottom: 8px; display: block; }
+
+.opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opcion { text-align: left; display: flex; gap: 11px; align-items: flex-start; padding: 13px 14px; border: 1.5px solid var(--line-2) !important; border-radius: 14px; background: var(--white) !important; color: var(--c1) !important; transition: all 0.2s; }
+.opcion:hover:not(:disabled) { border-color: var(--c3) !important; }
+.opcion.sel { border-color: var(--primary) !important; background: rgba(31, 160, 209, 0.06) !important; box-shadow: 0 0 0 4px rgba(31, 160, 209, 0.08); }
+.opcion:disabled { opacity: 0.55; cursor: not-allowed; }
+.opcionIcon { width: 32px; height: 32px; border-radius: 9px; background: var(--c5); color: var(--c1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.opcion.sel .opcionIcon { background: var(--primary); color: var(--white); }
+.opcionTitle { font-size: 13px; font-weight: 600; }
+.opcionSub { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+.personas { display: flex; flex-direction: column; gap: 8px; }
+.persona { display: grid; grid-template-columns: 34px minmax(0, 1fr) 140px auto 32px; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 12px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--c1)); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11.5px; }
+.inp { width: 100%; min-width: 0; padding: 9px 11px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--white); font: inherit; font-size: 12.5px; color: var(--c1); }
+.inp:focus { outline: 0; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(31, 160, 209, 0.08); }
+.estado { padding: 6px 11px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; border: 0; transition: opacity 0.15s; }
+.estado:hover:not(:disabled) { opacity: 0.8; }
+.estadoPendiente { background: var(--amber-soft) !important; color: var(--amber) !important; }
+.estadoLlenado { background: var(--green-soft) !important; color: var(--green) !important; }
+.estadoNuevo { background: var(--gray-soft) !important; color: var(--gray) !important; cursor: default !important; }
+.quitar { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: var(--muted) !important; transition: all 0.15s; }
+.quitar:hover:not(:disabled) { background: var(--rose-soft) !important; color: var(--rose) !important; }
+.quitar:disabled { opacity: 0.3; cursor: not-allowed; }
+.agregar { align-self: flex-start; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: var(--primary) !important; background: rgba(31, 160, 209, 0.08) !important; }
+.agregar:hover { background: rgba(31, 160, 209, 0.14) !important; }
+
+.aviso { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; font-size: 12px; line-height: 1.45; }
+.avisoWarn { background: var(--amber-soft); color: #7A5208; }
+.avisoInfo { background: rgba(31, 160, 209, 0.06); border: 1px solid rgba(31, 160, 209, 0.16); color: var(--c1); }
+
+@media (max-width: 640px) {
+  .opciones { grid-template-columns: 1fr; }
+  .persona { grid-template-columns: 34px minmax(0, 1fr) 32px; }
+  .persona .rol, .persona .estadoCell { grid-column: 2 / 3; }
+}

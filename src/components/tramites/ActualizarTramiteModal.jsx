@@ -7,7 +7,6 @@ import {
   deleteTRansactProgress,
   envioCorreoActualizacion,
 } from '../../api/api.js';
-import GestionarFormulariosModal from './GestionarFormulariosModal.jsx';
 import { TRAMITE_STATUSES } from '../../utils/tramiteStatus.js';
 import { hoyISO, fechaCitaYaPaso, MENSAJE_FECHA_PASADA } from '../../utils/fechaCita.js';
 import styles from '../../styles/tramites/ActualizarTramiteModal.module.css';
@@ -55,7 +54,6 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
   const [encargados, setEncargados] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [showFormularios, setShowFormularios] = useState(false);
 
   const [openPaso, setOpenPaso] = useState(false);
   const [openEstado, setOpenEstado] = useState(false);
@@ -633,11 +631,6 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
           <button type="button" className={`${styles.btn} ${styles.btnDanger}`} onClick={handleDelete} disabled={deleting || submitting}>
             {deleting ? 'Eliminando...' : 'Eliminar'}
           </button>
-          {(citaCas || citaCon) && (
-            <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setShowFormularios(true)}>
-              Formularios
-            </button>
-          )}
           <div className={styles.footSpacer}>
             <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={onHide} disabled={submitting}>Cancelar</button>
             <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleSubmit} disabled={submitting}>
@@ -646,12 +639,6 @@ export default function ActualizarTramiteModal({ show, onHide, onClienteRegistra
           </div>
         </div>
       </div>
-
-      <GestionarFormulariosModal
-        show={showFormularios}
-        onHide={() => setShowFormularios(false)}
-        idTransactProgress={cliente?.idTransactProgress}
-      />
     </div>
   );
 }

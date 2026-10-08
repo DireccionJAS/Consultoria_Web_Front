@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { createProcessWithPayment, payDS160, envioCorreo, createPersona, getSimulacionOcupados } from './../api/api.js';
-import { buildDs160Link } from './../utils/ds160.js';
+import { createProcessWithPayment, payDS160, envioCorreo, getSimulacionOcupados } from './../api/api.js';
 import apiClient from './../api/apiClient.js';
 
 export default function CheckoutForm({
@@ -178,23 +177,8 @@ export default function CheckoutForm({
             }
             await envioCorreo(userEmail,customer,serviceName);
 
-            // El módulo de Formularios (link DS-160 por persona) solo aplica a
-            // trámites con cita CAS o cita consular (service.cas / service.con)
-            if (service?.cas || service?.con) {
-              const nuevoIdTransactProgress = progressResult?.response?.idTransactProgress;
-              if (nuevoIdTransactProgress) {
-                try {
-                  await createPersona({
-                    name: (names[i] || '').trim(),
-                    role: i === 0 ? 'Titular' : 'Acompañante',
-                    ds160Link: buildDs160Link(names[i]),
-                    idTransactProgress: nuevoIdTransactProgress,
-                  });
-                } catch (personaError) {
-                  console.error('Error al crear la persona del DS-160:', personaError);
-                }
-              }
-            }
+            // Las personas y su formulario ya no se crean aquí: las define el
+            // admin al enviarlo desde Admin > Formularios (titular = personName).
           }
 
           await apiClient.post(`/payment`, paymentData);

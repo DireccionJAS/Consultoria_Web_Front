@@ -11,6 +11,7 @@ function SearchIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" f
 function ArrowIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10" /></svg>; }
 function TramitesIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>; }
 function ClientesIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="9" cy="8" r="4" /><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M17 11l2 2 4-4" /></svg>; }
+function FormulariosIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 7h6M9 11h6M9 15h4" /></svg>; }
 function CalendarioIcon({ size = 22 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>; }
 
 // Sin badges/conteos/agenda: no existe todavía un sistema de notificaciones ni
@@ -25,6 +26,10 @@ const NAV_CARDS = [
   {
     key: 'clientes', name: 'Clientes', desc: 'Registro, edición y estado de cuentas de clientes.',
     icon: ClientesIcon, path: '/ClientesAdmin',
+  },
+  {
+    key: 'formularios', name: 'Formularios', desc: 'Envía a tus clientes el formulario de JAS o CMG cuando cubran su pago inicial.',
+    icon: FormulariosIcon, path: '/FormulariosAdmin',
   },
   {
     key: 'calendario', name: 'Calendario', desc: 'Citas CAS, CON y simulaciones.',

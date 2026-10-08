@@ -54,6 +54,15 @@ function IconClose() {
   );
 }
 
+function IconFormulario() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+      <path d="M9 7h6M9 11h6M9 15h4"></path>
+    </svg>
+  );
+}
+
 function IconWarning() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -68,6 +77,7 @@ const ICONS_POR_TIPO = {
   pago: IconCard,
   efectivo: IconCash,
   cita: IconCalendar,
+  formulario: IconFormulario,
   aviso: IconWarning,
 };
 

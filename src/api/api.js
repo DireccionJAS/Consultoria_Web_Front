@@ -539,34 +539,56 @@ export const getPersonasByProgress = async (idTransactProgress) => {
   }
 };
 
-export const createPersona = async (data) => {
-  try {
-    const response = await apiClient.post(`/tramite-personas`, data);
-    return response.data;
-  } catch (error) {
-    console.error('Error al agregar la persona', error);
-    throw error;
-  }
+// =============================================================================
+// ADMIN > FORMULARIOS (formatos fijos por empresa + envío a clientes)
+// =============================================================================
+
+export const getFormatosFormulario = async () => {
+  const response = await apiClient.get(`/formularios/formatos`);
+  return response.data;
 };
 
-export const updatePersona = async (id, data) => {
-  try {
-    const response = await apiClient.put(`/tramite-personas/${id}`, data);
-    return response.data;
-  } catch (error) {
-    console.error('Error al actualizar la persona', error);
-    throw error;
-  }
+export const guardarLinkFormato = async (idEmpresa, link) => {
+  const response = await apiClient.put(`/formularios/formatos/${idEmpresa}`, { link });
+  return response.data;
 };
 
-export const deletePersona = async (id) => {
-  try {
-    const response = await apiClient.delete(`/tramite-personas/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error al eliminar la persona', error);
-    throw error;
-  }
+export const subirPdfFormato = async (idEmpresa, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await apiClient.post(`/formularios/formatos/${idEmpresa}/pdf`, formData);
+  return response.data;
+};
+
+export const quitarPdfFormato = async (idEmpresa) => {
+  const response = await apiClient.delete(`/formularios/formatos/${idEmpresa}/pdf`);
+  return response.data;
+};
+
+// Devuelven el PDF como Blob (llevan el token, no sirven como <a href>).
+export const verPdfFormato = async (idEmpresa) => {
+  const response = await apiClient.get(`/formularios/formatos/${idEmpresa}/pdf`, { responseType: 'blob' });
+  return response.data;
+};
+
+export const descargarPdfPersona = async (idTramitePersona) => {
+  const response = await apiClient.get(`/formularios/personas/${idTramitePersona}/pdf`, { responseType: 'blob' });
+  return response.data;
+};
+
+export const getTramitesFormularios = async () => {
+  const response = await apiClient.get(`/formularios/tramites`);
+  return response.data;
+};
+
+export const enviarFormulario = async (idTransactProgress, data) => {
+  const response = await apiClient.post(`/formularios/tramites/${idTransactProgress}/enviar`, data);
+  return response.data;
+};
+
+export const marcarFormularioLlenado = async (idTramitePersona, filled) => {
+  const response = await apiClient.patch(`/formularios/personas/${idTramitePersona}/llenado`, { filled });
+  return response.data;
 };
 
 // =============================================================================
@@ -1212,8 +1234,6 @@ export const envioCorreoActualizacion = async (email, nombreCliente, nombreTrami
     throw new Error(errorMessage);
   }
 };
-
-
 
 export const olvidarContraSin = async (email) => {
   try {

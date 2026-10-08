@@ -227,6 +227,10 @@
   background: var(--amber-soft);
   color: var(--amber);
 }
+.itemIcon.formulario {
+  background: rgba(45, 108, 223, 0.12);
+  color: #2D6CDF;
+}
 .itemIcon.aviso {
   background: var(--rose-soft);
   color: var(--rose);
