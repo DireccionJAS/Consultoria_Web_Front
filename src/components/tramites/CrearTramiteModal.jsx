@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import {
   clientes,
+  getEmpresas,
   servicios,
   RegistrarTransaccion as registrarTransaccionAPI,
   envioCorreo,
@@ -46,6 +47,7 @@ const ServiceIcon = () => (
 
 export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onCreated }) {
   const [usuarios, setUsuarios] = useState([]);
+  const [empresas, setEmpresas] = useState([]);
   const [transacciones, setTransacciones] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -58,8 +60,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
   const [buscarCliente, setBuscarCliente] = useState('');
   const [buscarServicio, setBuscarServicio] = useState('');
 
-  // La empresa del trámite corresponde a la empresa asignada al cliente.
-  const [empresa, setEmpresa] = useState('');
+  const [idEmpresa, setIdEmpresa] = useState(null);
   const [openEmpresa, setOpenEmpresa] = useState(false);
 
   const [pagoInicial, setPagoInicial] = useState(0);
@@ -102,9 +103,29 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
       }
     };
 
+    const fetchEmpresas = async () => {
+      try {
+        const response = await getEmpresas();
+        setEmpresas(response.success && Array.isArray(response.response.empresas)
+          ? response.response.empresas
+          : []);
+      } catch (error) {
+        console.error('Error al obtener las empresas:', error);
+        setEmpresas([]);
+      }
+    };
+
     setLoadingData(true);
-    Promise.all([fetchClientes(), fetchServicios()]).finally(() => setLoadingData(false));
+    Promise.all([fetchClientes(), fetchServicios(), fetchEmpresas()]).finally(() => setLoadingData(false));
   }, [show]);
+
+  useEffect(() => {
+    if (!selectedUser || !empresas.length || idEmpresa != null) return;
+    const asignada = empresas.find((e) =>
+      (selectedUser.empresaCode && e.code === selectedUser.empresaCode)
+      || (selectedUser.empresaName && e.name === selectedUser.empresaName));
+    if (asignada) setIdEmpresa(asignada.idEmpresa);
+  }, [selectedUser, empresas, idEmpresa]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -127,7 +148,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
     setBuscarServicio('');
     setOpenCliente(false);
     setOpenServicio(false);
-    setEmpresa('');
+    setIdEmpresa(null);
     setOpenEmpresa(false);
     setErrors({});
   };
@@ -158,7 +179,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
 
   const pickCliente = (user) => {
     setSelectedUser(user);
-    setEmpresa(user.empresaName || user.empresaCode || '');
+    setIdEmpresa(null);
     setOpenCliente(false);
     setBuscarCliente('');
     setErrors((prev) => ({ ...prev, idUser: undefined }));
@@ -175,6 +196,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
   const validate = () => {
     const next = {};
     if (!selectedUser) next.idUser = 'Selecciona un cliente';
+    if (!idEmpresa) next.idEmpresa = 'Selecciona una empresa';
     if (!selectedService) next.idTransact = 'Selecciona un servicio';
     if (!pagoInicial || pagoInicial <= 0) next.paid = 'Ingresa un pago inicial válido';
     if (!costoTotal || costoTotal <= 0) next.paidAll = 'Ingresa un costo total válido';
@@ -189,6 +211,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
     try {
       const res = await registrarTransaccionAPI({
         idUser: selectedUser.idUser,
+        idEmpresa,
         idTransact: selectedService.idTransact,
         paid: pagoInicial,
         paidAll: costoTotal,
@@ -336,8 +359,8 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
             <div ref={empresaRef} className={`${styles.selWrap} ${openEmpresa ? styles.open : ''}`}>
               <button type="button" className={styles.selTrigger} onClick={() => setOpenEmpresa((v) => !v)}>
                 <span className={styles.selMain}>
-                  {empresa ? (
-                    <span className={styles.selName}>{empresa}</span>
+                  {idEmpresa != null ? (
+                    <span className={styles.selName}>{empresas.find((e) => e.idEmpresa === idEmpresa)?.name || 'Empresa seleccionada'}</span>
                   ) : (
                     <span className={styles.selPlaceholder}>Selecciona una empresa</span>
                   )}
@@ -349,23 +372,24 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
               {openEmpresa && (
                 <div className={styles.selMenu}>
                   <div className={styles.selList}>
-                    {selectedUser?.empresaName || selectedUser?.empresaCode ? (
-                      <div
-                        className={styles.selOpt}
-                        onClick={() => {
-                          setEmpresa(selectedUser.empresaName || selectedUser.empresaCode);
-                          setOpenEmpresa(false);
-                        }}
-                      >
-                        <span className={styles.selName}>{selectedUser.empresaName || selectedUser.empresaCode}</span>
-                      </div>
+                    {empresas.length ? (
+                      empresas.map((e) => (
+                        <div
+                          key={e.idEmpresa}
+                          className={`${styles.selOpt} ${idEmpresa === e.idEmpresa ? styles.active : ''}`}
+                          onClick={() => { setIdEmpresa(e.idEmpresa); setOpenEmpresa(false); setErrors((prev) => ({ ...prev, idEmpresa: undefined })); }}
+                        >
+                          <span className={styles.selName}>{e.name}</span>
+                        </div>
+                      ))
                     ) : (
-                      <div className={styles.selEmpty}>Este cliente no tiene una empresa asignada</div>
+                      <div className={styles.selEmpty}>No se pudieron cargar las empresas</div>
                     )}
                   </div>
                 </div>
               )}
             </div>
+            {errors.idEmpresa && <div className={styles.fieldMsg}>{errors.idEmpresa}</div>}
           </div>
 
           {/* Servicio */}

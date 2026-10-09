@@ -16,7 +16,7 @@ import { EMPRESA_UI, formatoMoneda, formatFechaCorta, estadoFormulario, abrirPdf
 // Admin > Formularios: arriba el formulario fijo de cada empresa (link de
 // Google Forms y/o PDF); abajo los trámites de los clientes asignados para
 // mandárselo cuando ya cubrieron su pago inicial. El formulario lo decide la
-// empresa del cliente (JAS→JAS, CMG→CMG); aquí solo se elige link o PDF.
+// empresa seleccionada para cada trámite; aquí se elige link o PDF.
 
 const NOMBRE_EJEMPLO = 'Nombre Apellido';
 const ITEMS_POR_PAGINA = 15;
@@ -284,7 +284,7 @@ export default function AdminFormularios() {
           <div className={fs.sectionHead}>
             <div>
               <div className={fs.sectionTitle}>Formatos</div>
-              <div className={fs.sectionSub}>Cada cliente recibe el formulario de su empresa: los de JAS el de JAS y los de CMG el de CMG.</div>
+              <div className={fs.sectionSub}>Cada trámite usa el formulario de la empresa elegida al crearlo. Puedes enviar el link o el PDF configurado para esa empresa.</div>
             </div>
           </div>
           {cargando ? null : (
