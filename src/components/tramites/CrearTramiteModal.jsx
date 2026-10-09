@@ -58,8 +58,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
   const [buscarCliente, setBuscarCliente] = useState('');
   const [buscarServicio, setBuscarServicio] = useState('');
 
-  // Sin backend de Empresas todavía (no existe esa entidad) - selector
-  // decorativo por ahora, opción fija única, no se envía al guardar el trámite.
+  // La empresa del trámite corresponde a la empresa asignada al cliente.
   const [empresa, setEmpresa] = useState('');
   const [openEmpresa, setOpenEmpresa] = useState(false);
 
@@ -159,6 +158,7 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
 
   const pickCliente = (user) => {
     setSelectedUser(user);
+    setEmpresa(user.empresaName || user.empresaCode || '');
     setOpenCliente(false);
     setBuscarCliente('');
     setErrors((prev) => ({ ...prev, idUser: undefined }));
@@ -349,9 +349,19 @@ export default function CrearTramiteModal({ show, onHide, scope = 'empresa', onC
               {openEmpresa && (
                 <div className={styles.selMenu}>
                   <div className={styles.selList}>
-                    <div className={styles.selOpt} onClick={() => { setEmpresa('Consultoría JAS'); setOpenEmpresa(false); }}>
-                      <span className={styles.selName}>Consultoría JAS</span>
-                    </div>
+                    {selectedUser?.empresaName || selectedUser?.empresaCode ? (
+                      <div
+                        className={styles.selOpt}
+                        onClick={() => {
+                          setEmpresa(selectedUser.empresaName || selectedUser.empresaCode);
+                          setOpenEmpresa(false);
+                        }}
+                      >
+                        <span className={styles.selName}>{selectedUser.empresaName || selectedUser.empresaCode}</span>
+                      </div>
+                    ) : (
+                      <div className={styles.selEmpty}>Este cliente no tiene una empresa asignada</div>
+                    )}
                   </div>
                 </div>
               )}
