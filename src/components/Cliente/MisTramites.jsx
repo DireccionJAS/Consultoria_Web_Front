@@ -5,28 +5,26 @@ import Swal from 'sweetalert2';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import ModalActualizarTramite from './ActualizarMiTramite.jsx';
 import { clientePorId, tramitesPorId, getStepById } from './../../api/api.js';
-import { TRAMITE_STATUS_LABELS, TRAMITE_STATUS_TONES, TRAMITE_STATUS_ACTIVO, esTramiteCerrado } from './../../utils/tramiteStatus.js';
+import { TRAMITE_STATUS_ACTIVO, esTramiteCerrado } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/ClienteMisTramites.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import NotificationBell from './../common/NotificationBell.jsx';
 
 function ArrowIcon() { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>; }
 
-const TONE_CLS = { azul: 'tagProceso', naranja: 'tagNaranja', amarillo: 'tagEspera', verde: 'tagAprobado', rojo: 'tagRechazado', gris: 'tagCancelado' };
 const ACTIVO = TRAMITE_STATUS_ACTIVO;
 
 function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
-  const label = TRAMITE_STATUS_LABELS[tramite.status] || 'En espera de formatos internos';
-  const meta = { label, cls: TONE_CLS[TRAMITE_STATUS_TONES[tramite.status]] || 'tagProceso' };
   const cerrado = esTramiteCerrado(tramite.status);
   const rechazado = tramite.status === 9;
-  const progresoPct = totalPasos ? Math.round(((tramite.stepProgress || 0) / totalPasos) * 100) : 0;
+  const pasoActual = tramite.status === 8 && totalPasos
+    ? totalPasos
+    : Math.max(0, Math.min(tramite.stepProgress || 0, totalPasos || 0));
+  const progresoPct = totalPasos ? Math.floor((pasoActual / totalPasos) * 100) : 0;
   const fill = rechazado ? 'var(--rose)' : cerrado ? 'var(--green)' : 'var(--primary)';
-  const progLabel = cerrado
-    ? `Completado · ${meta.label}`
-    : totalPasos
-      ? `Paso ${tramite.stepProgress || 0} de ${totalPasos}`
-      : 'Sin pasos registrados';
+  const progLabel = totalPasos
+    ? `Paso ${pasoActual} de ${totalPasos} · ${progresoPct}%`
+    : 'Sin pasos registrados';
   const fechaInicio = tramite.dateStart ? new Date(`${tramite.dateStart}T00:00:00`).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sin definir';
 
   return (
@@ -43,7 +41,6 @@ function TramiteCard({ tramite, totalPasos, onVerDetalle, onVerFormularios }) {
             <div className={styles.tcardName}>{tramite.transact?.description || 'Trámite'}</div>
             {tramite.transact?.name && <div className={styles.tcardCat}>{tramite.transact.name}</div>}
           </div>
-          <span className={`${styles.tag} ${styles[meta.cls]}`}>{meta.label}</span>
         </div>
 
         <div className={styles.tcardMeta}>

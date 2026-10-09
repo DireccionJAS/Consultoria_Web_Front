@@ -4,8 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import Navbar from '../NavbarUser.jsx';
 import { Button, Form, Spinner, Image } from 'react-bootstrap';
-import { tramitesPorId } from './../../api/api.js';
-import { TRAMITE_STATUSES, TRAMITE_STATUS_LABELS, TRAMITE_STATUS_TONES } from './../../utils/tramiteStatus.js';
+import { tramitesPorId, getStepById } from './../../api/api.js';
+import { TRAMITE_STATUSES } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/MisTramitesMobile.module.css';
 import ModalActualizarTramite from './ActualizarMiTramite.jsx';
 
@@ -14,6 +14,7 @@ export default function MisTramitesMobile() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [busqueda, setBusqueda] = useState("");
   const [datos, setDatos] = useState([]);
+  const [pasosPorTransact, setPasosPorTransact] = useState({});
   const [cargando, setCargando] = useState(true);
   const [showModalA, setShowModalA] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
@@ -71,7 +72,18 @@ export default function MisTramitesMobile() {
     try {
       const response = await tramitesPorId(usuario);
       if (response.success && Array.isArray(response.response.transactProgresses)) {
-        setDatos(response.response.transactProgresses);
+        const items = response.response.transactProgresses;
+        setDatos(items);
+        const idsTransact = [...new Set(items.map((tramite) => tramite.idTransact))];
+        const entries = await Promise.all(idsTransact.map(async (idTransact) => {
+          try {
+            const stepsResponse = await getStepById(idTransact);
+            return [idTransact, stepsResponse?.response?.StepsTransacts?.length || 0];
+          } catch {
+            return [idTransact, 0];
+          }
+        }));
+        setPasosPorTransact(Object.fromEntries(entries));
       } else {
         console.error("Formato de respuesta inesperado:", response);
         setDatos([]);
@@ -83,19 +95,6 @@ export default function MisTramitesMobile() {
       setCargando(false);
     }
   };
-
-  const TONE_CLASS = {
-    azul: styles.statusProcess,
-    naranja: styles.statusOrange,
-    amarillo: styles.statusWaiting,
-    verde: styles.statusCompleted,
-    rojo: styles.statusRejected,
-    gris: styles.statusCancelled,
-  };
-
-  const getStatusText = (status) => TRAMITE_STATUS_LABELS[status] || 'Desconocido';
-
-  const getStatusClass = (status) => TONE_CLASS[TRAMITE_STATUS_TONES[status]] || '';
 
   const filtrados = datos.filter(d => {
     const busquedaStr = busqueda.toLowerCase();
@@ -179,11 +178,24 @@ export default function MisTramitesMobile() {
                     />
                     <div className={styles.cardTitle}>
                       <h3>{tramite.transact.description}</h3>
-                      <span className={`${styles.statusBadge} ${getStatusClass(tramite.status)}`}>
-                        {getStatusText(tramite.status)}
-                      </span>
                     </div>
                   </div>
+
+                  {(() => {
+                    const totalPasos = pasosPorTransact[tramite.idTransact] || 0;
+                    const pasoActual = tramite.status === 8 && totalPasos
+                      ? totalPasos
+                      : Math.max(0, Math.min(tramite.stepProgress || 0, totalPasos));
+                    const porcentaje = totalPasos ? Math.floor((pasoActual / totalPasos) * 100) : 0;
+                    return (
+                      <div className={styles.stepProgress}>
+                        <div className={styles.stepProgressBar}>
+                          <div className={styles.stepProgressFill} style={{ width: `${porcentaje}%` }} />
+                        </div>
+                        <span>{totalPasos ? `Paso ${pasoActual} de ${totalPasos} · ${porcentaje}%` : 'Sin pasos registrados'}</span>
+                      </div>
+                    );
+                  })()}
                   
                   <div className={styles.cardContent}>
                     <div className={styles.infoRow}>
