@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/HeaderLogoutButton.module.css';
+import { logoutAndNavigate } from '../../api/session.js';
 
 function LogoutIcon() {
   return (
@@ -23,8 +24,7 @@ export default function HeaderLogoutButton() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const confirmLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/Login');
+    return logoutAndNavigate(navigate);
   };
 
   return (

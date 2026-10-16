@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { logoutAndNavigate } from '../../api/session.js';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import styles from './../../styles/AdminSidebar.module.css';
@@ -52,8 +53,7 @@ export default function AdminSidebar({
 
   const handleLogout = () => setLogoutConfirmOpen(true);
   const confirmLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/Login');
+    return logoutAndNavigate(navigate);
   };
 
   return (

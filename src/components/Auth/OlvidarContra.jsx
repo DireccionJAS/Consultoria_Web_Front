@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { olvidarContra, actualizarContra, obtenerUsuarioPorCorreo, verificarCodigoRecuperacion } from './../../api/api.js';
+import { solicitarRecuperacion, verificarRecuperacion, completarRecuperacion } from './../../api/api.js';
 import styles from './../../styles/OlvidarContra.module.css';
 import logo from './../../img/logo_letras_negras.png';
 
@@ -22,7 +22,6 @@ export default function OlvidarContra() {
   const navigate = useNavigate();
   const [paso, setPaso] = useState(1);
   const [email, setEmail] = useState('');
-  const [userId, setUserId] = useState(null);
   const [verificando, setVerificando] = useState(false);
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [otpError, setOtpError] = useState(false);
@@ -62,15 +61,10 @@ export default function OlvidarContra() {
   };
 
   const solicitarCodigo = async (correo) => {
-    const resUser = await obtenerUsuarioPorCorreo(correo);
-    const user = resUser?.response?.user;
-    if (!user?.idUser) throw new Error('Usuario no encontrado.');
-    setUserId(user.idUser);
-
     // El código ya no viaja en la respuesta (antes permitía tomar cualquier
     // cuenta sin acceso al correo real) — solo se manda por email, y se
     // valida contra el backend en handleVerificarCodigo.
-    await olvidarContra(correo);
+    await solicitarRecuperacion(correo);
   };
 
   const handleEnviarCodigo = async (e) => {
@@ -86,10 +80,10 @@ export default function OlvidarContra() {
       setOtpError(false);
       setPaso(2);
       iniciarTemporizador();
-      Swal.fire({ icon: 'success', title: '¡Correo enviado!', text: 'Revisa tu bandeja para ver el código.', showConfirmButton: false, timer: 2500, timerProgressBar: true });
+      Swal.fire({ icon: 'info', title: 'Revisa tu correo', text: 'Si el correo está registrado, recibirás instrucciones para recuperar tu contraseña.' });
     } catch (error) {
       console.error('Error en recuperación de contraseña:', error);
-      Swal.fire('Error', 'El correo no existe en el sistema', 'error');
+      Swal.fire('Error', 'No se pudo procesar la solicitud. Intenta nuevamente.', 'error');
     } finally {
       setEnviando(false);
     }
@@ -101,7 +95,7 @@ export default function OlvidarContra() {
       setOtpDigits(['', '', '', '', '', '']);
       setOtpError(false);
       iniciarTemporizador();
-      Swal.fire({ icon: 'success', title: '¡Código reenviado!', text: 'Revisa tu bandeja de nuevo.', showConfirmButton: false, timer: 2500, timerProgressBar: true });
+      Swal.fire({ icon: 'info', title: 'Revisa tu correo', text: 'Si el correo está registrado, recibirás instrucciones para recuperar tu contraseña.' });
     } catch (error) {
       console.error('Error al reenviar código:', error);
       Swal.fire('Error', 'No se pudo reenviar el código.', 'error');
@@ -118,7 +112,7 @@ export default function OlvidarContra() {
     }
     setVerificando(true);
     try {
-      const res = await verificarCodigoRecuperacion(userId, codigoIngresado);
+      const res = await verificarRecuperacion(email.trim(), codigoIngresado);
       if (!res?.success) {
         setOtpError(true);
         Swal.fire('Error', res?.message || 'El código ingresado es incorrecto.', 'error');
@@ -146,7 +140,7 @@ export default function OlvidarContra() {
     }
     try {
       const codigoIngresado = otpDigits.join('');
-      const res = await actualizarContra(userId, nuevaPassword, codigoIngresado);
+      const res = await completarRecuperacion(email.trim(), codigoIngresado, nuevaPassword);
       if (!res?.success) {
         // El backend responde 200 con success:false (no un error HTTP) para
         // casos como "la contraseña no puede ser igual a la anterior" — sin

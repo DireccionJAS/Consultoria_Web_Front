@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import { Icon } from '@iconify/react';
 import Logo from '../img/logo.png';
 import logoutImg from '../img/salida.gif';
+import { logoutAndNavigate } from '../api/session.js';
 import '../styles/Sidebar.css';
 import '../styles/SidebarAdmin.css';
 
@@ -68,7 +69,7 @@ export default function NavbarAdmin({ title }) {
       cancelButtonText: 'Aceptar',
     }).then((result) => {
       if (result.dismiss === Swal.DismissReason.cancel) {
-        window.location.href = '/';
+        logoutAndNavigate((url) => { window.location.href = url; });
       }
     });
   }

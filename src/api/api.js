@@ -98,6 +98,13 @@ export const verificarCodigoRecuperacion = async (id_user, code) => {
   }
 };
 
+export const solicitarRecuperacion = async (email) =>
+  (await apiClient.post('/auth/password/request', { email })).data;
+export const verificarRecuperacion = async (email, code) =>
+  (await apiClient.post('/auth/password/verify', { email, code })).data;
+export const completarRecuperacion = async (email, code, password) =>
+  (await apiClient.post('/auth/password/reset', { email, code, password })).data;
+
 // =============================================================================
 // GESTIÓN DE CLIENTES (ADMINISTRADOR)
 // =============================================================================

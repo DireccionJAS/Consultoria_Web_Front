@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import styles from './../../styles/ClienteSidebar.module.css';
 import logo from './../../img/logo_letras_negras.png';
+import { logoutAndNavigate } from '../../api/session.js';
 
 function HomeIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 12L12 3l9 9v9a2 2 0 0 1-2 2h-4v-7H10v7H6a2 2 0 0 1-2-2v-9z" /></svg>; }
 function ServiciosIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.4 14.5L16 10 4 20" /></svg>; }
@@ -50,8 +51,7 @@ export default function ClienteSidebar({
 
   const handleLogout = () => setLogoutConfirmOpen(true);
   const confirmLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/Login');
+    return logoutAndNavigate(navigate);
   };
 
   return (
