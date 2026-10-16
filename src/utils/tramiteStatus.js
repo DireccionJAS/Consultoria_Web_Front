@@ -13,7 +13,7 @@
 // ningún estado del flujo de 9 pasos lo usa hoy).
 export const TRAMITE_STATUSES = [
   { code: 1, label: 'En espera de formatos internos', tone: 'amarillo' },
-  { code: 2, label: 'Emitiendo formulario de DS-160', tone: 'azul' },
+  { code: 2, label: 'Emitiendo formato de formulario', tone: 'azul' },
   { code: 3, label: 'En espera de pago de arancel', tone: 'naranja' },
   { code: 4, label: 'En busca de cita', tone: 'azul' },
   { code: 5, label: 'Citas confirmadas', tone: 'verde' },
