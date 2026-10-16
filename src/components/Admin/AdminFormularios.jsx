@@ -12,6 +12,7 @@ import fs from './../../styles/AdminFormularios.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import { EMPRESA_UI, formatoMoneda, formatFechaCorta, estadoFormulario, abrirPdf } from './../../utils/formularios.js';
+import { safeWebUrl } from './../../utils/webLinks.js';
 
 // Admin > Formularios: arriba el formulario fijo de cada empresa (link de
 // Google Forms y/o PDF); abajo los trámites de los clientes asignados para
@@ -54,7 +55,7 @@ function FormatoCard({ formato, onCambio }) {
   const ui = EMPRESA_UI[formato.empresaCode] || {};
 
   const cambiado = link.trim() !== (formato.link || '');
-  const linkPrueba = link.trim() ? link.trim().replace('{nombre}', encodeURIComponent(NOMBRE_EJEMPLO)) : null;
+  const linkPrueba = safeWebUrl(link.trim().replaceAll('{nombre}', encodeURIComponent(NOMBRE_EJEMPLO)));
 
   const guardar = async () => {
     setGuardando(true);

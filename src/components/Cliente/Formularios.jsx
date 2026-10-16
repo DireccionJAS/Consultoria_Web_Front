@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import ClienteSidebar from './ClienteSidebar.jsx';
 import { clientePorId, tramitesPorId, getPersonasByProgress, descargarPdfPersona } from './../../api/api.js';
 import { abrirPdf } from './../../utils/formularios.js';
+import { safeWebUrl } from './../../utils/webLinks.js';
 import { TRAMITE_STATUS_ACTIVO } from './../../utils/tramiteStatus.js';
 import styles from './../../styles/ClienteFormularios.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
@@ -96,7 +97,9 @@ export default function Formularios() {
   const pendientes = grupos.reduce((n, g) => n + g.personas.filter((p) => !p.filled).length, 0);
 
   const copiarLink = (persona) => {
-    if (persona.ds160Link) navigator.clipboard?.writeText(persona.ds160Link);
+    const link = safeWebUrl(persona.ds160Link);
+    if (!link) return;
+    navigator.clipboard?.writeText(link);
     setCopiadoId(persona.idTramitePersona);
     setTimeout(() => setCopiadoId((id) => (id === persona.idTramitePersona ? null : id)), 1600);
   };
@@ -162,7 +165,7 @@ export default function Formularios() {
                           </div>
                           <button className={styles.openBtn} onClick={() => abrirPdf(() => descargarPdfPersona(p.idTramitePersona))}><OpenIcon /> Descargar PDF</button>
                         </>
-                      ) : p.ds160Link ? (
+                      ) : safeWebUrl(p.ds160Link) ? (
                         <>
                           <div className={styles.linkBox}>
                             <span className={styles.linkIcon}><LinkIcon /></span>
@@ -171,7 +174,7 @@ export default function Formularios() {
                           <button className={`${styles.copyBtn} ${copiadoId === p.idTramitePersona ? styles.copied : ''}`} onClick={() => copiarLink(p)}>
                             {copiadoId === p.idTramitePersona ? <><CheckIcon /> Copiado</> : <><CopyIcon /> Copiar</>}
                           </button>
-                          <a className={styles.openBtn} href={p.ds160Link} target="_blank" rel="noopener noreferrer"><OpenIcon /> Abrir</a>
+                          <a className={styles.openBtn} href={safeWebUrl(p.ds160Link)} target="_blank" rel="noopener noreferrer"><OpenIcon /> Abrir</a>
                         </>
                       ) : (
                         <div className={styles.linkBox}><span className={styles.linkUrl}>Tu asesor aún no ha compartido el link</span></div>
