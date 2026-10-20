@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import PaymentElements from '../../../common/PaymentElements.jsx';
+
 import CheckoutForm from './../../../CheckoutForm.jsx';
 import PaymentOptions from './PaymentOption.jsx';
 import InfoBox from './InfoBox.jsx'; // Asegúrate de que esté en la misma carpeta
@@ -9,8 +9,6 @@ import { getSimulacionOcupados } from './../../../../api/api.js';
 import stylesModal from './../../../../styles/StripePaymentSection.module.css';
 
 
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-const stripePromise = loadStripe(stripeKey);
 
 const StripePaymentSection = ({
   service,
@@ -110,7 +108,7 @@ const StripePaymentSection = ({
               )}
             </div>
           )}
-          <Elements stripe={stripePromise}>
+          <PaymentElements>
             <CheckoutForm
               amount={(currentPaymentOption?.amount || 0) + extraFee}
               totalAmount={totalAmount ? totalAmount + extraFee : (currentPaymentOption?.amount || 0) + extraFee}
@@ -129,7 +127,7 @@ const StripePaymentSection = ({
               idTransactProgress={service?.idTransactProgress}
               liquidationPlan={selectedLiquidationPlan}
             />
-          </Elements>
+          </PaymentElements>
         </div>
       ) : (
         <>
@@ -175,7 +173,7 @@ const StripePaymentSection = ({
             </div>
           )}
 
-          <Elements stripe={stripePromise}>
+          <PaymentElements>
 
             <CheckoutForm
               amount={(currentPaymentOption?.amount || 0) + extraFee}
@@ -198,7 +196,7 @@ const StripePaymentSection = ({
        
 
             />
-          </Elements>
+          </PaymentElements>
         </>
       )}
     </div>

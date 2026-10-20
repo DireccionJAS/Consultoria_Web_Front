@@ -1,6 +1,6 @@
 import React from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import PaymentElements from '../../common/PaymentElements.jsx';
+
 import { Modal } from 'react-bootstrap';
 import { LockIcon } from 'lucide-react';
 import CheckoutForm from '../../Checkout.jsx';
@@ -38,8 +38,6 @@ const ShieldSVG = () => (
     </svg>
 );
 
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-const stripePromise = loadStripe(stripeKey);
 
 export default function Liquidacion({ show, onHide, service, userEmail, userId, onSuccess, onError }) {
     const montoRestante = service ? service.paidAll - service.paid : 0;
@@ -162,7 +160,7 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                     </div>
                 </div>
 
-                <Elements stripe={stripePromise}>
+                <PaymentElements>
                     <CheckoutForm
                         amount={montoRestante}
                         description={`Liquidación de trámite`}
@@ -173,7 +171,7 @@ export default function Liquidacion({ show, onHide, service, userEmail, userId, 
                         onError={onError}
                         serviceName={"liquidacion"}
                     />
-                </Elements>
+                </PaymentElements>
            
                 <div className={paymentStyles.paymentSeparator}>
                     <div className={paymentStyles.separatorLine} />

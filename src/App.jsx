@@ -48,10 +48,9 @@ const Signin = lazy(() => import("./components/Auth/Singin.jsx"));
 const UploadPfd = lazy(() => import("./components/Administrador/UploadPdf.jsx"));
 const Practicas = lazy(() => import("../Practicas.jsx"));
 
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import PaymentElements from './components/common/PaymentElements.jsx';
+
 const PruebaPago = lazy(() => import("./PruebaPago.jsx"));
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 function App() {
   return (
@@ -61,16 +60,16 @@ function App() {
         {/* Stripe solo para esta ruta */}
         <Route path="/ClienteServicios" element={
           <ProtectedRoute allowedRoles={["USER"]}>
-            <Elements stripe={stripePromise}>
+            <PaymentElements>
               <ClienteServicios />
-            </Elements>
+            </PaymentElements>
           </ProtectedRoute>
         } />
         <Route path="/ClienteServicios-sm" element={
           <ProtectedRoute allowedRoles={["USER"]}>
-            <Elements stripe={stripePromise}>
+            <PaymentElements>
               <ClienteServicios />
-            </Elements>
+            </PaymentElements>
           </ProtectedRoute>
         } />
 
@@ -260,9 +259,9 @@ function App() {
         } />
         <Route path="/MisTramites" element={
           <ProtectedRoute allowedRoles={["USER"]}>
-            <Elements stripe={stripePromise}>
+            <PaymentElements>
               <MisTramites />
-            </Elements>
+            </PaymentElements>
           </ProtectedRoute>
         } />
 

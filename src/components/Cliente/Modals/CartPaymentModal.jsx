@@ -1,14 +1,12 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import PaymentElements from '../../common/PaymentElements.jsx';
+
 import { LockIcon } from 'lucide-react';
 import CartCheckoutForm from './../CartCheckoutForm.jsx';
 import paymentStyles from './../../../styles/servicios/client/PaymentModal.module.css';
 import cartStyles from './../../../styles/CartPaymentModal.module.css';
 
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-const stripePromise = loadStripe(stripeKey);
 
 // Modal separado del PaymentModal de un solo servicio (deliberado: ese
 // modal ya carga mucha lógica específica de Visa Americana/DS-160/planes de
@@ -51,7 +49,7 @@ export default function CartPaymentModal({ show, onHide, services, userEmail, us
               <span className={cartStyles.totalAmount}>${total.toLocaleString('es-MX')} MXN</span>
             </div>
 
-            <Elements stripe={stripePromise}>
+            <PaymentElements>
               <CartCheckoutForm
                 services={services}
                 totalAmount={total}
@@ -60,7 +58,7 @@ export default function CartPaymentModal({ show, onHide, services, userEmail, us
                 onSuccess={onSuccess}
                 onError={onError}
               />
-            </Elements>
+            </PaymentElements>
           </>
         )}
 

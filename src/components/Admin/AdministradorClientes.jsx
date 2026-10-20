@@ -1,3 +1,4 @@
+import { accountConfirmation, clientsOnly } from '../../utils/accountActions';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -194,7 +195,7 @@ export default function AdministradorClientes() {
     try {
       const response = await clientes();
       if (response.success && Array.isArray(response.response.users)) {
-        setDatos(response.response.users);
+        setDatos(clientsOnly(response.response.users));
       } else {
         console.error('Formato de respuesta inesperado:', response);
         setDatos([]);
@@ -209,27 +210,21 @@ export default function AdministradorClientes() {
 
   const handleSwitchChange = async (idUser, nuevoEstado) => {
     try {
+      const cliente = datos.find(item => item.idUser === idUser);
+      const confirmacion = await Swal.fire(accountConfirmation(cliente, 'status', nuevoEstado));
+      if (!confirmacion.isConfirmed) return;
       await actualizarStatusCliente(idUser, nuevoEstado);
-      fetchServices();
+      await fetchServices();
     } catch (error) {
-      console.error('Error al actualizar el estado del cliente', error);
+      Swal.fire({ icon: 'error', title: 'No se cambió el estado', text: error.message });
     }
   };
 
   const handleArchivar = async (cliente) => {
     const archivar = !cliente.archived;
-
-    const confirmacion = await Swal.fire({
-      icon: 'warning',
-      title: archivar ? '¿Estás seguro de archivar a este cliente?' : '¿Estás seguro de desarchivar a este cliente?',
-      showCancelButton: true,
-      confirmButtonText: archivar ? 'Archivar' : 'Desarchivar',
-      cancelButtonText: 'Cancelar',
-    });
-
-    if (!confirmacion.isConfirmed) return;
-
     try {
+      const confirmacion = await Swal.fire(accountConfirmation(cliente, 'archive', archivar));
+      if (!confirmacion.isConfirmed) return;
       await archivarCliente(cliente.idUser, archivar);
       await fetchServices();
       Swal.fire({
@@ -246,7 +241,7 @@ export default function AdministradorClientes() {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo actualizar el archivado del cliente.',
+        text: error.message || 'No se pudo actualizar el archivado del cliente.',
       });
     }
   };

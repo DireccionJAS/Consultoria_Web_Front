@@ -2,6 +2,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2';
 import apiClient from './apiClient';
+import { requireAccountActionSuccess } from '../utils/accountActions';
 
 // =============================================================================
 // CONFIGURACIÓN DE URLS
@@ -169,7 +170,7 @@ export const createAdmin = async (data) => {
 export const actualizarStatusCliente = async (id_user, nuevoEstado) => {
   try {
     const response = await apiClient.put(`/users/${id_user}/status`, { status: nuevoEstado });
-    return response.data;
+    return requireAccountActionSuccess(response.data);
   } catch (error) {
     console.error("Error al actualizar el estado del cliente", error);
     throw error;
@@ -179,7 +180,7 @@ export const actualizarStatusCliente = async (id_user, nuevoEstado) => {
 export const archivarCliente = async (id_user, archivado) => {
   try {
     const response = await apiClient.put(`/users/${id_user}/archive`, { archived: archivado });
-    return response.data;
+    return requireAccountActionSuccess(response.data);
   } catch (error) {
     console.error("Error al archivar el cliente", error);
     throw error;

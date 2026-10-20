@@ -1,9 +1,10 @@
+import { accountRole } from '../../utils/accountActions';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { listarEncargados, actualizarStatusCliente, archivarCliente, clientes as clientesAPI, asignarEncargadoCliente } from './../../api/api.js';
+import { listarEncargados, archivarCliente, clientes as clientesAPI, asignarEncargadoCliente } from './../../api/api.js';
 import ModalAdmin from '../Administrador/ModalAdmin.jsx';
 import modalStyles from './../../styles/ClienteModal.module.css';
 import styles from './../../styles/EmpresaAdmins.module.css';
@@ -117,7 +118,7 @@ export default function EmpresaAdmins() {
       setCargando(true);
       const response = await listarEncargados();
       const lista = response.success && Array.isArray(response.response.users) ? response.response.users : [];
-      setAdmins(lista);
+      setAdmins(lista.filter(account => accountRole(account) === 'ADMIN'));
     } catch (error) {
       console.error('Error al obtener admins:', error);
       setAdmins([]);
@@ -126,29 +127,19 @@ export default function EmpresaAdmins() {
     }
   };
 
-  const handleToggleStatus = async (admin) => {
-    try {
-      await actualizarStatusCliente(admin.idUser, !admin.status);
-      fetchAdmins();
-    } catch (error) {
-      console.error('Error al actualizar el estado del admin', error);
-      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el estado.' });
-    }
-  };
-
   const handleConfirmarArchivar = async () => {
-    if (!adminArchivando) return;
+    if (!adminArchivando || accountRole(adminArchivando) !== 'ADMIN') return;
     try {
       await archivarCliente(adminArchivando.idUser, true);
       setAdminArchivando(null);
       fetchAdmins();
       Swal.fire({
-        toast: true, position: 'top-end', icon: 'success', title: 'Administrador eliminado',
+        toast: true, position: 'top-end', icon: 'success', title: 'Administrador archivado',
         showConfirmButton: false, timer: 2500, timerProgressBar: true,
       });
     } catch (error) {
       console.error('Error al eliminar el admin', error);
-      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo eliminar el administrador.' });
+      Swal.fire({ icon: 'error', title: 'Error', text: error.message || 'No se pudo archivar el administrador.' });
     }
   };
 
@@ -313,7 +304,7 @@ export default function EmpresaAdmins() {
                           <td><span className={styles.cellMono}>{admin.phone}</span></td>
                           <td>
                             <div className={styles.tgWrap}>
-                              <span className={`${styles.tg} ${admin.status ? styles.on : ''}`} onClick={() => handleToggleStatus(admin)}></span>
+                              <span className={`${styles.tg} ${admin.status ? styles.on : ''}`} aria-disabled="true" title="Solo ADMIN puede cambiar el acceso"></span>
                               <span className={`${styles.tgLabel} ${admin.status ? styles.on : styles.off}`}>{admin.status ? 'Activo' : 'Inactivo'}</span>
                             </div>
                           </td>
@@ -367,14 +358,16 @@ export default function EmpresaAdmins() {
               <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--rose-soft)', color: 'var(--rose)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
                 <IconTrash size={28} />
               </div>
-              <div style={{ fontFamily: 'var(--display)', fontWeight: 600, fontSize: 20, letterSpacing: '-0.02em', marginBottom: 8 }}>¿Eliminar administrador?</div>
+              <div style={{ fontFamily: 'var(--display)', fontWeight: 600, fontSize: 20, letterSpacing: '-0.02em', marginBottom: 8 }}>¿Archivar administrador?</div>
               <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>
-                Sus clientes asignados quedarán <strong>sin asignar</strong> y deberás reasignarlos. Esta acción no se puede deshacer.
+                <strong>{adminArchivando.email}</strong> · Rol: ADMIN · ID: {adminArchivando.idUser}.
+                Perderá el acceso y sus clientes quedarán <strong>sin asignar</strong>.
+                Desarchivar no restaura las asignaciones anteriores.
               </div>
             </div>
             <div className={modalStyles.modalFoot}>
               <button className={`${modalStyles.btn} ${modalStyles.btnGhost}`} onClick={() => setAdminArchivando(null)}>Cancelar</button>
-              <button className={`${modalStyles.btn} ${modalStyles.btnDanger}`} onClick={handleConfirmarArchivar}>Sí, eliminar</button>
+              <button className={`${modalStyles.btn} ${modalStyles.btnDanger}`} onClick={handleConfirmarArchivar}>Sí, archivar</button>
             </div>
           </div>
         </div>

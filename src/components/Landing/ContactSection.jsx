@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useReveal from "../../hooks/useReveal";
+import { useCookiePreferences } from '../common/CookieNotice.jsx';
+import { openCookiePreferences } from '../../utils/cookiePreferences.js';
 import { getPaginaPublicaConfig } from "../../api/api.js";
 import { redesDesdeConfig, redesVisibles, tipoRed, IconoRed, urlRed } from "../../utils/redesSociales.jsx";
 import styles from '../../styles/landing/ContactSection.module.css';
@@ -32,6 +34,7 @@ const CONTACT_FALLBACK = {
 };
 
 export default function ContactSection() {
+  const { maps } = useCookiePreferences();
   const [headerRef, headerIn] = useReveal();
   const [gridRef, gridIn] = useReveal();
   const [hoursRef, hoursIn] = useReveal();
@@ -101,7 +104,7 @@ export default function ContactSection() {
               <div className={styles.mapPinMod}></div>
               {/* Mapa real de Google (embed sin llave). El dibujo de arriba queda
                   de fondo mientras carga o si no hay dirección. */}
-              {u.direccion && (
+              {u.direccion && maps && (
                 <iframe
                   className={styles.mapEmbed}
                   title={`Mapa de ${u.titulo}`}
@@ -111,6 +114,7 @@ export default function ContactSection() {
                   allowFullScreen
                 />
               )}
+              {u.direccion && !maps && <button type="button" onClick={openCookiePreferences} style={{ position: 'relative', zIndex: 2, margin: '24px', padding: '12px', borderRadius: '10px', border: '1px solid #fff', background: '#1b2a4a', color: '#fff' }}>Permitir mapas de Google</button>}
             </div>
             <div className={styles.locationBody}>
               <div className={styles.locationHead}>

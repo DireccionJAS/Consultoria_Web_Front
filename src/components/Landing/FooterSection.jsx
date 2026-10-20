@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../../img/landing/logo.png";
+import { openCookiePreferences } from '../../utils/cookiePreferences.js';
 import { getPdfLegalUrl, getPaginaPublicaConfig } from "../../api/api.js";
 import { redesDesdeConfig, redesVisibles, tipoRed, IconoRed, urlRed } from "../../utils/redesSociales.jsx";
 import styles from '../../styles/landing/FooterSection.module.css';
@@ -66,7 +67,7 @@ export default function FooterSection() {
               <ul>
                 <li><a href={getPdfLegalUrl('terminos')} target="_blank" rel="noreferrer">Términos y condiciones</a></li>
                 <li><a href={getPdfLegalUrl('privacidad')} target="_blank" rel="noreferrer">Política de privacidad</a></li>
-                <li><a href="#">Aviso de cookies</a></li>
+                <li><button type="button" onClick={openCookiePreferences} style={{ background: 'none', border: 0, color: 'inherit', padding: 0, font: 'inherit', cursor: 'pointer' }}>Aviso de cookies</button></li>
                 <li><a href="#">Protección de datos</a></li>
               </ul>
             </div>

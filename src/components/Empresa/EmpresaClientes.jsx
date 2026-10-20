@@ -1,9 +1,10 @@
+import { accountConfirmation, clientsOnly } from '../../utils/accountActions';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import EmpresaSidebar from './EmpresaSidebar.jsx';
-import { clientes, actualizarStatusCliente, archivarCliente } from './../../api/api.js';
+import { clientes, archivarCliente } from './../../api/api.js';
 import styles from './../../styles/EmpresaClientes.module.css';
 import NotificationBell from './../common/NotificationBell.jsx';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
@@ -168,7 +169,7 @@ export default function EmpresaClientes() {
     try {
       const response = await clientes();
       if (response.success && Array.isArray(response.response.users)) {
-        setDatos(response.response.users);
+        setDatos(clientsOnly(response.response.users));
       } else {
         console.error('Formato de respuesta inesperado:', response);
         setDatos([]);
@@ -181,25 +182,19 @@ export default function EmpresaClientes() {
     }
   };
 
-  const handleSwitchChange = async (idUser, nuevoEstado) => {
-    try {
-      await actualizarStatusCliente(idUser, nuevoEstado);
-      fetchServices();
-    } catch (error) {
-      console.error('Error al actualizar el estado del cliente', error);
-    }
-  };
-
   const handleArchivar = async (cliente) => {
+    const archivar = !cliente.archived;
     try {
-      await archivarCliente(cliente.idUser, !cliente.archived);
+      const confirmacion = await Swal.fire(accountConfirmation(cliente, 'archive', archivar));
+      if (!confirmacion.isConfirmed) return;
+      await archivarCliente(cliente.idUser, archivar);
       fetchServices();
     } catch (error) {
       console.error('Error al archivar el cliente', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo actualizar el archivado del cliente.',
+        text: error.message || 'No se pudo actualizar el archivado del cliente.',
       });
     }
   };
@@ -372,7 +367,7 @@ export default function EmpresaClientes() {
                             <div className={styles.tgWrap}>
                               <span
                                 className={`${styles.tg} ${cliente.status ? styles.on : ''}`}
-                                onClick={() => handleSwitchChange(cliente.idUser, !cliente.status)}
+                                aria-disabled="true" title="Solo ADMIN puede cambiar el acceso"
                               ></span>
                               <span className={`${styles.tgLabel} ${cliente.status ? styles.on : styles.off}`}>
                                 {cliente.status ? 'Activo' : 'Inactivo'}
