@@ -8,6 +8,7 @@ import { TRAMITE_STATUS_LABELS, TRAMITE_STATUS_TONES } from './../../utils/trami
 import styles from './../../styles/ClienteDashboard.module.css';
 import HeaderLogoutButton from './../common/HeaderLogoutButton.jsx';
 import NotificationBell from './../common/NotificationBell.jsx';
+import { formatAppointmentDate } from '../../utils/appointmentDate.js';
 
 function ArrowIcon() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10" /></svg>; }
 function TramiteIcon() { return <svg width="22" height="22" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="6" y="4" width="20" height="28" rx="2" /><circle cx="16" cy="14" r="3.5" /><path d="M10 22h12M10 26h8" /></svg>; }
@@ -22,15 +23,6 @@ const STATUS_META = Object.fromEntries(
     { label, cls: TONE_CLS[TRAMITE_STATUS_TONES[code]] || 'tagProceso' },
   ])
 );
-
-const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-function formatCita(fecha) {
-  const d = new Date(fecha);
-  if (Number.isNaN(d.getTime())) return null;
-  const hora = String(d.getHours()).padStart(2, '0');
-  const min = String(d.getMinutes()).padStart(2, '0');
-  return { fecha: `${d.getDate()} ${MESES[d.getMonth()]}`, hora: `${hora}:${min}` };
-}
 
 export default function ClienteHome() {
   const navigate = useNavigate();
@@ -97,7 +89,7 @@ export default function ClienteHome() {
 
   const primerNombre = nombre ? nombre.trim().split(/\s+/)[0] : '';
   const statusMeta = tramite ? STATUS_META[tramite.status] : null;
-  const cita = tramite ? formatCita(tramite.dateSimulation || tramite.dateCas || tramite.dateCon) : null;
+  const cita = tramite ? formatAppointmentDate(tramite.dateSimulation || tramite.dateCas || tramite.dateCon) : null;
   const citaLabel = tramite?.dateSimulation ? 'Simulación de entrevista' : tramite?.dateCas ? 'Cita CAS' : tramite?.dateCon ? 'Cita consular' : null;
   const pendiente = tramite ? Math.max((tramite.paidAll || 0) - (tramite.paid || 0), 0) : null;
   const progresoPct = tramite && totalPasos ? Math.round((tramite.stepProgress / totalPasos) * 100) : null;
@@ -156,7 +148,7 @@ export default function ClienteHome() {
                     </>
                   ) : (
                     <>
-                      <div className={styles.cardValue}>Sin agendar</div>
+                      <div className={styles.cardValue}>Pendiente de agendar</div>
                       <div className={styles.cardMeta}>Aún no tienes una cita programada</div>
                     </>
                   )}
