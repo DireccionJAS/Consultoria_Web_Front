@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2';
 import logoJas from './../assets/empresas/logo-jas.png';
 import logoCmg from './../assets/empresas/logo-cmg.png';
+import logoHenko from './../assets/empresas/logo-henko.png';
 
 // Utilidades de Formularios (Admin > Formularios y portal del cliente).
 
@@ -9,6 +10,7 @@ const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 's
 export const EMPRESA_UI = {
   JAS: { corto: 'C.JAS', logo: logoJas },
   CMG: { corto: 'COR.M', logo: logoCmg },
+  HENKO: { corto: 'HENKO', logo: logoHenko },
 };
 
 export function formatoMoneda(n) {

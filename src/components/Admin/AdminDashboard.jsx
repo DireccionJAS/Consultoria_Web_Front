@@ -28,7 +28,7 @@ const NAV_CARDS = [
     icon: ClientesIcon, path: '/ClientesAdmin',
   },
   {
-    key: 'formularios', name: 'Formularios', desc: 'Envía a tus clientes el formulario de JAS o CMG cuando cubran su pago inicial.',
+    key: 'formularios', name: 'Formularios', desc: 'Envía a tus clientes el formulario correspondiente a su empresa cuando cubran su pago inicial.',
     icon: FormulariosIcon, path: '/FormulariosAdmin',
   },
   {

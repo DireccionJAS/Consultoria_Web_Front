@@ -5,6 +5,7 @@ import { listarEncargados, getEmpresas, asignarEncargadoCliente, cambiarEmpresaC
 import styles from './../../styles/AsignacionDropdowns.module.css';
 import logoJas from './../../assets/empresas/logo-jas.png';
 import logoCmg from './../../assets/empresas/logo-cmg.png';
+import logoHenko from './../../assets/empresas/logo-henko.png';
 
 // Columnas "Encargado" y "Empresa" de las tablas del panel Empresa
 // (Trámites y Clientes). Ambas son del CLIENTE (user.encargado /
@@ -13,6 +14,7 @@ import logoCmg from './../../assets/empresas/logo-cmg.png';
 const EMPRESA_UI = {
   JAS: { corto: 'C.JAS', logo: logoJas },
   CMG: { corto: 'COR.M', logo: logoCmg },
+  HENKO: { corto: 'HENKO', logo: logoHenko },
 };
 
 function ChevronDownIcon() { return <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>; }
